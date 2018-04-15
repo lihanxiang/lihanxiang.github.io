@@ -51,7 +51,7 @@ kramdown:
 disqus_username: disqus_suJWvGcLCh
 
 # Duoshuo settings
-# duoshuo_username: huxblog
+# duoshuo_username: 
 # Share component is depend on Comment so we can NOT use share only.
 # duoshuo_share: true                     # set to false if you want to use Comment without Sharing
 
@@ -70,7 +70,7 @@ ga_domain: http://lihanxiang.github.io
 # Sidebar settings
 sidebar: true                           # whether or not using Sidebar.
 sidebar-about-description: "写写Java，一天就过去了"
-sidebar-avatar: /img/     # use absolute URL, seeing it's used in both `/` and `/about/`
+sidebar-avatar: /img/Hank.jpg    	# use absolute URL, seeing it's used in both `/` and `/about/`
 
 
 
@@ -81,7 +81,7 @@ featured-condition-size: 0              # A tag will be featured if the size of 
 
 
 # Something else
-friends: [
+se: [
     {
         title: "简书",
         href: "https://www.jianshu.com/u/fbc9284d5523"
