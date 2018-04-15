@@ -1,7 +1,7 @@
 gem: [jekyll-paginate]
 # Site settings
-title: LHX Blog
-SEOTitle: LHX Blog
+title: Lhx Blog
+SEOTitle: 李汉祥
 header-img: img/top.jpg
 email: l945457758@gmail.com
 description: "写写代码，做做网页"
