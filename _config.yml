@@ -1,7 +1,7 @@
 gem: [jekyll-paginate]
 # Site settings
-title: LHX的博客
-SEOTitle: LHX的博客
+title: LHX Blog
+SEOTitle: LHX Blog
 header-img: img/top.jpg
 email: l945457758@gmail.com
 description: "写写代码，做做网页"
