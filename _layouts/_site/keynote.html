@@ -1,0 +1,113 @@
+<!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/" width="0" height="0"> -->
+
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        /*background-image: url('/')*/
+        height: 500px;
+        overflow: hidden;
+    }
+    header iframe{
+        width: 100%;
+        height: 100%;
+        border: 0;
+    }
+</style>
+<header class="intro-header" >
+    <iframe src=""/>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    <div class="post-heading">
+                        <div class="tags">
+                            
+                        </div>
+                        <h1></h1>
+                        
+                        
+                        <h2 class="subheading"></h2>
+                        
+                        <span class="meta">Posted by  on </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </iframe>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Post Container -->
+            <div class="post-container
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1 ">
+
+				
+
+                <hr>
+
+                
+
+
+                <ul class="pager">
+                    
+                    
+                </ul>
+
+
+                
+
+                
+
+            </div>
+
+            <!-- Sidebar Container -->
+            <div class="sidebar-container
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1 ">
+
+                <!-- Featured Tags -->
+                
+
+                <!-- Something else -->
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+<!-- resize header to fullscreen keynotes -->
+<script>
+    var $header = document.getElementsByTagName("header")[0];
+    function resize(){
+        /*
+         * leave 85px to both
+         * - told/imply users that there has more content below
+         * - let user can scroll in mobile device, seeing the keynote-view is unscrollable
+         */
+        $header.style.height = (window.innerHeight-85) + 'px';
+    }
+    document.addEventListener('DOMContentLoaded', function(){
+        resize();
+    })
+    window.addEventListener('load', function(){
+        resize();
+    })
+    window.addEventListener('resize', function(){
+        resize();
+    })
+    resize();
+</script>
+
+
+
+
+
+
+
+
