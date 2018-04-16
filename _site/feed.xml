@@ -5,9 +5,121 @@
     <description>写写Java，一天就过去了</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Mon, 16 Apr 2018 04:08:31 +0000</pubDate>
-    <lastBuildDate>Mon, 16 Apr 2018 04:08:31 +0000</lastBuildDate>
+    <pubDate>Mon, 16 Apr 2018 06:09:05 +0000</pubDate>
+    <lastBuildDate>Mon, 16 Apr 2018 06:09:05 +0000</lastBuildDate>
     <generator>Jekyll v3.7.3</generator>
+    
+      <item>
+        <title>简易商品信息管理系统——首个Web项目</title>
+        <description>&lt;h3 id=&quot;正文之前&quot;&gt;正文之前&lt;/h3&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;在学习了一段时间的Java Web的内容之后，当然需要有个项目来练练手，我相信大多数人的首选项目都是信息管理系统吧，所以我选择了商品信息管理系统&lt;/p&gt;
+
+  &lt;p&gt;目前项目源码已全部上传至GitHub，欢迎大家来&lt;strong&gt;fork&lt;/strong&gt; —— &lt;a href=&quot;https://github.com/lihanxiang/ProductManagement&quot;&gt;商品信息管理系统&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;hr /&gt;
+
+&lt;h3 id=&quot;正文&quot;&gt;正文&lt;/h3&gt;
+
+&lt;h4 id=&quot;项目构思&quot;&gt;项目构思&lt;/h4&gt;
+
+&lt;p&gt;简易的管理系统，结构为 &lt;strong&gt;Servlet + JSP + MySQL&lt;/strong&gt;，使用IntelliJ IDEA，搭建起了这个项目，源码中有很详细的注释，如果刚开始学习JavaWeb的内容，学一下Servlet，再搭配这个项目，岂不是美滋滋，有需要就拿去，如果能够有帮助，在fork的同时也赏一个Star吧！&lt;/p&gt;
+
+&lt;p&gt;接下来就介绍一下过程：&lt;/p&gt;
+
+&lt;h5 id=&quot;1-数据库连接&quot;&gt;1. 数据库连接&lt;/h5&gt;
+
+&lt;p&gt;在这个项目中，并不是单独编写Java程序来连接数据库，而是使用&lt;strong&gt;c3p0-config.xml&lt;/strong&gt;文件来配置数据库连接池，使用 &lt;strong&gt;QueryRunner&lt;/strong&gt; 来执行数据库操作
+&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/3426615-e857443bcfbb5fcc.PNG?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;在运行项目之前，需要在图中所示文件中设置你自己的本地数据库名称和密码，否则，无法连接数据库&lt;/p&gt;
+
+&lt;h5 id=&quot;2-jar文件&quot;&gt;2. JAR文件&lt;/h5&gt;
+
+&lt;p&gt;在构建项目时，需要导入所需的Library&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/3426615-75b00af804bf378a.PNG?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;h5 id=&quot;3-建表&quot;&gt;3. 建表&lt;/h5&gt;
+
+&lt;p&gt;在创建数据库时，也需要一张表来配合运行项目，在项目中也给出了这张表的结构&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/3426615-103c57fa0bd8e7df.PNG?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;h5 id=&quot;4-建包&quot;&gt;4. 建包&lt;/h5&gt;
+
+&lt;p&gt;采用MVC设计模式，建包时我分成了这几个方面：&lt;/p&gt;
+&lt;blockquote&gt;
+  &lt;p&gt;dao
+page
+product
+service
+servlet
+以及在测试时的用例：demo&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;接下来介绍这几个包的内容：&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;
+    &lt;p&gt;dao包：
+内含有一个Java文件：ProductDao，编写对于数据库的操作，增删改查之类&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;page包：
+查询后的数据需要分页显示，否则看起来很麻烦，page包中包含有一个Java文件：PageBean，配合content.jsp文件将查询结果分页显示&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;product包：
+内含有Product类，将商品的基本信息封装，便于其他类使用&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;service包
+内含有一个Java文件：ProductService，实现了ProductDao类中定义的方法，并封装，降低程序中的代码重复性，更加简洁&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;servlet包
+内含有ProductServlet，实现了ProductService类中定义的方法，并和JSP页面进行通信&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;demo包
+在完成项目后，需要测试用例来进行测试&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h5 id=&quot;5-mvc模式&quot;&gt;5. MVC模式&lt;/h5&gt;
+
+&lt;p&gt;MVC模式：Model，View，Controller：&lt;/p&gt;
+
+&lt;p&gt;Model：ProductDao类，PageBean类和Product类作为基本的模型&lt;/p&gt;
+
+&lt;p&gt;View：JSP文件，系统的页面&lt;/p&gt;
+
+&lt;p&gt;Controller：ProductServlet，作为用户输入和数据库操作的控制者&lt;/p&gt;
+
+&lt;p&gt;这样就使得代码较为简洁&lt;/p&gt;
+
+&lt;h5 id=&quot;6-运行前需要的准备&quot;&gt;6. 运行前需要的准备&lt;/h5&gt;
+
+&lt;p&gt;在Github上fork项目，并且clone至本地后，用IDEA打开，并按照这篇配置教程来配置web项目
+&lt;a href=&quot;https://www.jianshu.com/p/8d49d36a3c7e&quot;&gt;【JavaWeb】IDEA如何创建及配置Web项目（多图）&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;配置后，将&lt;strong&gt;src&lt;/strong&gt;目录下的 &lt;strong&gt;c3p0-config.xml&lt;/strong&gt; 文件中的数据库信息改为自己的数据库信息，运行Tomcat，岂不是美滋滋&lt;/p&gt;
+
+&lt;h5 id=&quot;7-思维导图&quot;&gt;7. 思维导图&lt;/h5&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/3426615-cfa3d4b11fc240e8.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;结合这篇文章和项目根目录中的 &lt;a href=&quot;https://github.com/lihanxiang/ProductManagement/blob/master/README.md&quot;&gt;README.md&lt;/a&gt; 文档，开始自己的JavaWeb之旅吧！&lt;/p&gt;
+</description>
+        <pubDate>Mon, 16 Apr 2018 00:00:00 +0000</pubDate>
+        <link>http://localhost:4000/2018/04/16/%E7%AE%80%E6%98%93%E5%95%86%E5%93%81%E4%BF%A1%E6%81%AF%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F-%E9%A6%96%E4%B8%AAWeb%E9%A1%B9%E7%9B%AE/</link>
+        <guid isPermaLink="true">http://localhost:4000/2018/04/16/%E7%AE%80%E6%98%93%E5%95%86%E5%93%81%E4%BF%A1%E6%81%AF%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F-%E9%A6%96%E4%B8%AAWeb%E9%A1%B9%E7%9B%AE/</guid>
+        
+        <category>JavaWeb</category>
+        
+        
+      </item>
     
   </channel>
 </rss>
