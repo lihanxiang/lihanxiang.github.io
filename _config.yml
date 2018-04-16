@@ -4,8 +4,8 @@ title: L Blog
 SEOTitle: 李汉祥的博客 | L Blog
 header-img: img/top.jpg
 email: l945457758@gmail.com
-description: "写写Java，一天就过去了"
-keyword: "Java"
+description: 写写Java，一天就过去了
+keyword: Java
 url: "http://lihanxiang.github.io"              # your host, for absolute URL
 baseurl: ""         # for example, '/blog' if your blog hosted on 'host/blog'
 
@@ -13,7 +13,11 @@ baseurl: ""         # for example, '/blog' if your blog hosted on 'host/blog'
 
 # SNS settings
 RSS: false   
-github_username: lihanxiang
+#weibo_username:
+zhihu_username:     li-han-xiang-54-15
+github_username:    lihanxiang
+#twitter_username:  
+#facebook_username:  
 
 
 
