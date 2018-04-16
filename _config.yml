@@ -1,4 +1,3 @@
-gems: [jekyll-paginate]
 # Site settings
 title: L Blog
 SEOTitle: 李汉祥的博客 | L Blog
@@ -13,12 +12,8 @@ baseurl: ""         # for example, '/blog' if your blog hosted on 'host/blog'
 
 # SNS settings
 RSS: false   
-#weibo_username:
 zhihu_username:     li-han-xiang-54-15
 github_username:    lihanxiang
-#twitter_username:  
-#facebook_username:  
-
 
 
 # Build settings
