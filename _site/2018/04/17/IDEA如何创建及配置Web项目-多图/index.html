@@ -10,9 +10,9 @@
     <meta name="keyword"  content="Java">
     <link rel="shortcut icon" href="/img/favicon.ico">
 
-    <title>简易商品信息管理系统——首个Web项目 - 李汉祥的博客 | L Blog</title>
+    <title>IDEA如何创建及配置Web项目（多图） - 李汉祥的博客 | L Blog</title>
 
-    <link rel="canonical" href="http://localhost:4000/2018/04/16/%E7%AE%80%E6%98%93%E5%95%86%E5%93%81%E4%BF%A1%E6%81%AF%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F-%E9%A6%96%E4%B8%AAWeb%E9%A1%B9%E7%9B%AE/">
+    <link rel="canonical" href="http://localhost:4000/2018/04/17/IDEA%E5%A6%82%E4%BD%95%E5%88%9B%E5%BB%BA%E5%8F%8A%E9%85%8D%E7%BD%AEWeb%E9%A1%B9%E7%9B%AE-%E5%A4%9A%E5%9B%BE/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -124,12 +124,12 @@
 
 
     <!-- Image to hack wechat -->
-<!-- <img src="/img/post/2018-04/16.jpg" width="0" height="0"> -->
+<!-- <img src="/img/post/2018-04/17.jpeg" width="0" height="0"> -->
 
 <!-- Post Header -->
 <style type="text/css">
     header.intro-header{
-        background-image: url('/img/post/2018-04/16.jpg')
+        background-image: url('/img/post/2018-04/17.jpeg')
     }
 </style>
 <header class="intro-header" >
@@ -144,12 +144,12 @@
                         <a class="tag" href="/tags/#IntelliJ IDEA" title="IntelliJ IDEA">IntelliJ IDEA</a>
                         
                     </div>
-                    <h1>简易商品信息管理系统——首个Web项目</h1>
+                    <h1>IDEA如何创建及配置Web项目（多图）</h1>
                     
                     
-                    <h2 class="subheading">项目</h2>
+                    <h2 class="subheading">项目配置</h2>
                     
-                    <span class="meta">Posted by L on April 16, 2018</span>
+                    <span class="meta">Posted by L on April 17, 2018</span>
                 </div>
             </div>
         </div>
@@ -170,108 +170,111 @@
 				<h3 id="正文之前">正文之前</h3>
 
 <blockquote>
-  <p>在学习了一段时间的Java Web的内容之后，当然需要有个项目来练练手，我相信大多数人的首选项目都是信息管理系统吧，所以我选择了商品信息管理系统</p>
-
-  <p>目前项目源码已全部上传至GitHub，欢迎大家来<strong>fork</strong> —— <a href="https://github.com/lihanxiang/ProductManagement">商品信息管理系统</a></p>
+  <p>在学习Java Web时，第一个遇到的问题就是如何创建或配置Web项目了，今天，就用IntelliJ IDEA 来进行Web项目配置：</p>
+  <ol>
+    <li>创建Web项目</li>
+    <li>配置web项目</li>
+  </ol>
 </blockquote>
 
 <hr />
 
 <h3 id="正文">正文</h3>
 
-<h4 id="项目构思">项目构思</h4>
-
-<p>简易的管理系统，结构为 <strong>Servlet + JSP + MySQL</strong>，使用IntelliJ IDEA，搭建起了这个项目，源码中有很详细的注释，如果刚开始学习JavaWeb的内容，学一下Servlet，再搭配这个项目，岂不是美滋滋，有需要就拿去，如果能够有帮助，在fork的同时也赏一个Star吧！</p>
-
-<p>接下来就介绍一下过程：</p>
-
-<h5 id="1-数据库连接">1. 数据库连接</h5>
-
-<p>在这个项目中，并不是单独编写Java程序来连接数据库，而是使用<strong>c3p0-config.xml</strong>文件来配置数据库连接池，使用 <strong>QueryRunner</strong> 来执行数据库操作
-<img src="http://upload-images.jianshu.io/upload_images/3426615-e857443bcfbb5fcc.PNG?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
-
-<p>在运行项目之前，需要在图中所示文件中设置你自己的本地数据库名称和密码，否则，无法连接数据库</p>
-
-<h5 id="2-jar文件">2. JAR文件</h5>
-
-<p>在构建项目时，需要导入所需的Library</p>
-
-<p><img src="http://upload-images.jianshu.io/upload_images/3426615-75b00af804bf378a.PNG?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
-
-<h5 id="3-建表">3. 建表</h5>
-
-<p>在创建数据库时，也需要一张表来配合运行项目，在项目中也给出了这张表的结构<img src="http://upload-images.jianshu.io/upload_images/3426615-103c57fa0bd8e7df.PNG?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
-
-<h5 id="4-建包">4. 建包</h5>
-
-<p>采用MVC设计模式，建包时我分成了这几个方面：</p>
-<blockquote>
-  <p>dao</p>
-
-  <p>page</p>
-
-  <p>product</p>
-
-  <p>service</p>
-
-  <p>servlet</p>
-
-  <p>以及在测试时的用例：demo</p>
-</blockquote>
-
-<p>接下来介绍这几个包的内容：</p>
+<h4 id="创建web项目">创建Web项目</h4>
 
 <ol>
   <li>
-    <p>dao包：
-内含有一个Java文件：ProductDao，编写对于数据库的操作，增删改查之类</p>
+    <p>新建Web项目
+<img src="http://upload-images.jianshu.io/upload_images/3426615-ddb0f4073c436700.PNG?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" />
+<br /></p>
   </li>
   <li>
-    <p>page包：
-查询后的数据需要分页显示，否则看起来很麻烦，page包中包含有一个Java文件：PageBean，配合content.jsp文件将查询结果分页显示</p>
+    <p>File - Project Structure
+<img src="http://upload-images.jianshu.io/upload_images/3426615-89271f34e5f3b809.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" />
+<br /></p>
   </li>
   <li>
-    <p>product包：
-内含有Product类，将商品的基本信息封装，便于其他类使用</p>
+    <p>Modules - Sources
+在web目录下新建一个目录，名为 <strong>WEB-INF</strong>，在<strong>WEB-INF</strong>目录下新建两个目录，名为 <strong>classes</strong> 和 <strong>lib</strong>
+classes：.class文件存放位置
+lib：整个项目所用到的JAR文件存放位置
+<img src="http://upload-images.jianshu.io/upload_images/3426615-2bb22296a04f3409.PNG?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" />
+<br /></p>
   </li>
   <li>
-    <p>service包
-内含有一个Java文件：ProductService，实现了ProductDao类中定义的方法，并封装，降低程序中的代码重复性，更加简洁</p>
-  </li>
-  <li>
-    <p>servlet包
-内含有ProductServlet，实现了ProductService类中定义的方法，并和JSP页面进行通信</p>
-  </li>
-  <li>
-    <p>demo包
-在完成项目后，需要测试用例来进行测试</p>
+    <p>Modules - Paths
+勾选 <strong>Use module compile output path</strong>，并将 <strong>Output path</strong> 和 <strong>Test output path</strong> 改为刚才<strong>web</strong>目录下新建的 <strong>classes</strong> 文件夹<br />
+<strong>目的：</strong>在构建项目时，能将.class文件输出至 <strong>classes</strong> 文件夹中
+<img src="http://upload-images.jianshu.io/upload_images/3426615-e41a436471433fc8.PNG?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" />
+<br /></p>
   </li>
 </ol>
 
-<h5 id="5-mvc模式">5. MVC模式</h5>
+<p>在下面的JavaDoc中添加<strong>web</strong>目录下的 <strong>lib</strong>文件夹
+<img src="http://upload-images.jianshu.io/upload_images/3426615-37cddc22213a1b5b.PNG?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" />
+<br /></p>
 
-<p>MVC模式：Model，View，Controller：</p>
+<ol>
+  <li>
+    <p>Modules - Dependencies 
+添加web目录下的<strong>lib</strong>文件夹以及Tomcat的Library
+在添加 <strong>lib</strong>文件夹时选择 <strong>Jar Directory</strong>
+<img src="http://upload-images.jianshu.io/upload_images/3426615-eed4f6391ccbfbb9.PNG?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" />
+<br /></p>
+  </li>
+  <li>
+    <p>Libraries
+添加web目录下的<strong>lib</strong>文件夹，选择 <strong>Jar Directory</strong>
+<img src="http://upload-images.jianshu.io/upload_images/3426615-fb3a36060f52bd79.PNG?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" />
+<br /></p>
+  </li>
+  <li>
+    <p>Facets
+在Deployment Descriptor中添加 <strong>web.xml</strong> 文件
+<img src="http://upload-images.jianshu.io/upload_images/3426615-82800832c2b676b8.PNG?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" />
+<br /></p>
+  </li>
+  <li>
+    <p>Artifacts
+勾选 <strong>Include in project build</strong> 和 <strong>Show content of elements</strong> 两个选项，点击OK
+<img src="http://upload-images.jianshu.io/upload_images/3426615-89fa2470fa132079.PNG?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" />
+<br /></p>
+  </li>
+  <li>
+    <p>Edit Configurations - Tomcat Server - Local
+这是配置Tomcat的过程
+<img src="http://upload-images.jianshu.io/upload_images/3426615-3bafc20a17cc8bb1.PNG?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" />
+<img src="http://upload-images.jianshu.io/upload_images/3426615-5356db8234b58f39.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" />
+<br /></p>
+  </li>
+  <li>
+    <p>Tomcat
+修改名称，在Deployment中添加第8步中的Artifact
+<img src="http://upload-images.jianshu.io/upload_images/3426615-964817df2fc7bd52.PNG?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
+  </li>
+</ol>
 
-<p>Model：ProductDao类，PageBean类和Product类作为基本的模型</p>
+<p>这就是新建Web项目所需要的配置了</p>
 
-<p>View：JSP文件，系统的页面</p>
+<hr />
 
-<p>Controller：ProductServlet，作为用户输入和数据库操作的控制者</p>
+<h4 id="配置web项目">配置Web项目</h4>
 
-<p>这样就使得代码较为简洁</p>
+<p>打开已存在的项目，配置JDK，执行上面所述的第第4步至第10步</p>
 
-<h5 id="6-运行前需要的准备">6. 运行前需要的准备</h5>
+<h5 id="有一点要注意">有一点要注意</h5>
 
-<p>在Github上fork项目，并且clone至本地后，用IDEA打开，并按照这篇配置教程来配置web项目
-<a href="https://www.jianshu.com/p/8d49d36a3c7e">【JavaWeb】IDEA如何创建及配置Web项目（多图）</a></p>
+<p>在Facets中，<strong>Web Resource Directories</strong> 需要定位到拥有全部web项目资源的文件夹，在不同的工程中或许有不同的名称，在上面所述的例子中，需要定位到<strong>web</strong>文件夹
+<img src="http://upload-images.jianshu.io/upload_images/3426615-fc8fe98f22101804.PNG?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" />
+<br /></p>
 
-<p>配置后，将<strong>src</strong>目录下的 <strong>c3p0-config.xml</strong> 文件中的数据库信息改为自己的数据库信息，运行Tomcat，岂不是美滋滋</p>
+<p>在进行工程配置时，往往会遗漏一些步骤，往往是小东西影响了整个项目的执行，在工程初期，就需要将配置完成，以免产生不必要的麻烦</p>
 
-<h5 id="7-思维导图">7. 思维导图</h5>
+<p>原文地址：<a href="https://www.jianshu.com/p/8d49d36a3c7e">简书</a></p>
 
-<p><img src="http://upload-images.jianshu.io/upload_images/3426615-cfa3d4b11fc240e8.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
+<p>有需要的可以私信，我一定尽力解答，谢谢！</p>
 
-<p>结合这篇文章和项目根目录中的 <a href="https://github.com/lihanxiang/ProductManagement/blob/master/README.md">README.md</a> 文档，开始自己的JavaWeb之旅吧！</p>
 
 
                 <hr>
@@ -281,10 +284,10 @@
 
                 <ul class="pager">
                     
-                    
-                    <li class="next">
-                        <a href="/2018/04/17/IDEA%E5%A6%82%E4%BD%95%E5%88%9B%E5%BB%BA%E5%8F%8A%E9%85%8D%E7%BD%AEWeb%E9%A1%B9%E7%9B%AE-%E5%A4%9A%E5%9B%BE/" data-toggle="tooltip" data-placement="top" title="IDEA如何创建及配置Web项目（多图）">Next Post &rarr;</a>
+                    <li class="previous">
+                        <a href="/2018/04/16/%E7%AE%80%E6%98%93%E5%95%86%E5%93%81%E4%BF%A1%E6%81%AF%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F-%E9%A6%96%E4%B8%AAWeb%E9%A1%B9%E7%9B%AE/" data-toggle="tooltip" data-placement="top" title="简易商品信息管理系统——首个Web项目">&larr; Previous Post</a>
                     </li>
+                    
                     
                 </ul>
 
@@ -336,8 +339,8 @@
 <script type="text/javascript">
     /* * * CONFIGURATION VARIABLES * * */
     var disqus_shortname = "李汉祥";
-    var disqus_identifier = "/2018/04/16/简易商品信息管理系统——首个Web项目";
-    var disqus_url = "http://localhost:4000/2018/04/16/%E7%AE%80%E6%98%93%E5%95%86%E5%93%81%E4%BF%A1%E6%81%AF%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F-%E9%A6%96%E4%B8%AAWeb%E9%A1%B9%E7%9B%AE/";
+    var disqus_identifier = "/2018/04/17/IDEA如何创建及配置Web项目（多图）";
+    var disqus_url = "http://localhost:4000/2018/04/17/IDEA%E5%A6%82%E4%BD%95%E5%88%9B%E5%BB%BA%E5%8F%8A%E9%85%8D%E7%BD%AEWeb%E9%A1%B9%E7%9B%AE-%E5%A4%9A%E5%9B%BE/";
 
     (function() {
         var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;

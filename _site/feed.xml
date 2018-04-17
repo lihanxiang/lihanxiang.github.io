@@ -5,9 +5,131 @@
     <description>写写Java，一天就过去了</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Mon, 16 Apr 2018 13:22:05 +0000</pubDate>
-    <lastBuildDate>Mon, 16 Apr 2018 13:22:05 +0000</lastBuildDate>
+    <pubDate>Tue, 17 Apr 2018 04:14:45 +0000</pubDate>
+    <lastBuildDate>Tue, 17 Apr 2018 04:14:45 +0000</lastBuildDate>
     <generator>Jekyll v3.7.3</generator>
+    
+      <item>
+        <title>IDEA如何创建及配置Web项目（多图）</title>
+        <description>&lt;h3 id=&quot;正文之前&quot;&gt;正文之前&lt;/h3&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;在学习Java Web时，第一个遇到的问题就是如何创建或配置Web项目了，今天，就用IntelliJ IDEA 来进行Web项目配置：&lt;/p&gt;
+  &lt;ol&gt;
+    &lt;li&gt;创建Web项目&lt;/li&gt;
+    &lt;li&gt;配置web项目&lt;/li&gt;
+  &lt;/ol&gt;
+&lt;/blockquote&gt;
+
+&lt;hr /&gt;
+
+&lt;h3 id=&quot;正文&quot;&gt;正文&lt;/h3&gt;
+
+&lt;h4 id=&quot;创建web项目&quot;&gt;创建Web项目&lt;/h4&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;
+    &lt;p&gt;新建Web项目
+&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/3426615-ddb0f4073c436700.PNG?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;
+&lt;br /&gt;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;File - Project Structure
+&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/3426615-89271f34e5f3b809.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;
+&lt;br /&gt;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Modules - Sources
+在web目录下新建一个目录，名为 &lt;strong&gt;WEB-INF&lt;/strong&gt;，在&lt;strong&gt;WEB-INF&lt;/strong&gt;目录下新建两个目录，名为 &lt;strong&gt;classes&lt;/strong&gt; 和 &lt;strong&gt;lib&lt;/strong&gt;
+classes：.class文件存放位置
+lib：整个项目所用到的JAR文件存放位置
+&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/3426615-2bb22296a04f3409.PNG?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;
+&lt;br /&gt;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Modules - Paths
+勾选 &lt;strong&gt;Use module compile output path&lt;/strong&gt;，并将 &lt;strong&gt;Output path&lt;/strong&gt; 和 &lt;strong&gt;Test output path&lt;/strong&gt; 改为刚才&lt;strong&gt;web&lt;/strong&gt;目录下新建的 &lt;strong&gt;classes&lt;/strong&gt; 文件夹&lt;br /&gt;
+&lt;strong&gt;目的：&lt;/strong&gt;在构建项目时，能将.class文件输出至 &lt;strong&gt;classes&lt;/strong&gt; 文件夹中
+&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/3426615-e41a436471433fc8.PNG?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;
+&lt;br /&gt;&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;在下面的JavaDoc中添加&lt;strong&gt;web&lt;/strong&gt;目录下的 &lt;strong&gt;lib&lt;/strong&gt;文件夹
+&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/3426615-37cddc22213a1b5b.PNG?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;
+&lt;br /&gt;&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;
+    &lt;p&gt;Modules - Dependencies 
+添加web目录下的&lt;strong&gt;lib&lt;/strong&gt;文件夹以及Tomcat的Library
+在添加 &lt;strong&gt;lib&lt;/strong&gt;文件夹时选择 &lt;strong&gt;Jar Directory&lt;/strong&gt;
+&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/3426615-eed4f6391ccbfbb9.PNG?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;
+&lt;br /&gt;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Libraries
+添加web目录下的&lt;strong&gt;lib&lt;/strong&gt;文件夹，选择 &lt;strong&gt;Jar Directory&lt;/strong&gt;
+&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/3426615-fb3a36060f52bd79.PNG?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;
+&lt;br /&gt;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Facets
+在Deployment Descriptor中添加 &lt;strong&gt;web.xml&lt;/strong&gt; 文件
+&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/3426615-82800832c2b676b8.PNG?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;
+&lt;br /&gt;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Artifacts
+勾选 &lt;strong&gt;Include in project build&lt;/strong&gt; 和 &lt;strong&gt;Show content of elements&lt;/strong&gt; 两个选项，点击OK
+&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/3426615-89fa2470fa132079.PNG?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;
+&lt;br /&gt;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Edit Configurations - Tomcat Server - Local
+这是配置Tomcat的过程
+&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/3426615-3bafc20a17cc8bb1.PNG?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;
+&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/3426615-5356db8234b58f39.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;
+&lt;br /&gt;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Tomcat
+修改名称，在Deployment中添加第8步中的Artifact
+&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/3426615-964817df2fc7bd52.PNG?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;这就是新建Web项目所需要的配置了&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h4 id=&quot;配置web项目&quot;&gt;配置Web项目&lt;/h4&gt;
+
+&lt;p&gt;打开已存在的项目，配置JDK，执行上面所述的第第4步至第10步&lt;/p&gt;
+
+&lt;h5 id=&quot;有一点要注意&quot;&gt;有一点要注意&lt;/h5&gt;
+
+&lt;p&gt;在Facets中，&lt;strong&gt;Web Resource Directories&lt;/strong&gt; 需要定位到拥有全部web项目资源的文件夹，在不同的工程中或许有不同的名称，在上面所述的例子中，需要定位到&lt;strong&gt;web&lt;/strong&gt;文件夹
+&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/3426615-fc8fe98f22101804.PNG?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;
+&lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;在进行工程配置时，往往会遗漏一些步骤，往往是小东西影响了整个项目的执行，在工程初期，就需要将配置完成，以免产生不必要的麻烦&lt;/p&gt;
+
+&lt;p&gt;原文地址：&lt;a href=&quot;https://www.jianshu.com/p/8d49d36a3c7e&quot;&gt;简书&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;有需要的可以私信，我一定尽力解答，谢谢！&lt;/p&gt;
+
+</description>
+        <pubDate>Tue, 17 Apr 2018 00:00:00 +0000</pubDate>
+        <link>http://localhost:4000/2018/04/17/IDEA%E5%A6%82%E4%BD%95%E5%88%9B%E5%BB%BA%E5%8F%8A%E9%85%8D%E7%BD%AEWeb%E9%A1%B9%E7%9B%AE-%E5%A4%9A%E5%9B%BE/</link>
+        <guid isPermaLink="true">http://localhost:4000/2018/04/17/IDEA%E5%A6%82%E4%BD%95%E5%88%9B%E5%BB%BA%E5%8F%8A%E9%85%8D%E7%BD%AEWeb%E9%A1%B9%E7%9B%AE-%E5%A4%9A%E5%9B%BE/</guid>
+        
+        <category>JavaWeb</category>
+        
+        <category>IntelliJ IDEA</category>
+        
+        
+      </item>
     
       <item>
         <title>简易商品信息管理系统——首个Web项目</title>
@@ -50,12 +172,17 @@
 
 &lt;p&gt;采用MVC设计模式，建包时我分成了这几个方面：&lt;/p&gt;
 &lt;blockquote&gt;
-  &lt;p&gt;dao
-page
-product
-service
-servlet
-以及在测试时的用例：demo&lt;/p&gt;
+  &lt;p&gt;dao&lt;/p&gt;
+
+  &lt;p&gt;page&lt;/p&gt;
+
+  &lt;p&gt;product&lt;/p&gt;
+
+  &lt;p&gt;service&lt;/p&gt;
+
+  &lt;p&gt;servlet&lt;/p&gt;
+
+  &lt;p&gt;以及在测试时的用例：demo&lt;/p&gt;
 &lt;/blockquote&gt;
 
 &lt;p&gt;接下来介绍这几个包的内容：&lt;/p&gt;
@@ -117,6 +244,8 @@ servlet
         <guid isPermaLink="true">http://localhost:4000/2018/04/16/%E7%AE%80%E6%98%93%E5%95%86%E5%93%81%E4%BF%A1%E6%81%AF%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F-%E9%A6%96%E4%B8%AAWeb%E9%A1%B9%E7%9B%AE/</guid>
         
         <category>JavaWeb</category>
+        
+        <category>IntelliJ IDEA</category>
         
         
       </item>

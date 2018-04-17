@@ -12,6 +12,7 @@ baseurl: ""         # for example, '/blog' if your blog hosted on 'host/blog'
 
 # SNS settings
 RSS: false   
+jianshu_username:   fbc9284d5523
 zhihu_username:     li-han-xiang-54-15
 github_username:    lihanxiang
 
@@ -71,10 +72,8 @@ featured-condition-size: 1              # A tag will be featured if the size of 
 # Something else
 se: [
     {
-        title: "简书",
-        href: "https://www.jianshu.com/u/fbc9284d5523"
-    },{
-        title: "知乎",
-        href: "https://www.zhihu.com/people/li-han-xiang-54-15/activities"
+        title: "博客园",
+        href: "https://home.cnblogs.com/lihanxiang"
     }
+
 ]
