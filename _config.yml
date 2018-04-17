@@ -73,7 +73,7 @@ featured-condition-size: 1              # A tag will be featured if the size of 
 se: [
     {
         title: "博客园",
-        href: "https://home.cnblogs.com/lihanxiang"
+        href: "http://www.cnblogs.com/lihanxiang"
     }
 
 ]
