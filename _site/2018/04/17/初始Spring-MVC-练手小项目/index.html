@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="写写Java，一天就过去了">
+    <meta name="keyword"  content="Java">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>初始Spring MVC——练手小项目 - 李汉祥的博客 | L Blog</title>
+
+    <link rel="canonical" href="http://localhost:4000/2018/04/17/%E5%88%9D%E5%A7%8BSpring-MVC-%E7%BB%83%E6%89%8B%E5%B0%8F%E9%A1%B9%E7%9B%AE/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/hux-blog.min.css">
+
+    <!-- Pygments Github CSS -->
+    <link rel="stylesheet" href="/css/syntax.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="http://cdn.staticfile.org/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">L Blog</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+                    
+                    <li>
+                        <a href="/about/">About</a>
+                    </li>
+                    
+                    <li>
+                        <a href="/tags/">Tags</a>
+                    </li>
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Image to hack wechat -->
+<!-- <img src="/img/post/2018-04/17s.jpg" width="0" height="0"> -->
+
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        background-image: url('/img/post/2018-04/17s.jpg')
+    }
+</style>
+<header class="intro-header" >
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                        <a class="tag" href="/tags/#Spring MVC" title="Spring MVC">Spring MVC</a>
+                        
+                        <a class="tag" href="/tags/#Java Web" title="Java Web">Java Web</a>
+                        
+                    </div>
+                    <h1>初始Spring MVC——练手小项目</h1>
+                    
+                    
+                    <h2 class="subheading">练手项目</h2>
+                    
+                    <span class="meta">Posted by L on April 17, 2018</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+				<h3 id="初始spring-mvc">初始Spring MVC</h3>
+
+<blockquote>
+  <p>前几天开始了我的spring学习之旅，由于之前使用过MVC模式来做项目，所以我先下手的是 Spring MVC，做个练手项目，非常简单</p>
+</blockquote>
+
+<h5 id="项目介绍">项目介绍：</h5>
+
+<p>用户输入信息 -&gt; 后台处理 -&gt; 输出信息</p>
+
+<h5 id="开始">开始</h5>
+
+<ol>
+  <li>创建Spring MVC 项目（创建时下载所需文件）</li>
+</ol>
+
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-d084130830d4db65.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" />
+<br />
+2.创建完的项目目录是这样的</p>
+
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-78e04adbbf1a2c54.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" />
+<br /></p>
+<ol>
+  <li>配置Web项目结构</li>
+</ol>
+
+<p>参考另一篇文章<a href="https://www.jianshu.com/p/8d49d36a3c7e">IDEA如何创建及配置Web项目（多图）</a></p>
+
+<p>有变化的是： 不需要自己创建 <strong>lib</strong> 文件夹，在创建项目时已经建立，另外在 <strong>WEB-INF</strong> 建立 <strong>jsp</strong> 用于存放 <strong>.jsp</strong> 文件，其他的都没什么区别</p>
+
+<p>配置完的样子（文件夹旁有箭头是因为我在做完项目才截图，具体的类以及其他文件都已在内）：</p>
+
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-e4e64f432bfe4d12.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" />
+<br /></p>
+
+<ol>
+  <li>配置Spring MVC的核心 —— <strong>dispatcher-servlet.xml</strong>
+    <blockquote>
+      <p>Spring MVC provides an annotation-based programming model where <strong>@Controller</strong> and <strong>@RestController</strong> components use annotations to express request mappings, request input, exception handling, and more. Annotated controllers have flexible method signatures and do not have to extend base classes nor implement specific interfaces.</p>
+    </blockquote>
+  </li>
+</ol>
+
+<p>如官方文档所说，我也使用了注解来定义控制器（Controller）和服务（Service）.</p>
+
+<p>首先需要添加的是</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;context:component-scan base-package="controller"/&gt;
+&lt;context:component-scan base-package="service"/&gt;
+</code></pre></div></div>
+<p>这样我们就能通过注解来定义<strong>Controller</strong>以及<strong>Service</strong>.</p>
+
+<p>然后，我们需要配置视图解析器，在具体操作时只要写出视图的名称(xxx)，就可以采用URL拼接的方式，达到这种效果：/WEB-INF/jsp/xxx.jsp</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;bean class="org.springframework.web.servlet.view.InternalResourceViewResolver"&gt;
+    &lt;property name="prefix" value="/WEB-INF/jsp/"/&gt;
+    &lt;property name="suffix" value=".jsp"/&gt;
+&lt;/bean&gt;
+</code></pre></div></div>
+
+<ol>
+  <li>开始进行具体的操作</li>
+</ol>
+
+<p>首先是基本数据类：</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public class Product {
+    private long id;
+    private String name;
+    private String price;
+    private String inventory;
+
+    public void setId(long id) {
+        this.id = id;
+    }
+    public long getId() {
+        return id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+    public String getName() { return name; }
+    public void setPrice(String price) {
+        this.price = price;
+    }
+    public String getPrice() { return price; }
+    public void setInventory(String inventory) {
+        this.inventory = inventory;
+    }
+    public String getInventory() { return inventory; }
+}
+</code></pre></div></div>
+<p><br /></p>
+
+<p>接下来是收集用户输入所需要的表单类：</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public class ProductForm {
+    private String name;
+    private String price;
+    private String inventory;
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setPrice(String price) {
+        this.price = price;
+    }
+
+    public void setInventory(String inventory) {
+        this.inventory = inventory;
+    }
+
+    public String getName() {
+        return name;
+    }
+    public String getPrice() {
+        return price;
+    }
+    public String getInventory() {
+        return inventory;
+    }
+}
+</code></pre></div></div>
+<p><br /></p>
+
+<p>然后编写服务接口，以及它的实现类</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>import domain.Product;
+
+public interface ProductService {
+    Product add(Product product);
+    Product get(long id);
+}
+
+</code></pre></div></div>
+
+<p><strong>ProductServiceImpl</strong>就是刚才配置的服务（Service）</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>import domain.Product;
+import org.springframework.stereotype.Service;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
+
+@Service
+public class ProductServiceImpl implements ProductService{
+    private Map&lt;Long, Product&gt; productMap = new HashMap&lt;&gt;();
+    private AtomicLong atomicLong = new AtomicLong();
+
+    @Override
+    public Product add(Product product){
+        long id = atomicLong.incrementAndGet();
+        product.setId(id);
+        productMap.put(id, product);
+        return product;
+    }
+
+    @Override
+    public Product get(long id){
+        return productMap.get(id);
+    }
+}
+</code></pre></div></div>
+<p><br /></p>
+
+<p>最重要的是<strong>控制器</strong>：</p>
+
+<p>采用<strong>@Autowired</strong>注解的方式自动装配Service，
+使用<strong>@RequestMapping</strong>注解的方式，将注解中的路径映射到控制器：</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>import domain.Product;
+import form.ProductForm;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import service.ProductService;
+
+@Controller
+public class ProductController {
+    //日志记录具体操作
+    private static final Log logger = LogFactory.getLog(ProductController.class);
+
+    @Autowired
+    private  ProductService productService;
+
+    //method = RequestMethod.POST表示只接受POST形式的请求
+    @RequestMapping(value = "/product_save", method = RequestMethod.POST)
+    //采用POST的方式发送请求
+    public String saveProduct(ProductForm productForm, RedirectAttributes redirectAttributes){
+        logger.info("saveProduct called");
+
+        //获得用户输入
+        Product product = new Product();
+        product.setName(productForm.getName());
+        product.setPrice(productForm.getPrice());
+        product.setInventory(productForm.getInventory());
+
+        //添加有记录的产品，并且根据ID进行重定向
+        Product savedProduct = productService.add(product);
+        redirectAttributes.addFlashAttribute("message", "Add product Successfully");
+        return "redirect:/product_view/" + savedProduct.getId();
+    }
+
+    //根据ID，将用户输入展示在ProductView中
+    @RequestMapping(value = "product_view/{id}")
+    public String viewProduct(@PathVariable Long id, Model model){
+        //根据ID得到信息
+        Product product = productService.get(id);
+        model.addAttribute("product", product);
+        //ProductView.jsp
+        return "ProductView";
+    }
+}
+</code></pre></div></div>
+<p><br />
+需要注意的是，在现在的Spring版本中，如果直接对Service进行注解，将会有产生警告：
+<img src="https://upload-images.jianshu.io/upload_images/3426615-5c63d619a6d6712e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
+
+<p>按住Alt + Enter 修正错误，会看见提示：</p>
+
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-4b63db8e4d3d88fe.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
+
+<p>官方推荐使用构造器注入</p>
+
+<p>到此为止，后台工作就结束了</p>
+
+<ol>
+  <li>页面</li>
+</ol>
+
+<p>接下来是JSP的编写：</p>
+
+<p>首先是用户输入的页面 (ProductForm.jsp)</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;body&gt;
+    &lt;div&gt;
+        &lt;form action="product_save" method="post"&gt;
+            &lt;fieldset&gt;
+                &lt;legend&gt;Add a product&lt;/legend&gt;
+                &lt;p&gt;
+                    &lt;label for="name"&gt;Product Name: &lt;/label&gt;
+                    &lt;input type="text" id="name" name="name"&gt;
+                &lt;/p&gt;
+                &lt;p&gt;
+                    &lt;label for="price"&gt;Price: &lt;/label&gt;
+                    &lt;input type="text" id="price" name="price"&gt;
+                &lt;/p&gt;
+                &lt;p&gt;
+                    &lt;label for="inventory"&gt;Inventory: &lt;/label&gt;
+                    &lt;input type="text" id="inventory" name="inventory"&gt;
+                &lt;/p&gt;
+                &lt;p&gt;
+                    &lt;input id="reset" type="reset" tabindex="4"&gt;
+                    &lt;input id="submit" type="submit" tabindex="5" value="Add Product"&gt;
+                &lt;/p&gt;
+            &lt;/fieldset&gt;
+        &lt;/form&gt;
+    &lt;/div&gt;
+&lt;/body&gt;
+</code></pre></div></div>
+<p>比较表单中的<strong>&lt;form action="product_save"&gt;</strong>
+和控制器中的<strong>@RequestMapping(value = “/product_save”)</strong>就能够知道，通过@RequestMapping注解，任何<strong>“/product_save”</strong>开头的路径都会被映射到控制器中，并采用saveProduct()方法</p>
+
+<p>然后是显示用户输入的页面 (ProductView.jsp)</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;body&gt;
+    &lt;div&gt;
+        &lt;h3&gt;${message}&lt;/h3&gt;
+        &lt;h4&gt;Details:&lt;/h4&gt;
+        Product Name: ${product.name}&lt;br&gt;
+        Price: ${product.price}&lt;br&gt;
+        Inventory: ${product.inventory}&lt;br&gt;
+    &lt;/div&gt;
+&lt;/body&gt;
+</code></pre></div></div>
+<p>${message}就是刚才在控制器中重定向页面的属性，它会在页面头部输出”Add product Successfully”</p>
+
+<h5 id="项目构建完毕">项目构建完毕</h5>
+
+<p>最终的目录结构是这样：</p>
+
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-3c9d0a81f74d2c04.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
+
+<p>然后我们运行， 输入：</p>
+
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-70edad81b60fb0a7.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
+
+<p>页面难看，主要是用Spring MVC做出来的就可以了</p>
+
+<p>结果是这样的：</p>
+
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-97cced76b8bcbbe2.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
+
+<p>目光移至URL，填写信息提交后，页面重定向至 <strong>product_view/{id}</strong> 处，当前id = 1</p>
+
+<p>到处，我们的这个练手的小项目就结束了，有什么问题都可以私信我</p>
+
+
+
+                <hr>
+
+               
+
+
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/2018/04/17/IDEA%E5%A6%82%E4%BD%95%E5%88%9B%E5%BB%BA%E5%8F%8A%E9%85%8D%E7%BD%AEWeb%E9%A1%B9%E7%9B%AE-%E5%A4%9A%E5%9B%BE/" data-toggle="tooltip" data-placement="top" title="IDEA如何创建及配置Web项目（多图）">&larr; Previous Post</a>
+                    </li>
+                    
+                    
+                </ul>
+
+
+
+            </div>
+
+    <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <hr class="hidden-sm hidden-xs">
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+        				
+                            
+                				<a href="/tags/#Java Web" title="Java Web" rel="3">
+                                    Java Web
+                                </a>
+                            
+        				
+                            
+                				<a href="/tags/#IntelliJ IDEA" title="IntelliJ IDEA" rel="1">
+                                    IntelliJ IDEA
+                                </a>
+                            
+        				
+                            
+                				<a href="/tags/#Spring MVC" title="Spring MVC" rel="1">
+                                    Spring MVC
+                                </a>
+                            
+        				
+        			</div>
+                </section>
+                
+
+                <!-- Something else -->
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+
+
+<!-- disqus 公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = "李汉祥";
+    var disqus_identifier = "/2018/04/17/初始Spring MVC——练手小项目";
+    var disqus_url = "http://localhost:4000/2018/04/17/%E5%88%9D%E5%A7%8BSpring-MVC-%E7%BB%83%E6%89%8B%E5%B0%8F%E9%A1%B9%E7%9B%AE/";
+
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<!-- disqus 公共JS代码 end -->
+
+
+
+
+
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                    
+                  
+		    
+                            <li>
+                                <a target="_blank" href="https://www.jianshu.com/u/li-han-xiang-54-15">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fa fa-circle fa-stack-2x"></i>
+                                        <i class="fa fa-stack-1x fa-inverse">简</i>
+                                    </span>
+                                </a>
+                            </li>
+                            
+                   
+                    
+                    <li>
+                        <a target="_blank" href="https://www.zhihu.com/people/li-han-xiang-54-15">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-stack-1x fa-inverse">知</i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+
+
+                    
+                    
+                    <li>
+                        <a target="_blank" href="https://github.com/lihanxiang">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; L Blog 2018
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("http://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+<script>
+    // dynamic User by Hux
+    var _gaId = 'UA-117570649-1';
+    var _gaDomain = 'http://lihanxiang.github.io';
+
+    // Originial
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', _gaId, _gaDomain);
+    ga('send', 'pageview');
+</script>
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+
+<!-- Image to hack wechat -->
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>
