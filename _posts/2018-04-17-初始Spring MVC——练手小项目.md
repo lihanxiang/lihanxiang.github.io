@@ -4,7 +4,7 @@ title:      初始Spring MVC——练手小项目
 subtitle:   练手项目
 date:	    2018-04-17
 author:	    L
-header-img: "img/post/2018-04/17s.jpg"
+header-img: "img/post/2018-04/17(2).jpg"
 tags:
     - Spring MVC
     - Java Web

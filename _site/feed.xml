@@ -5,9 +5,66 @@
     <description>写写Java，一天就过去了</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Tue, 17 Apr 2018 22:38:24 +0800</pubDate>
-    <lastBuildDate>Tue, 17 Apr 2018 22:38:24 +0800</lastBuildDate>
+    <pubDate>Wed, 18 Apr 2018 09:39:48 +0800</pubDate>
+    <lastBuildDate>Wed, 18 Apr 2018 09:39:48 +0800</lastBuildDate>
     <generator>Jekyll v3.7.3</generator>
+    
+      <item>
+        <title>博客介绍</title>
+        <description>&lt;h3 id=&quot;终于开通了自己的个人博客&quot;&gt;终于开通了自己的个人博客&lt;/h3&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;2天前，突发奇想，为什么不去申请一个自己的个人博客呢，毕竟我接触GitHub也有一年了。GitHub为每一位用户都提供了一个创建个人博客的机会，也就是GitHub Pages，在此就不详述创建的过程了，如有需要，另写一篇&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h4 id=&quot;博客主题&quot;&gt;博客主题&lt;/h4&gt;
+
+&lt;p&gt;由于我才开始接触Jekyll（静态页面生成器），想要自己做一个网页模板是没有那么快的，所以采用了他人的开源模板，在暑假的时候去自创一个&lt;/p&gt;
+
+&lt;p&gt;在此要特别感谢从前端设计师大佬 &lt;a href=&quot;https://github.com/Huxpro/huxblog-boilerplate&quot;&gt;@Huxpro/huxblog-boilerplate&lt;/a&gt; 获得的模板样本，感觉做的很不错，如果有人觉得我是盗用模板，先去弄清楚什么叫&lt;strong&gt;开源&lt;/strong&gt;吧&lt;/p&gt;
+
+&lt;h4 id=&quot;博客名字&quot;&gt;博客名字&lt;/h4&gt;
+
+&lt;table&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td&gt;博客首页的名字是 &lt;strong&gt;L Blog&lt;/strong&gt;，用姓的首字母吧，这样看上去好像比较高逼格。但是在 SEO（搜索引擎优化）使用的名字是 **李汉祥的博客&lt;/td&gt;
+      &lt;td&gt;L Blog&lt;strong&gt;，绑定了自己的域名之后，好像就搜不到了，如果用 **github.io&lt;/strong&gt; 做域名后缀是搜得到的，估计过个半年就可以了吧&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;h4 id=&quot;博客域名&quot;&gt;博客域名&lt;/h4&gt;
+
+&lt;p&gt;我觉得GitHub给的名字有点长了，估计是我自己的用户名太长，然后去买了个域名 &lt;strong&gt;http://hxblog.site/&lt;/strong&gt;， 从阿里云买的，有个对需要买域名的同学们的忠告，遇见便宜的，能买十年就买十年吧，才发现第二年续费贵了好几倍，对于我的域名来说，买一年续九年（我）的价格 （￥400+）是一次买十年的价格的两倍（￥200+）&lt;/p&gt;
+
+&lt;p&gt;在万网买的域名，实名认证也挺快的，拍个身份证照片上传，本来以为要几天，一个小时后就让我的博客上线了&lt;/p&gt;
+
+&lt;h4 id=&quot;博客内容&quot;&gt;博客内容&lt;/h4&gt;
+
+&lt;p&gt;既然是计算机相关专业的学生，博客的大部分内容会是计算机相关的，偶尔有一些随笔，比如现在这一篇，目前的计算机相关内容将会是&lt;strong&gt;Java基础&lt;/strong&gt;以及&lt;strong&gt;Spring框架&lt;/strong&gt;的内容，有一些练手项目，概念解读和源码解读&lt;/p&gt;
+
+&lt;h4 id=&quot;文章搬迁&quot;&gt;文章搬迁&lt;/h4&gt;
+
+&lt;p&gt;由于在未创立个人博客之前，我的文章都是在简书上发布的，所以最近会将简书上的文章搬过来，在文章开头都会有标志 &lt;strong&gt;这篇文章转载自我的个人博客&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;当然，接下来的文章都会先在个人博客上发布，然后在简书中进行转载&lt;/p&gt;
+
+&lt;h4 id=&quot;原创性&quot;&gt;原创性&lt;/h4&gt;
+
+&lt;p&gt;我的 &lt;strong&gt;所有的文章都是原创&lt;/strong&gt; ，即使有引用，也只是引用 &lt;a href=&quot;https://zh.wikipedia.org/wiki/Wikipedia:%E9%A6%96%E9%A1%B5&quot;&gt;维基百科&lt;/a&gt; 上的相关概念简介，所有主要内容全是个人总结
+文章的作者署名都是 &lt;strong&gt;L&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;哎呦，到了结尾，就先这样吧&lt;/p&gt;
+</description>
+        <pubDate>Wed, 18 Apr 2018 00:00:00 +0800</pubDate>
+        <link>http://localhost:4000/2018/04/18/%E5%8D%9A%E5%AE%A2%E4%BB%8B%E7%BB%8D/</link>
+        <guid isPermaLink="true">http://localhost:4000/2018/04/18/%E5%8D%9A%E5%AE%A2%E4%BB%8B%E7%BB%8D/</guid>
+        
+        <category>随笔</category>
+        
+        
+      </item>
     
       <item>
         <title>初始Spring MVC——练手小项目</title>
@@ -325,7 +382,9 @@ public class ProductController {
     
       <item>
         <title>IDEA如何创建及配置Web项目（多图）</title>
-        <description>&lt;h3 id=&quot;正文之前&quot;&gt;正文之前&lt;/h3&gt;
+        <description>&lt;p&gt;这篇文章转载自&lt;a href=&quot;https://www.jianshu.com/p/8d49d36a3c7e&quot;&gt;我的简书&lt;/a&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;正文之前&quot;&gt;正文之前&lt;/h3&gt;
 
 &lt;blockquote&gt;
   &lt;p&gt;在学习Java Web时，第一个遇到的问题就是如何创建或配置Web项目了，今天，就用IntelliJ IDEA 来进行Web项目配置：&lt;/p&gt;
@@ -447,7 +506,9 @@ lib：整个项目所用到的JAR文件存放位置
     
       <item>
         <title>简易商品信息管理系统——首个Web项目</title>
-        <description>&lt;h3 id=&quot;正文之前&quot;&gt;正文之前&lt;/h3&gt;
+        <description>&lt;p&gt;这篇文章转载自&lt;a href=&quot;https://www.jianshu.com/p/737effb5ecc8&quot;&gt;我的简书&lt;/a&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;正文之前&quot;&gt;正文之前&lt;/h3&gt;
 
 &lt;blockquote&gt;
   &lt;p&gt;在学习了一段时间的Java Web的内容之后，当然需要有个项目来练练手，我相信大多数人的首选项目都是信息管理系统吧，所以我选择了商品信息管理系统&lt;/p&gt;
