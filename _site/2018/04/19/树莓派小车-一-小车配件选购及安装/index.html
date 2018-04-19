@@ -19,9 +19,9 @@
     <meta name="keyword"  content="Java">
     <link rel="shortcut icon" href="/img/favicon.ico">
 
-    <title>简易商品信息管理系统——首个Web项目 - 李汉祥的博客 | L Blog</title>
+    <title>树莓派小车（一）小车配件选购及安装 - 李汉祥的博客 | L Blog</title>
 
-    <link rel="canonical" href="http://localhost:4000/2018/04/16/%E7%AE%80%E6%98%93%E5%95%86%E5%93%81%E4%BF%A1%E6%81%AF%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F-%E9%A6%96%E4%B8%AAWeb%E9%A1%B9%E7%9B%AE/">
+    <link rel="canonical" href="http://localhost:4000/2018/04/19/%E6%A0%91%E8%8E%93%E6%B4%BE%E5%B0%8F%E8%BD%A6-%E4%B8%80-%E5%B0%8F%E8%BD%A6%E9%85%8D%E4%BB%B6%E9%80%89%E8%B4%AD%E5%8F%8A%E5%AE%89%E8%A3%85/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -142,12 +142,12 @@
 
 
     <!-- Image to hack wechat -->
-<!-- <img src="/img/post/2018-04/16.jpg" width="0" height="0"> -->
+<!-- <img src="/img/post/2018-04/19.jpeg" width="0" height="0"> -->
 
 <!-- Post Header -->
 <style type="text/css">
     header.intro-header{
-        background-image: url('/img/post/2018-04/16.jpg')
+        background-image: url('/img/post/2018-04/19.jpeg')
     }
 </style>
 <header class="intro-header" >
@@ -157,15 +157,15 @@
                 <div class="post-heading">
                     <div class="tags">
                         
-                        <a class="tag" href="/tags/#Java Web" title="Java Web">Java Web</a>
+                        <a class="tag" href="/tags/#树莓派" title="树莓派">树莓派</a>
                         
                     </div>
-                    <h1>简易商品信息管理系统——首个Web项目</h1>
+                    <h1>树莓派小车（一）小车配件选购及安装</h1>
                     
                     
-                    <h2 class="subheading">练手项目</h2>
+                    <h2 class="subheading">随便玩玩</h2>
                     
-                    <span class="meta">Posted by L on April 16, 2018</span>
+                    <span class="meta">Posted by L on April 19, 2018</span>
                 </div>
             </div>
         </div>
@@ -183,115 +183,121 @@
                 col-md-10 col-md-offset-1
                 post-container">
 
-				<p>这篇文章转载自<a href="https://www.jianshu.com/p/737effb5ecc8">我的简书</a></p>
+				<p>这篇文章转载自<a href="https://www.jianshu.com/p/2692875cc8d7">我的简书</a></p>
 
 <h3 id="正文之前">正文之前</h3>
 
-<blockquote>
-  <p>在学习了一段时间的Java Web的内容之后，当然需要有个项目来练练手，我相信大多数人的首选项目都是信息管理系统吧，所以我选择了商品信息管理系统</p>
+<p>在考试之后突发奇想，想要用身边的树莓派做点事情，作为入门级的树莓派玩法，应该当属小车了吧，我先做的是红外避障小车</p>
 
-  <p>目前项目源码已全部上传至GitHub，欢迎大家来<strong>fork</strong> —— <a href="https://github.com/lihanxiang/ProductManagement">商品信息管理系统</a></p>
-</blockquote>
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-f60dec482ce908ee.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
+
+<p>接下来说重点，说一说配件的选购和小车的拼装</p>
 
 <hr />
 
-<h3 id="正文">正文</h3>
+<h3 id="1配件选购">1.配件选购</h3>
 
-<h4 id="项目构思">项目构思</h4>
+<p>买配件当然是从某宝买入，建议大家去一些做零件批发的店，如果去专卖店的话，就有些小贵了。而且也要学着如何去确定自己所需要的零件，而不是直接购买一整辆小车的零件</p>
 
-<p>简易的管理系统，结构为 <strong>Servlet + JSP + MySQL</strong>，使用IntelliJ IDEA，搭建起了这个项目，源码中有很详细的注释，如果刚开始学习JavaWeb的内容，学一下Servlet，再搭配这个项目，岂不是美滋滋，有需要就拿去，如果能够有帮助，在fork的同时也赏一个Star吧！</p>
-
-<p>接下来就介绍一下过程：</p>
-
-<h5 id="1-数据库连接">1. 数据库连接</h5>
-
-<p>在这个项目中，并不是单独编写Java程序来连接数据库，而是使用<strong>c3p0-config.xml</strong>文件来配置数据库连接池，使用 <strong>QueryRunner</strong> 来执行数据库操作
-<img src="http://upload-images.jianshu.io/upload_images/3426615-e857443bcfbb5fcc.PNG?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
-
-<p>在运行项目之前，需要在图中所示文件中设置你自己的本地数据库名称和密码，否则，无法连接数据库</p>
-
-<h5 id="2-jar文件">2. JAR文件</h5>
-
-<p>在构建项目时，需要导入所需的Library</p>
-
-<p><img src="http://upload-images.jianshu.io/upload_images/3426615-75b00af804bf378a.PNG?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
-
-<h5 id="3-建表">3. 建表</h5>
-
-<p>在创建数据库时，也需要一张表来配合运行项目，在项目中也给出了这张表的结构<img src="http://upload-images.jianshu.io/upload_images/3426615-103c57fa0bd8e7df.PNG?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
-
-<h5 id="4-建包">4. 建包</h5>
-
-<p>采用MVC设计模式，建包时我分成了这几个方面：</p>
-<blockquote>
-  <p>dao</p>
-
-  <p>page</p>
-
-  <p>product</p>
-
-  <p>service</p>
-
-  <p>servlet</p>
-
-  <p>以及在测试时的用例：demo</p>
-</blockquote>
-
-<p>接下来介绍这几个包的内容：</p>
+<p>对于需要哪些零件，我说一说我自己的购物清单：</p>
 
 <ol>
   <li>
-    <p>dao包：
-内含有一个Java文件：ProductDao，编写对于数据库的操作，增删改查之类</p>
+    <p>树莓派1只（必须的，建议买英国版）</p>
   </li>
   <li>
-    <p>page包：
-查询后的数据需要分页显示，否则看起来很麻烦，page包中包含有一个Java文件：PageBean，配合content.jsp文件将查询结果分页显示</p>
-  </li>
-  <li>
-    <p>product包：
-内含有Product类，将商品的基本信息封装，便于其他类使用</p>
-  </li>
-  <li>
-    <p>service包
-内含有一个Java文件：ProductService，实现了ProductDao类中定义的方法，并封装，降低程序中的代码重复性，更加简洁</p>
-  </li>
-  <li>
-    <p>servlet包
-内含有ProductServlet，实现了ProductService类中定义的方法，并和JSP页面进行通信</p>
-  </li>
-  <li>
-    <p>demo包
-在完成项目后，需要测试用例来进行测试</p>
+    <p>小车底盘，四只直流电机，四个车轮，20线测速码盘，铜柱、螺丝、螺帽、紧固件若干</p>
   </li>
 </ol>
 
-<h5 id="5-mvc模式">5. MVC模式</h5>
+<p>（商家自配电池盒以及电线若干）</p>
 
-<p>MVC模式：Model，View，Controller：</p>
+<ol>
+  <li>
+    <p>L298N驱动板</p>
+  </li>
+  <li>
+    <p>充电宝（必须有2A输出的）</p>
+  </li>
+  <li>
+    <p>杜邦线若干（公对公，母对母，公对母最好都买一些）</p>
+  </li>
+  <li>
+    <p>4节5号电池（建议买充电电池，小车耗电量太大了）</p>
+  </li>
+</ol>
 
-<p>Model：ProductDao类，PageBean类和Product类作为基本的模型</p>
+<p>以上是做小车基础模型所必需的，由于我做的是红外避障小车，所以还需要买红外传感器</p>
 
-<p>View：JSP文件，系统的页面</p>
+<p>还买了迷你摄像头，打算过一段时间加一个拍摄功能</p>
 
-<p>Controller：ProductServlet，作为用户输入和数据库操作的控制者</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-9686214962edf9c8.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
 
-<p>这样就使得代码较为简洁</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-5f6b38a4612f182b.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
 
-<h5 id="6-运行前需要的准备">6. 运行前需要的准备</h5>
+<p>加上运费差不多75元左右，建议大家可以多买一些配件，反正玩小车都有可能用到，比如超声波传感，红外测距，测速模块，人体感应模块和声音检测传感器之类的</p>
 
-<p>在Github上fork项目，并且clone至本地后，用IDEA打开，并按照这篇配置教程来配置web项目
-<a href="https://www.jianshu.com/p/8d49d36a3c7e">【JavaWeb】IDEA如何创建及配置Web项目（多图）</a></p>
+<h3 id="2小车底盘安装">2.小车底盘安装</h3>
 
-<p>配置后，将<strong>src</strong>目录下的 <strong>c3p0-config.xml</strong> 文件中的数据库信息改为自己的数据库信息，运行Tomcat，岂不是美滋滋</p>
+<p>配件到手之后，就可以开始动手安装了，先说一说下小车车驱动的思路：</p>
 
-<h5 id="7-思维导图">7. 思维导图</h5>
+<h4 id="电池盒中的四节电池是用来给驱动板供电的驱动板给电机提供动力电机带动车轮转动由于此车是没有用到舵机的所以转弯的方式是通过单边车轮前进或后退来进行转弯的">电池盒中的四节电池是用来给驱动板供电的，驱动板给电机提供动力，电机带动车轮转动，由于此车是没有用到舵机的，所以转弯的方式是通过单边车轮前进或后退来进行转弯的</h4>
 
-<p><img src="http://upload-images.jianshu.io/upload_images/3426615-cfa3d4b11fc240e8.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
+<p>还需要说一下供电的问题，关于树莓派的供电问题一直是大家的一大焦点，本次安装中，充电宝是给树莓派单独供电的，电池则是给驱动板供电（用充电电池比较环保，四驱车耗电量太大）。千万不能用充电宝给树莓派和L298N同时供电（不然又要去买树莓派了）</p>
 
-<p>结合这篇文章和项目根目录中的 <a href="https://github.com/lihanxiang/ProductManagement/blob/master/README.md">README.md</a> 文档，开始自己的JavaWeb之旅吧！</p>
+<h3 id="开始组装">开始组装</h3>
 
-<p>原文地址：<a href="https://www.jianshu.com/p/737effb5ecc8">简书</a></p>
+<p>1.电机的连接</p>
+
+<p>将去掉外皮的电线连接至电机末尾的铜环处</p>
+
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-f80b0f6e05d95915.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
+
+<p>2.将车轮和电机固定至底盘</p>
+
+<p>使用配件中的紧固件、螺丝和螺帽将车轮、码盘和电机固定在底盘</p>
+
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-39708a29f65d9b41.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
+
+<p>3.电机与L298N驱动板的连接</p>
+
+<p>关于L298N的知识在此不赘述，大家自行解决。</p>
+
+<p>将两边电机的负极连至L298N的OUT1和OUT3处，正极连至OUT2和OUT4处。</p>
+
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-88fff7dd0b8294c3.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
+
+<p>4.驱动板供电</p>
+
+<p>将4节五号电池装入电池盒，将电池盒与驱动板的接地口和12V输入口相连</p>
+
+<p>正极（红线）连接12V供电</p>
+
+<p>负极（黑线）接地</p>
+
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-8ca765338a87b652.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
+
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-dc9a98bf5e804db0.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
+
+<p>5.驱动板与树莓派连接</p>
+
+<p>L298N驱动板上共有4个信息输入口，为IN1,IN2,IN3,IN4。</p>
+
+<p>这四个口就是与树莓派的GPIO接口相连的。</p>
+
+<p>关于GPIO接口，有时间另说，读者可以科学上网解决此问题</p>
+
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-419925c3ca591a02.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
+
+<p>5.安装完成</p>
+
+<p>根据个人喜好，我连接的树莓派GPIO为引脚编号11，12，13，15的接口。</p>
+
+<p>读者可以另选其他位置接口（只要符合连接规则就行）</p>
+
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-c31e3b62f027d11e.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
+
+<p>关于小车的基础模型的安装就到这里了，接下来的文章会讲解用Pyhton驱动小车，以及红外避障小车的制作</p>
 
 
                 <hr>
@@ -301,10 +307,10 @@
 
                 <ul class="pager">
                     
-                    
-                    <li class="next">
-                        <a href="/2018/04/17/IDEA%E5%A6%82%E4%BD%95%E5%88%9B%E5%BB%BA%E5%8F%8A%E9%85%8D%E7%BD%AEWeb%E9%A1%B9%E7%9B%AE-%E5%A4%9A%E5%9B%BE/" data-toggle="tooltip" data-placement="top" title="IDEA如何创建及配置Web项目（多图）">Next Post &rarr;</a>
+                    <li class="previous">
+                        <a href="/2018/04/18/%E5%8D%9A%E5%AE%A2%E4%BB%8B%E7%BB%8D/" data-toggle="tooltip" data-placement="top" title="博客介绍">&larr; Previous Post</a>
                     </li>
+                    
                     
                 </ul>
 
@@ -380,8 +386,8 @@
 <script type="text/javascript">
     /* * * CONFIGURATION VARIABLES * * */
     var disqus_shortname = "http-hxblog-site";
-    var disqus_identifier = "/2018/04/16/简易商品信息管理系统——首个Web项目";
-    var disqus_url = "http://localhost:4000/2018/04/16/%E7%AE%80%E6%98%93%E5%95%86%E5%93%81%E4%BF%A1%E6%81%AF%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F-%E9%A6%96%E4%B8%AAWeb%E9%A1%B9%E7%9B%AE/";
+    var disqus_identifier = "/2018/04/19/树莓派小车（一）小车配件选购及安装";
+    var disqus_url = "http://localhost:4000/2018/04/19/%E6%A0%91%E8%8E%93%E6%B4%BE%E5%B0%8F%E8%BD%A6-%E4%B8%80-%E5%B0%8F%E8%BD%A6%E9%85%8D%E4%BB%B6%E9%80%89%E8%B4%AD%E5%8F%8A%E5%AE%89%E8%A3%85/";
 
     (function() {
         var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;

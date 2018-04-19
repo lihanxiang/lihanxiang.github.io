@@ -5,9 +5,136 @@
     <description>写写Java，一天就过去了</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Wed, 18 Apr 2018 21:14:29 +0800</pubDate>
-    <lastBuildDate>Wed, 18 Apr 2018 21:14:29 +0800</lastBuildDate>
+    <pubDate>Thu, 19 Apr 2018 08:47:28 +0800</pubDate>
+    <lastBuildDate>Thu, 19 Apr 2018 08:47:28 +0800</lastBuildDate>
     <generator>Jekyll v3.7.3</generator>
+    
+      <item>
+        <title>树莓派小车（一）小车配件选购及安装</title>
+        <description>&lt;p&gt;这篇文章转载自&lt;a href=&quot;https://www.jianshu.com/p/2692875cc8d7&quot;&gt;我的简书&lt;/a&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;正文之前&quot;&gt;正文之前&lt;/h3&gt;
+
+&lt;p&gt;在考试之后突发奇想，想要用身边的树莓派做点事情，作为入门级的树莓派玩法，应该当属小车了吧，我先做的是红外避障小车&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-f60dec482ce908ee.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;接下来说重点，说一说配件的选购和小车的拼装&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h3 id=&quot;1配件选购&quot;&gt;1.配件选购&lt;/h3&gt;
+
+&lt;p&gt;买配件当然是从某宝买入，建议大家去一些做零件批发的店，如果去专卖店的话，就有些小贵了。而且也要学着如何去确定自己所需要的零件，而不是直接购买一整辆小车的零件&lt;/p&gt;
+
+&lt;p&gt;对于需要哪些零件，我说一说我自己的购物清单：&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;
+    &lt;p&gt;树莓派1只（必须的，建议买英国版）&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;小车底盘，四只直流电机，四个车轮，20线测速码盘，铜柱、螺丝、螺帽、紧固件若干&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;（商家自配电池盒以及电线若干）&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;
+    &lt;p&gt;L298N驱动板&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;充电宝（必须有2A输出的）&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;杜邦线若干（公对公，母对母，公对母最好都买一些）&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;4节5号电池（建议买充电电池，小车耗电量太大了）&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;以上是做小车基础模型所必需的，由于我做的是红外避障小车，所以还需要买红外传感器&lt;/p&gt;
+
+&lt;p&gt;还买了迷你摄像头，打算过一段时间加一个拍摄功能&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-9686214962edf9c8.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-5f6b38a4612f182b.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;加上运费差不多75元左右，建议大家可以多买一些配件，反正玩小车都有可能用到，比如超声波传感，红外测距，测速模块，人体感应模块和声音检测传感器之类的&lt;/p&gt;
+
+&lt;h3 id=&quot;2小车底盘安装&quot;&gt;2.小车底盘安装&lt;/h3&gt;
+
+&lt;p&gt;配件到手之后，就可以开始动手安装了，先说一说下小车车驱动的思路：&lt;/p&gt;
+
+&lt;h4 id=&quot;电池盒中的四节电池是用来给驱动板供电的驱动板给电机提供动力电机带动车轮转动由于此车是没有用到舵机的所以转弯的方式是通过单边车轮前进或后退来进行转弯的&quot;&gt;电池盒中的四节电池是用来给驱动板供电的，驱动板给电机提供动力，电机带动车轮转动，由于此车是没有用到舵机的，所以转弯的方式是通过单边车轮前进或后退来进行转弯的&lt;/h4&gt;
+
+&lt;p&gt;还需要说一下供电的问题，关于树莓派的供电问题一直是大家的一大焦点，本次安装中，充电宝是给树莓派单独供电的，电池则是给驱动板供电（用充电电池比较环保，四驱车耗电量太大）。千万不能用充电宝给树莓派和L298N同时供电（不然又要去买树莓派了）&lt;/p&gt;
+
+&lt;h3 id=&quot;开始组装&quot;&gt;开始组装&lt;/h3&gt;
+
+&lt;p&gt;1.电机的连接&lt;/p&gt;
+
+&lt;p&gt;将去掉外皮的电线连接至电机末尾的铜环处&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-f80b0f6e05d95915.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;2.将车轮和电机固定至底盘&lt;/p&gt;
+
+&lt;p&gt;使用配件中的紧固件、螺丝和螺帽将车轮、码盘和电机固定在底盘&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-39708a29f65d9b41.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;3.电机与L298N驱动板的连接&lt;/p&gt;
+
+&lt;p&gt;关于L298N的知识在此不赘述，大家自行解决。&lt;/p&gt;
+
+&lt;p&gt;将两边电机的负极连至L298N的OUT1和OUT3处，正极连至OUT2和OUT4处。&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-88fff7dd0b8294c3.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;4.驱动板供电&lt;/p&gt;
+
+&lt;p&gt;将4节五号电池装入电池盒，将电池盒与驱动板的接地口和12V输入口相连&lt;/p&gt;
+
+&lt;p&gt;正极（红线）连接12V供电&lt;/p&gt;
+
+&lt;p&gt;负极（黑线）接地&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-8ca765338a87b652.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-dc9a98bf5e804db0.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;5.驱动板与树莓派连接&lt;/p&gt;
+
+&lt;p&gt;L298N驱动板上共有4个信息输入口，为IN1,IN2,IN3,IN4。&lt;/p&gt;
+
+&lt;p&gt;这四个口就是与树莓派的GPIO接口相连的。&lt;/p&gt;
+
+&lt;p&gt;关于GPIO接口，有时间另说，读者可以科学上网解决此问题&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-419925c3ca591a02.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;5.安装完成&lt;/p&gt;
+
+&lt;p&gt;根据个人喜好，我连接的树莓派GPIO为引脚编号11，12，13，15的接口。&lt;/p&gt;
+
+&lt;p&gt;读者可以另选其他位置接口（只要符合连接规则就行）&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-c31e3b62f027d11e.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;关于小车的基础模型的安装就到这里了，接下来的文章会讲解用Pyhton驱动小车，以及红外避障小车的制作&lt;/p&gt;
+</description>
+        <pubDate>Thu, 19 Apr 2018 00:00:00 +0800</pubDate>
+        <link>http://localhost:4000/2018/04/19/%E6%A0%91%E8%8E%93%E6%B4%BE%E5%B0%8F%E8%BD%A6-%E4%B8%80-%E5%B0%8F%E8%BD%A6%E9%85%8D%E4%BB%B6%E9%80%89%E8%B4%AD%E5%8F%8A%E5%AE%89%E8%A3%85/</link>
+        <guid isPermaLink="true">http://localhost:4000/2018/04/19/%E6%A0%91%E8%8E%93%E6%B4%BE%E5%B0%8F%E8%BD%A6-%E4%B8%80-%E5%B0%8F%E8%BD%A6%E9%85%8D%E4%BB%B6%E9%80%89%E8%B4%AD%E5%8F%8A%E5%AE%89%E8%A3%85/</guid>
+        
+        <category>树莓派</category>
+        
+        
+      </item>
     
       <item>
         <title>博客介绍</title>
