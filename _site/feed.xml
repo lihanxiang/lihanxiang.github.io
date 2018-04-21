@@ -5,9 +5,86 @@
     <description>写写Java，一天就过去了</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Thu, 19 Apr 2018 08:47:28 +0800</pubDate>
-    <lastBuildDate>Thu, 19 Apr 2018 08:47:28 +0800</lastBuildDate>
-    <generator>Jekyll v3.7.3</generator>
+    <pubDate>Fri, 20 Apr 2018 02:12:01 -0700</pubDate>
+    <lastBuildDate>Fri, 20 Apr 2018 02:12:01 -0700</lastBuildDate>
+    <generator>Jekyll v3.8.0</generator>
+    
+      <item>
+        <title>树莓派小车（二）树莓派、小车和红外线模块连接</title>
+        <description>&lt;p&gt;这篇文章转载自&lt;a href=&quot;https://www.jianshu.com/p/27b256f1afa8&quot;&gt;我的简书&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;上一篇文章介绍了小车底盘以及驱动板的安装，这一次来讲一讲树莓派与驱动板以及红外线模块的安装&lt;/p&gt;
+
+&lt;h3 id=&quot;树莓派的gpio引脚定义&quot;&gt;树莓派的GPIO引脚定义：&lt;/h3&gt;
+
+&lt;p&gt;树莓派的GPIO引脚共分为两种类型，一种是&lt;strong&gt;PHYSICAL NUMBERING&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-787c3854e8eeb8d2.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;单纯地用从上至下，从左至右的顺序来定义引脚&lt;/p&gt;
+
+&lt;p&gt;在我们的小车中：&lt;/p&gt;
+
+&lt;p&gt;黄色的GPIO接口连接L298N驱动板以及其他模块如红外线模块等等&lt;/p&gt;
+
+&lt;p&gt;黑色的Ground接口连接红外线模块上的GND接口&lt;/p&gt;
+
+&lt;p&gt;红色的5V供电接口连接L298N驱动板上的+5V接口&lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-05c31686331df76c.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;采用特殊（未知）的方式来标记GPIO接口&lt;/p&gt;
+
+&lt;p&gt;黄色的GPIO接口连接L298N驱动板以及其他模块如红外线模块等等&lt;/p&gt;
+
+&lt;p&gt;黑色的Ground接口连接红外线模块上的GND接口&lt;/p&gt;
+
+&lt;p&gt;红色的5V供电接口连接L298N驱动板上的+5V接口&lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;我采用的是第二种，关于如何设置哪一种类型以及编写代码驱动小车，将会在树莓派小车系列之三中介绍&lt;/p&gt;
+
+&lt;h3 id=&quot;连接驱动板和树莓派&quot;&gt;连接驱动板和树莓派：&lt;/h3&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/3426615-a268ffc4720ec730?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;连接红外线模块和树莓派&quot;&gt;连接红外线模块和树莓派：&lt;/h3&gt;
+
+&lt;p&gt;我购买的是四路探测红外线模块，先拿其中两个红外线接发器来做前方探测&lt;/p&gt;
+
+&lt;p&gt;在模块电路板中，每个与红外线探测器相连的接口共有三种口，分别是：VCC，GND，IN（1，2，3，4）&lt;/p&gt;
+
+&lt;p&gt;在模块电路板与树莓派的接口中，也有三种口：VCC，GND，OUT（1，2，3，4）&lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;在电路板与红外探测器之间连接时，按照对应接口：&lt;/p&gt;
+
+&lt;p&gt;VCC - VCC        GND - GND         IN - OUT&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/3426615-53434834eb9bd53a?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;在电路板与树莓派之间连接时，按照对应接口：&lt;/p&gt;
+
+&lt;p&gt;VCC - 3.3V         GND - GND         OUT - GPIO&lt;/p&gt;
+
+&lt;p&gt;将OUT1和OUT4接在GPIO22 和 GPIO24（读者随意，只要是GPIO口就行）&lt;/p&gt;
+
+&lt;p&gt;然后将红外线模块固定在车底部&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/3426615-deb5b0b27d74a22d?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;最后，在小车的第二层放上树莓派和充电宝，小车就全部组装完毕了&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/3426615-ca0153b77eb2b571?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;关于小车的组装就完成了，在下一篇文章中将会给出驱动小车的Python代码&lt;/p&gt;
+</description>
+        <pubDate>Fri, 20 Apr 2018 00:00:00 -0700</pubDate>
+        <link>http://localhost:4000/2018/04/20/%E6%A0%91%E8%8E%93%E6%B4%BE%E5%B0%8F%E8%BD%A6-%E4%BA%8C-%E6%A0%91%E8%8E%93%E6%B4%BE-%E5%B0%8F%E8%BD%A6%E5%92%8C%E7%BA%A2%E5%A4%96%E7%BA%BF%E6%A8%A1%E5%9D%97%E8%BF%9E%E6%8E%A5/</link>
+        <guid isPermaLink="true">http://localhost:4000/2018/04/20/%E6%A0%91%E8%8E%93%E6%B4%BE%E5%B0%8F%E8%BD%A6-%E4%BA%8C-%E6%A0%91%E8%8E%93%E6%B4%BE-%E5%B0%8F%E8%BD%A6%E5%92%8C%E7%BA%A2%E5%A4%96%E7%BA%BF%E6%A8%A1%E5%9D%97%E8%BF%9E%E6%8E%A5/</guid>
+        
+        <category>树莓派</category>
+        
+        
+      </item>
     
       <item>
         <title>树莓派小车（一）小车配件选购及安装</title>
@@ -127,7 +204,7 @@
 
 &lt;p&gt;关于小车的基础模型的安装就到这里了，接下来的文章会讲解用Pyhton驱动小车，以及红外避障小车的制作&lt;/p&gt;
 </description>
-        <pubDate>Thu, 19 Apr 2018 00:00:00 +0800</pubDate>
+        <pubDate>Thu, 19 Apr 2018 00:00:00 -0700</pubDate>
         <link>http://localhost:4000/2018/04/19/%E6%A0%91%E8%8E%93%E6%B4%BE%E5%B0%8F%E8%BD%A6-%E4%B8%80-%E5%B0%8F%E8%BD%A6%E9%85%8D%E4%BB%B6%E9%80%89%E8%B4%AD%E5%8F%8A%E5%AE%89%E8%A3%85/</link>
         <guid isPermaLink="true">http://localhost:4000/2018/04/19/%E6%A0%91%E8%8E%93%E6%B4%BE%E5%B0%8F%E8%BD%A6-%E4%B8%80-%E5%B0%8F%E8%BD%A6%E9%85%8D%E4%BB%B6%E9%80%89%E8%B4%AD%E5%8F%8A%E5%AE%89%E8%A3%85/</guid>
         
@@ -177,7 +254,7 @@
 
 &lt;p&gt;哎呦，到了结尾，就先这样吧&lt;/p&gt;
 </description>
-        <pubDate>Wed, 18 Apr 2018 00:00:00 +0800</pubDate>
+        <pubDate>Wed, 18 Apr 2018 00:00:00 -0700</pubDate>
         <link>http://localhost:4000/2018/04/18/%E5%8D%9A%E5%AE%A2%E4%BB%8B%E7%BB%8D/</link>
         <guid isPermaLink="true">http://localhost:4000/2018/04/18/%E5%8D%9A%E5%AE%A2%E4%BB%8B%E7%BB%8D/</guid>
         
@@ -489,7 +566,7 @@ public class ProductController {
 &lt;p&gt;到处，我们的这个练手的小项目就结束了，有什么问题都可以私信我&lt;/p&gt;
 
 </description>
-        <pubDate>Tue, 17 Apr 2018 00:00:00 +0800</pubDate>
+        <pubDate>Tue, 17 Apr 2018 00:00:00 -0700</pubDate>
         <link>http://localhost:4000/2018/04/17/%E5%88%9D%E5%A7%8BSpring-MVC-%E7%BB%83%E6%89%8B%E5%B0%8F%E9%A1%B9%E7%9B%AE/</link>
         <guid isPermaLink="true">http://localhost:4000/2018/04/17/%E5%88%9D%E5%A7%8BSpring-MVC-%E7%BB%83%E6%89%8B%E5%B0%8F%E9%A1%B9%E7%9B%AE/</guid>
         
@@ -611,7 +688,7 @@ lib：整个项目所用到的JAR文件存放位置
 &lt;p&gt;有需要的可以私信，我一定尽力解答，谢谢！&lt;/p&gt;
 
 </description>
-        <pubDate>Tue, 17 Apr 2018 00:00:00 +0800</pubDate>
+        <pubDate>Tue, 17 Apr 2018 00:00:00 -0700</pubDate>
         <link>http://localhost:4000/2018/04/17/IDEA%E5%A6%82%E4%BD%95%E5%88%9B%E5%BB%BA%E5%8F%8A%E9%85%8D%E7%BD%AEWeb%E9%A1%B9%E7%9B%AE-%E5%A4%9A%E5%9B%BE/</link>
         <guid isPermaLink="true">http://localhost:4000/2018/04/17/IDEA%E5%A6%82%E4%BD%95%E5%88%9B%E5%BB%BA%E5%8F%8A%E9%85%8D%E7%BD%AEWeb%E9%A1%B9%E7%9B%AE-%E5%A4%9A%E5%9B%BE/</guid>
         
@@ -734,7 +811,7 @@ lib：整个项目所用到的JAR文件存放位置
 
 &lt;p&gt;原文地址：&lt;a href=&quot;https://www.jianshu.com/p/737effb5ecc8&quot;&gt;简书&lt;/a&gt;&lt;/p&gt;
 </description>
-        <pubDate>Mon, 16 Apr 2018 00:00:00 +0800</pubDate>
+        <pubDate>Mon, 16 Apr 2018 00:00:00 -0700</pubDate>
         <link>http://localhost:4000/2018/04/16/%E7%AE%80%E6%98%93%E5%95%86%E5%93%81%E4%BF%A1%E6%81%AF%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F-%E9%A6%96%E4%B8%AAWeb%E9%A1%B9%E7%9B%AE/</link>
         <guid isPermaLink="true">http://localhost:4000/2018/04/16/%E7%AE%80%E6%98%93%E5%95%86%E5%93%81%E4%BF%A1%E6%81%AF%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F-%E9%A6%96%E4%B8%AAWeb%E9%A1%B9%E7%9B%AE/</guid>
         
