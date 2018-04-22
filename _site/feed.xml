@@ -5,8 +5,8 @@
     <description>写写Java，一天就过去了</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Sat, 21 Apr 2018 07:20:54 -0700</pubDate>
-    <lastBuildDate>Sat, 21 Apr 2018 07:20:54 -0700</lastBuildDate>
+    <pubDate>Sat, 21 Apr 2018 17:10:07 -0700</pubDate>
+    <lastBuildDate>Sat, 21 Apr 2018 17:10:07 -0700</lastBuildDate>
     <generator>Jekyll v3.8.0</generator>
     
       <item>
@@ -954,8 +954,6 @@ lib：整个项目所用到的JAR文件存放位置
 &lt;p&gt;&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/3426615-cfa3d4b11fc240e8.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;结合这篇文章和项目根目录中的 &lt;a href=&quot;https://github.com/lihanxiang/ProductManagement/blob/master/README.md&quot;&gt;README.md&lt;/a&gt; 文档，开始自己的JavaWeb之旅吧！&lt;/p&gt;
-
-&lt;p&gt;原文地址：&lt;a href=&quot;https://www.jianshu.com/p/737effb5ecc8&quot;&gt;简书&lt;/a&gt;&lt;/p&gt;
 </description>
         <pubDate>Mon, 16 Apr 2018 00:00:00 -0700</pubDate>
         <link>http://localhost:4000/2018/04/16/%E7%AE%80%E6%98%93%E5%95%86%E5%93%81%E4%BF%A1%E6%81%AF%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F-%E9%A6%96%E4%B8%AAWeb%E9%A1%B9%E7%9B%AE/</link>
