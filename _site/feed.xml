@@ -3,11 +3,354 @@
   <channel>
     <title>L Blog</title>
     <description>写写Java，一天就过去了</description>
-    <link>http://localhost:4000/</link>
-    <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Sun, 22 Apr 2018 21:14:15 -0700</pubDate>
-    <lastBuildDate>Sun, 22 Apr 2018 21:14:15 -0700</lastBuildDate>
+    <link>http://hxblog.site/</link>
+    <atom:link href="http://hxblog.site/feed.xml" rel="self" type="application/rss+xml" />
+    <pubDate>Mon, 23 Apr 2018 00:16:14 -0700</pubDate>
+    <lastBuildDate>Mon, 23 Apr 2018 00:16:14 -0700</lastBuildDate>
     <generator>Jekyll v3.8.0</generator>
+    
+      <item>
+        <title>Java基础知识梳理（二）字符串</title>
+        <description>&lt;p&gt;这篇文章转载自&lt;a href=&quot;https://www.jianshu.com/p/8b1b86f21a61&quot;&gt;我的简书&lt;/a&gt;,有部分改动&lt;/p&gt;
+
+&lt;h3 id=&quot;正文之前&quot;&gt;正文之前&lt;/h3&gt;
+
+&lt;p&gt;此处引用维基百科的介绍：&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;&lt;strong&gt;字符串&lt;/strong&gt;（&lt;strong&gt;String&lt;/strong&gt;），是由零个或多个字符组成的有限序列。一般记为 s = a&lt;sub&gt;1&lt;/sub&gt;a&lt;sub&gt;2&lt;/sub&gt;…a&lt;sub&gt;n&lt;/sub&gt;（0 ≤ n ≤ ∞）它是&lt;strong&gt;编程语言&lt;/strong&gt;中表示&lt;strong&gt;文本&lt;/strong&gt;的数据类型&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;本文将会介绍：&lt;/p&gt;
+&lt;blockquote&gt;
+  &lt;p&gt;Java字符串基本概念
+字符串基本操作
+StringBuilder和StringBuffer&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;hr /&gt;
+
+&lt;h2 id=&quot;正文&quot;&gt;正文&lt;/h2&gt;
+
+&lt;h3 id=&quot;java字符串基本概念&quot;&gt;Java字符串基本概念&lt;/h3&gt;
+
+&lt;blockquote&gt;
+  &lt;ol&gt;
+    &lt;li&gt;String类&lt;/li&gt;
+    &lt;li&gt;字符串不可变性&lt;/li&gt;
+  &lt;/ol&gt;
+&lt;/blockquote&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Java并没有内置的字符串类型，字符串由 &lt;strong&gt;String&lt;/strong&gt; 类库提供（每个双引号的内容都是字符串的一个实例）&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/3426615-c3974d3d15f0693c.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Java字符串是 &lt;strong&gt;不可变&lt;/strong&gt; 的，任何看似改变字符串的操作其实都是创建一个 &lt;strong&gt;新的&lt;/strong&gt; 字符串&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/3426615-1fb9ba285b763a53.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;substring()&lt;/strong&gt; 方法将在下文介绍，此处代码含义：
+生成字符串 &lt;strong&gt;s1&lt;/strong&gt; ：Hello ，截取字符串，此处所得到的字符串是新生成的，并没有在 &lt;strong&gt;s1&lt;/strong&gt; 直接改变&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;&lt;strong&gt;将字符串作为方法的参数时，都会自动复制一份引用，将 **s1&lt;/strong&gt; 拷贝至 &lt;strong&gt;s2&lt;/strong&gt; 时，只是传递一个复制的引用，将 &lt;strong&gt;s2&lt;/strong&gt; 改变时，其实只是改变了 &lt;strong&gt;s2&lt;/strong&gt; 复制的引用**&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/3426615-83564d46adda1ba2.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/3426615-e1626ba4bc679c46.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;关于字符串的不变性，一定要牢记在心！&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h3 id=&quot;字符串基本操作&quot;&gt;字符串基本操作&lt;/h3&gt;
+
+&lt;blockquote&gt;
+  &lt;ol&gt;
+    &lt;li&gt;子串&lt;/li&gt;
+    &lt;li&gt;字符串比较&lt;/li&gt;
+    &lt;li&gt;字符串分割&lt;/li&gt;
+    &lt;li&gt;字符串拼接&lt;/li&gt;
+    &lt;li&gt;字符串转换&lt;/li&gt;
+  &lt;/ol&gt;
+&lt;/blockquote&gt;
+
+&lt;h4 id=&quot;1-子串&quot;&gt;1. 子串&lt;/h4&gt;
+
+&lt;p&gt;在Java中，用 &lt;strong&gt;substring()&lt;/strong&gt; 来生成一个字串，先看看官方的API：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/3426615-b71f95a970bfd464.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/3426615-e40a163d54c8c285.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/3426615-256c77de40226091.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/3426615-eac805de222d6667.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;substring(0,2)&lt;/strong&gt;表示截取位置从0到2的字符（不包括2），并生成子串&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;substring(2)&lt;/strong&gt;表示从截取位置从2到字符串末尾的字符，并生成子串（&lt;strong&gt;substring(0)&lt;/strong&gt;所生成的字符串的内容和原字符串相同）&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h4 id=&quot;2-字符串比较&quot;&gt;2. 字符串比较&lt;/h4&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;关于字符串，比较方式有两种：&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;blockquote&gt;
+  &lt;ol&gt;
+    &lt;li&gt;equals()方法&lt;/li&gt;
+    &lt;li&gt;等号比较（==）&lt;/li&gt;
+  &lt;/ol&gt;
+&lt;/blockquote&gt;
+
+&lt;h5 id=&quot;equals方法&quot;&gt;equals()方法：&lt;/h5&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/3426615-c1a2c06ff7b3ca63.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;equals()&lt;/strong&gt;方法比较的是两个字符串的内容是否相同：&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/3426615-a350d7e8fe41d620.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;equalsIgnoreCase()&lt;/strong&gt;是一种特殊的比较方式：忽略大小写&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/3426615-f59f36f0f39b4a57.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;compareTo()&lt;/strong&gt;方法也是比较的一种：&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/3426615-f9a3958423ddf58c.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;返回值为 &lt;strong&gt;int&lt;/strong&gt; 类型：第一个字符串长度减去第二个字符串长度&lt;/p&gt;
+
+&lt;h5 id=&quot;等号比较-&quot;&gt;等号比较（==） ：&lt;/h5&gt;
+
+&lt;p&gt;直接用等号比较：比较的是两个字符串的位置，&lt;strong&gt;千万不要用等号来比较两个字符串的内容&lt;/strong&gt;（或许很多内容相同的字符串的拷贝将分布在不同位置）&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/3426615-6cfc935992fd81d1.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;经过一系列操作后，虽然 &lt;strong&gt;s1&lt;/strong&gt; 和 &lt;strong&gt;s2&lt;/strong&gt; 内容相同，但是位置却不同了：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/3426615-79143f93fe85cea0.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h4 id=&quot;3-字符串分割&quot;&gt;3. 字符串分割：&lt;/h4&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/3426615-09828a9848d26c80.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;split(String regex)&lt;/strong&gt;将参数作为分割元素，划分字符串，生成多个子串，并存放于数组内：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/3426615-df5e94ca2cea29d3.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/3426615-95c3e60886c44742.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;split(String regex, int limit)&lt;/strong&gt;表示了另一种分割字符串的方法，参数limit作为存放子串的数组的最大空间：&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;
+    &lt;p&gt;limit &amp;gt; 0：数组的大小为limit的值，字符串切分的次数为limit的值，不管是否按要求完成切分&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;limit &amp;lt; 0：数组的大小为任意，字符串切分的次数为任意，直到将字符串按要求完成切分&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;limit = 0：数组的大小为任意，字符串切分的次数为任意，直到将字符串按要求完成切分，并将数组末尾的空字符串删去&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public static void main(String[] args){
+        String s1 = &quot;1oo:2:3:4:5oo&quot;;
+        String[] s2 = s1.split(&quot;o&quot;,2);
+        String[] s3 = s1.split(&quot;o&quot;,0);
+        String[] s4 = s1.split(&quot;o&quot;,-2);
+        for (String  i: s2) {
+            if(i.equals(&quot;&quot;)){
+                System.out.println(&quot;this is an empty string&quot;);  //显示出空字符串
+            }
+            System.out.println(i);
+        }
+        System.out.println(&quot;--------------------&quot;);
+        System.out.println();
+        for (String  i: s3) {
+            if(i.equals(&quot;&quot;)){
+                System.out.println(&quot;this is an empty string&quot;);  //显示出空字符串
+            }
+            System.out.println(i);
+        }
+        System.out.println(&quot;--------------------&quot;);
+        System.out.println();
+        for (String  i: s4) {
+            if(i.equals(&quot;&quot;)){
+                System.out.println(&quot;this is an empty string&quot;);  //显示出空字符串
+            }
+            System.out.println(i);
+        }
+        System.out.println(&quot;--------------------&quot;);
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/3426615-d80b2fae00846489.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h4 id=&quot;4-字符串拼接&quot;&gt;4. 字符串拼接&lt;/h4&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;关于字符串的拼接，有3种方式：
+    &lt;blockquote&gt;
+      &lt;ol&gt;
+        &lt;li&gt;重载操作符（+）&lt;/li&gt;
+        &lt;li&gt;StringBuffer.append()方法&lt;/li&gt;
+        &lt;li&gt;String.concat()方法&lt;/li&gt;
+      &lt;/ol&gt;
+    &lt;/blockquote&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h5 id=&quot;重载操作符&quot;&gt;重载操作符（+）：&lt;/h5&gt;
+
+&lt;p&gt;将操作符中的加号（+）重载之后可作为字符串连接的方式&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/3426615-01ca60cdfb2253c5.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;h5 id=&quot;stringbufferappend方法&quot;&gt;StringBuffer.append()方法&lt;/h5&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/3426615-53c7dfe40aab1817.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;StringBuffer为可变长度的，可以一直扩容，如果在字符串经常改变的情况下，使用StringBuffer是更为合适的&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/3426615-08e4f553613f577f.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;h5 id=&quot;stringconcat方法&quot;&gt;String.concat()方法&lt;/h5&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/3426615-2f94dcdc4413465e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;由于concat()方法返回String类型，所以可以一直拼接，在这次拼接中，总共生成了 &lt;strong&gt;4&lt;/strong&gt; 个字符串&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/3426615-8ca082cdb8bae3d1.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;5-字符串转换&quot;&gt;5. 字符串转换&lt;/h4&gt;
+
+&lt;p&gt;有时需要在Integer类型和String类型之间互相转换，接下来说说这几种方法：&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Integer -&amp;gt; String : 
+String.valueOf(int i)
+Integer.toString(int i)&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;String -&amp;gt; Integer
+Integer.parseInt(String s)
+Integer.valueOf(String s)&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h5 id=&quot;integer---string&quot;&gt;Integer -&amp;gt; String&lt;/h5&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/3426615-5e011e2e6cec3620.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;h5 id=&quot;string---integer&quot;&gt;String -&amp;gt; Integer&lt;/h5&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/3426615-6c6e6be9d6c22939.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;stringbuilder和stringbuffer&quot;&gt;StringBuilder和StringBuffer&lt;/h3&gt;
+
+&lt;h4 id=&quot;1-共同点&quot;&gt;1. 共同点&lt;/h4&gt;
+
+&lt;p&gt;上面也说了，每一次对字符串的操作都是创建新的字符串，所以如果在运行时要进行灵活的字符串操作,用StringBuilder和StringBuffer都可以达到，比如我在&lt;a href=&quot;https://github.com/lihanxiang/ProductManagement&quot;&gt;练手Web项目的源码&lt;/a&gt;中对于查询功能就采用字符串拼接的方式&lt;/p&gt;
+
+&lt;h4 id=&quot;2-不同点&quot;&gt;2. 不同点&lt;/h4&gt;
+
+&lt;p&gt;二者各有优缺点：&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;线程安全&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;StringBuilder是非线程安全的，StringBuffer是线程安全的&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;效率&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;StringBuilder既然是非线程安全的，肯定需要有一点优点，不然就没人用了，在单线程情况下，StringBuilder进行字符串操作的效率要高一些，我们做个实验验证一下，用计时器计时：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public class StringTest {
+    private static String s = &quot;Hello, &quot;;
+
+    public static void stringTest(){
+        long startTime = System.currentTimeMillis();
+        String str = &quot;it's me&quot;;
+        //没有一两万次的拼接是看不出效果的
+        for (int i = 0; i &amp;lt; 20000; i++) {
+            s += str;
+        }
+        long endTime = System.currentTimeMillis();
+        long time = endTime - startTime;
+        System.out.println(&quot;String用了&quot; + time  + &quot;毫秒&quot;);
+    }
+
+    public static void stringBuilderTest(){
+        long startTime = System.currentTimeMillis();
+        StringBuilder stringBuilder = new StringBuilder(s);
+        String str = &quot;it's me&quot;;
+        for (int i = 0; i &amp;lt; 200000; i++) {
+            stringBuilder.append(str);
+        }
+        long endTime = System.currentTimeMillis();
+        long time = endTime - startTime;
+        System.out.println(&quot;StringBuilder用了&quot; + time  + &quot;毫秒&quot;);
+    }
+
+    public static void stringBufferTest(){
+        long startTime = System.currentTimeMillis();
+        StringBuffer stringBuffer = new StringBuffer(s);
+        String str = &quot;it's me&quot;;
+        for (int i = 0; i &amp;lt; 200000; i++) {
+            stringBuffer.append(str);
+        }
+        long endTime = System.currentTimeMillis();
+        long time = endTime - startTime;
+        System.out.println(&quot;StringBuffer用了&quot; + time  + &quot;毫秒&quot;);
+    }
+
+    public static void main(String args[]) {
+        stringTest();
+        stringBuilderTest();
+        stringBufferTest();
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-de66beef693f5b5b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;具体的选择就看需求再决定咯&lt;/p&gt;
+
+&lt;p&gt;关于字符串的基本知识就到这里啦！&lt;/p&gt;
+</description>
+        <pubDate>Mon, 23 Apr 2018 00:00:00 -0700</pubDate>
+        <link>http://hxblog.site/2018/04/23/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E4%BA%8C-%E5%AD%97%E7%AC%A6%E4%B8%B2/</link>
+        <guid isPermaLink="true">http://hxblog.site/2018/04/23/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E4%BA%8C-%E5%AD%97%E7%AC%A6%E4%B8%B2/</guid>
+        
+        <category>Java基础</category>
+        
+        
+      </item>
     
       <item>
         <title>Java基础知识梳理（一）</title>
@@ -185,8 +528,8 @@
 
 </description>
         <pubDate>Sun, 22 Apr 2018 00:00:00 -0700</pubDate>
-        <link>http://localhost:4000/2018/04/22/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E4%B8%80/</link>
-        <guid isPermaLink="true">http://localhost:4000/2018/04/22/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E4%B8%80/</guid>
+        <link>http://hxblog.site/2018/04/22/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E4%B8%80/</link>
+        <guid isPermaLink="true">http://hxblog.site/2018/04/22/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E4%B8%80/</guid>
         
         <category>Java基础</category>
         
@@ -331,8 +674,8 @@ time.sleep(time) 表示的是经过 time 秒后执行下一步操作，就是休
 &lt;p&gt;关于树莓派信息的内容就先告一段落&lt;/p&gt;
 </description>
         <pubDate>Sat, 21 Apr 2018 00:00:00 -0700</pubDate>
-        <link>http://localhost:4000/2018/04/21/%E6%A0%91%E8%8E%93%E6%B4%BE%E5%B0%8F%E8%BD%A6-%E4%B8%89-Python%E6%8E%A7%E5%88%B6%E5%B0%8F%E8%BD%A6/</link>
-        <guid isPermaLink="true">http://localhost:4000/2018/04/21/%E6%A0%91%E8%8E%93%E6%B4%BE%E5%B0%8F%E8%BD%A6-%E4%B8%89-Python%E6%8E%A7%E5%88%B6%E5%B0%8F%E8%BD%A6/</guid>
+        <link>http://hxblog.site/2018/04/21/%E6%A0%91%E8%8E%93%E6%B4%BE%E5%B0%8F%E8%BD%A6-%E4%B8%89-Python%E6%8E%A7%E5%88%B6%E5%B0%8F%E8%BD%A6/</link>
+        <guid isPermaLink="true">http://hxblog.site/2018/04/21/%E6%A0%91%E8%8E%93%E6%B4%BE%E5%B0%8F%E8%BD%A6-%E4%B8%89-Python%E6%8E%A7%E5%88%B6%E5%B0%8F%E8%BD%A6/</guid>
         
         <category>树莓派</category>
         
@@ -408,8 +751,8 @@ time.sleep(time) 表示的是经过 time 秒后执行下一步操作，就是休
 &lt;p&gt;关于小车的组装就完成了，在下一篇文章中将会给出驱动小车的Python代码&lt;/p&gt;
 </description>
         <pubDate>Fri, 20 Apr 2018 00:00:00 -0700</pubDate>
-        <link>http://localhost:4000/2018/04/20/%E6%A0%91%E8%8E%93%E6%B4%BE%E5%B0%8F%E8%BD%A6-%E4%BA%8C-%E6%A0%91%E8%8E%93%E6%B4%BE-%E5%B0%8F%E8%BD%A6%E5%92%8C%E7%BA%A2%E5%A4%96%E7%BA%BF%E6%A8%A1%E5%9D%97%E8%BF%9E%E6%8E%A5/</link>
-        <guid isPermaLink="true">http://localhost:4000/2018/04/20/%E6%A0%91%E8%8E%93%E6%B4%BE%E5%B0%8F%E8%BD%A6-%E4%BA%8C-%E6%A0%91%E8%8E%93%E6%B4%BE-%E5%B0%8F%E8%BD%A6%E5%92%8C%E7%BA%A2%E5%A4%96%E7%BA%BF%E6%A8%A1%E5%9D%97%E8%BF%9E%E6%8E%A5/</guid>
+        <link>http://hxblog.site/2018/04/20/%E6%A0%91%E8%8E%93%E6%B4%BE%E5%B0%8F%E8%BD%A6-%E4%BA%8C-%E6%A0%91%E8%8E%93%E6%B4%BE-%E5%B0%8F%E8%BD%A6%E5%92%8C%E7%BA%A2%E5%A4%96%E7%BA%BF%E6%A8%A1%E5%9D%97%E8%BF%9E%E6%8E%A5/</link>
+        <guid isPermaLink="true">http://hxblog.site/2018/04/20/%E6%A0%91%E8%8E%93%E6%B4%BE%E5%B0%8F%E8%BD%A6-%E4%BA%8C-%E6%A0%91%E8%8E%93%E6%B4%BE-%E5%B0%8F%E8%BD%A6%E5%92%8C%E7%BA%A2%E5%A4%96%E7%BA%BF%E6%A8%A1%E5%9D%97%E8%BF%9E%E6%8E%A5/</guid>
         
         <category>树莓派</category>
         
@@ -535,8 +878,8 @@ time.sleep(time) 表示的是经过 time 秒后执行下一步操作，就是休
 &lt;p&gt;关于小车的基础模型的安装就到这里了，接下来的文章会讲解用Pyhton驱动小车，以及红外避障小车的制作&lt;/p&gt;
 </description>
         <pubDate>Thu, 19 Apr 2018 00:00:00 -0700</pubDate>
-        <link>http://localhost:4000/2018/04/19/%E6%A0%91%E8%8E%93%E6%B4%BE%E5%B0%8F%E8%BD%A6-%E4%B8%80-%E5%B0%8F%E8%BD%A6%E9%85%8D%E4%BB%B6%E9%80%89%E8%B4%AD%E5%8F%8A%E5%AE%89%E8%A3%85/</link>
-        <guid isPermaLink="true">http://localhost:4000/2018/04/19/%E6%A0%91%E8%8E%93%E6%B4%BE%E5%B0%8F%E8%BD%A6-%E4%B8%80-%E5%B0%8F%E8%BD%A6%E9%85%8D%E4%BB%B6%E9%80%89%E8%B4%AD%E5%8F%8A%E5%AE%89%E8%A3%85/</guid>
+        <link>http://hxblog.site/2018/04/19/%E6%A0%91%E8%8E%93%E6%B4%BE%E5%B0%8F%E8%BD%A6-%E4%B8%80-%E5%B0%8F%E8%BD%A6%E9%85%8D%E4%BB%B6%E9%80%89%E8%B4%AD%E5%8F%8A%E5%AE%89%E8%A3%85/</link>
+        <guid isPermaLink="true">http://hxblog.site/2018/04/19/%E6%A0%91%E8%8E%93%E6%B4%BE%E5%B0%8F%E8%BD%A6-%E4%B8%80-%E5%B0%8F%E8%BD%A6%E9%85%8D%E4%BB%B6%E9%80%89%E8%B4%AD%E5%8F%8A%E5%AE%89%E8%A3%85/</guid>
         
         <category>树莓派</category>
         
@@ -585,8 +928,8 @@ time.sleep(time) 表示的是经过 time 秒后执行下一步操作，就是休
 &lt;p&gt;哎呦，到了结尾，就先这样吧&lt;/p&gt;
 </description>
         <pubDate>Wed, 18 Apr 2018 00:00:00 -0700</pubDate>
-        <link>http://localhost:4000/2018/04/18/%E5%8D%9A%E5%AE%A2%E4%BB%8B%E7%BB%8D/</link>
-        <guid isPermaLink="true">http://localhost:4000/2018/04/18/%E5%8D%9A%E5%AE%A2%E4%BB%8B%E7%BB%8D/</guid>
+        <link>http://hxblog.site/2018/04/18/%E5%8D%9A%E5%AE%A2%E4%BB%8B%E7%BB%8D/</link>
+        <guid isPermaLink="true">http://hxblog.site/2018/04/18/%E5%8D%9A%E5%AE%A2%E4%BB%8B%E7%BB%8D/</guid>
         
         <category>随笔</category>
         
@@ -897,8 +1240,8 @@ public class ProductController {
 
 </description>
         <pubDate>Tue, 17 Apr 2018 00:00:00 -0700</pubDate>
-        <link>http://localhost:4000/2018/04/17/%E5%88%9D%E5%A7%8BSpring-MVC-%E7%BB%83%E6%89%8B%E5%B0%8F%E9%A1%B9%E7%9B%AE/</link>
-        <guid isPermaLink="true">http://localhost:4000/2018/04/17/%E5%88%9D%E5%A7%8BSpring-MVC-%E7%BB%83%E6%89%8B%E5%B0%8F%E9%A1%B9%E7%9B%AE/</guid>
+        <link>http://hxblog.site/2018/04/17/%E5%88%9D%E5%A7%8BSpring-MVC-%E7%BB%83%E6%89%8B%E5%B0%8F%E9%A1%B9%E7%9B%AE/</link>
+        <guid isPermaLink="true">http://hxblog.site/2018/04/17/%E5%88%9D%E5%A7%8BSpring-MVC-%E7%BB%83%E6%89%8B%E5%B0%8F%E9%A1%B9%E7%9B%AE/</guid>
         
         <category>Spring MVC</category>
         
@@ -1019,8 +1362,8 @@ lib：整个项目所用到的JAR文件存放位置
 
 </description>
         <pubDate>Tue, 17 Apr 2018 00:00:00 -0700</pubDate>
-        <link>http://localhost:4000/2018/04/17/IDEA%E5%A6%82%E4%BD%95%E5%88%9B%E5%BB%BA%E5%8F%8A%E9%85%8D%E7%BD%AEWeb%E9%A1%B9%E7%9B%AE-%E5%A4%9A%E5%9B%BE/</link>
-        <guid isPermaLink="true">http://localhost:4000/2018/04/17/IDEA%E5%A6%82%E4%BD%95%E5%88%9B%E5%BB%BA%E5%8F%8A%E9%85%8D%E7%BD%AEWeb%E9%A1%B9%E7%9B%AE-%E5%A4%9A%E5%9B%BE/</guid>
+        <link>http://hxblog.site/2018/04/17/IDEA%E5%A6%82%E4%BD%95%E5%88%9B%E5%BB%BA%E5%8F%8A%E9%85%8D%E7%BD%AEWeb%E9%A1%B9%E7%9B%AE-%E5%A4%9A%E5%9B%BE/</link>
+        <guid isPermaLink="true">http://hxblog.site/2018/04/17/IDEA%E5%A6%82%E4%BD%95%E5%88%9B%E5%BB%BA%E5%8F%8A%E9%85%8D%E7%BD%AEWeb%E9%A1%B9%E7%9B%AE-%E5%A4%9A%E5%9B%BE/</guid>
         
         <category>Java Web</category>
         
@@ -1140,8 +1483,8 @@ lib：整个项目所用到的JAR文件存放位置
 &lt;p&gt;结合这篇文章和项目根目录中的 &lt;a href=&quot;https://github.com/lihanxiang/ProductManagement/blob/master/README.md&quot;&gt;README.md&lt;/a&gt; 文档，开始自己的JavaWeb之旅吧！&lt;/p&gt;
 </description>
         <pubDate>Mon, 16 Apr 2018 00:00:00 -0700</pubDate>
-        <link>http://localhost:4000/2018/04/16/%E7%AE%80%E6%98%93%E5%95%86%E5%93%81%E4%BF%A1%E6%81%AF%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F-%E9%A6%96%E4%B8%AAWeb%E9%A1%B9%E7%9B%AE/</link>
-        <guid isPermaLink="true">http://localhost:4000/2018/04/16/%E7%AE%80%E6%98%93%E5%95%86%E5%93%81%E4%BF%A1%E6%81%AF%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F-%E9%A6%96%E4%B8%AAWeb%E9%A1%B9%E7%9B%AE/</guid>
+        <link>http://hxblog.site/2018/04/16/%E7%AE%80%E6%98%93%E5%95%86%E5%93%81%E4%BF%A1%E6%81%AF%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F-%E9%A6%96%E4%B8%AAWeb%E9%A1%B9%E7%9B%AE/</link>
+        <guid isPermaLink="true">http://hxblog.site/2018/04/16/%E7%AE%80%E6%98%93%E5%95%86%E5%93%81%E4%BF%A1%E6%81%AF%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F-%E9%A6%96%E4%B8%AAWeb%E9%A1%B9%E7%9B%AE/</guid>
         
         <category>Java Web</category>
         
