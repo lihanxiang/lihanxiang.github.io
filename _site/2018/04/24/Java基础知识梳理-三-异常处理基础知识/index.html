@@ -19,9 +19,9 @@
     <meta name="keyword"  content="Java">
     <link rel="shortcut icon" href="/img/favicon.ico">
 
-    <title>简易商品信息管理系统——首个Web项目 - 李汉祥的博客 | L Blog</title>
+    <title>Java基础知识梳理（三）异常处理基础知识 - 李汉祥的博客 | L Blog</title>
 
-    <link rel="canonical" href="http://hxblog.site/2018/04/16/%E7%AE%80%E6%98%93%E5%95%86%E5%93%81%E4%BF%A1%E6%81%AF%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F-%E9%A6%96%E4%B8%AAWeb%E9%A1%B9%E7%9B%AE/">
+    <link rel="canonical" href="http://hxblog.site/2018/04/24/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E4%B8%89-%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -142,12 +142,12 @@
 
 
     <!-- Image to hack wechat -->
-<!-- <img src="/img/post/2018-04/16.jpg" width="0" height="0"> -->
+<!-- <img src="/img/post/2018-04/24.jpg" width="0" height="0"> -->
 
 <!-- Post Header -->
 <style type="text/css">
     header.intro-header{
-        background-image: url('/img/post/2018-04/16.jpg')
+        background-image: url('/img/post/2018-04/24.jpg')
     }
 </style>
 <header class="intro-header" >
@@ -157,15 +157,15 @@
                 <div class="post-heading">
                     <div class="tags">
                         
-                        <a class="tag" href="/tags/#Java Web" title="Java Web">Java Web</a>
+                        <a class="tag" href="/tags/#Java基础" title="Java基础">Java基础</a>
                         
                     </div>
-                    <h1>简易商品信息管理系统——首个Web项目</h1>
+                    <h1>Java基础知识梳理（三）异常处理基础知识</h1>
                     
                     
-                    <h2 class="subheading">练手项目</h2>
+                    <h2 class="subheading">知识点回顾</h2>
                     
-                    <span class="meta">Posted by L on April 16, 2018</span>
+                    <span class="meta">Posted by L on April 24, 2018</span>
                 </div>
             </div>
         </div>
@@ -183,113 +183,159 @@
                 col-md-10 col-md-offset-1
                 post-container">
 
-				<p>这篇文章转载自<a href="https://www.jianshu.com/p/737effb5ecc8">我的简书</a></p>
+				<h3 id="正文之前">正文之前</h3>
 
-<h3 id="正文之前">正文之前</h3>
+<p>有句话说的不错，来自《Java核心技术 卷一》：</p>
 
 <blockquote>
-  <p>在学习了一段时间的Java Web的内容之后，当然需要有个项目来练练手，我相信大多数人的首选项目都是信息管理系统吧，所以我选择了商品信息管理系统</p>
+  <p>在理想状态下，用户输入数据的格式永远都是正确的，选择打开的文件也一定存在，并且永远不会出现bug</p>
+</blockquote>
 
-  <p>目前项目源码已全部上传至GitHub，欢迎大家来<strong>fork</strong> —— <a href="https://github.com/lihanxiang/ProductManagement">商品信息管理系统</a></p>
+<p>相信这个，你就天真了，这次我们来介绍以下Java异常处理的基本知识：</p>
+
+<blockquote>
+  <ol>
+    <li>异常分类</li>
+    <li>抛出异常</li>
+    <li>捕获异常</li>
+    <li>处理异常</li>
+    <li>异常说明</li>
+    <li>throw和throws的区别</li>
+  </ol>
 </blockquote>
 
 <hr />
 
 <h3 id="正文">正文</h3>
 
-<h4 id="项目构思">项目构思</h4>
+<h4 id="1-异常分类">1. 异常分类</h4>
 
-<p>简易的管理系统，结构为 <strong>Servlet + JSP + MySQL</strong>，使用IntelliJ IDEA，搭建起了这个项目，源码中有很详细的注释，如果刚开始学习JavaWeb的内容，学一下Servlet，再搭配这个项目，岂不是美滋滋，有需要就拿去，如果能够有帮助，在fork的同时也赏一个Star吧！</p>
+<p>在Java中，每个异常都是一个名叫<strong>Throwable</strong>的类的一个实例</p>
 
-<p>接下来就介绍一下过程：</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/3426615-5482653285cf17fa.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
 
-<h5 id="1-数据库连接">1. 数据库连接</h5>
+<p>在《Java核心技术 卷一》有这么一句话：“如果出现runtime exception异常,那么就一定是你的问题”，具体都有哪些异常，这里就不赘述</p>
 
-<p>在这个项目中，并不是单独编写Java程序来连接数据库，而是使用<strong>c3p0-config.xml</strong>文件来配置数据库连接池，使用 <strong>QueryRunner</strong> 来执行数据库操作
-<img src="http://upload-images.jianshu.io/upload_images/3426615-e857443bcfbb5fcc.PNG?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
+<h4 id="2-抛出异常">2. 抛出异常</h4>
 
-<p>在运行项目之前，需要在图中所示文件中设置你自己的本地数据库名称和密码，否则，无法连接数据库</p>
+<p>在抛出异常之前，要先确定异常的类型，举个例子：</p>
 
-<h5 id="2-jar文件">2. JAR文件</h5>
+<p><strong>EOFException</strong>：在输入过程，遇到了预期之外的EOF之后的信号</p>
 
-<p>在构建项目时，需要导入所需的Library</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/3426615-44b796cb99af6c76.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
 
-<p><img src="http://upload-images.jianshu.io/upload_images/3426615-75b00af804bf378a.PNG?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
+<h4 id="3-捕获异常">3. 捕获异常</h4>
 
-<h5 id="3-建表">3. 建表</h5>
+<p>使用 try-catch 语句来进行异常的捕获：</p>
 
-<p>在创建数据库时，也需要一张表来配合运行项目，在项目中也给出了这张表的结构<img src="http://upload-images.jianshu.io/upload_images/3426615-103c57fa0bd8e7df.PNG?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
+<p>基本格式：</p>
 
-<h5 id="4-建包">4. 建包</h5>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>try{
+    //一段代码
+}
+catch(Exception Type){
+    //另一段代码
+}
+</code></pre></div></div>
 
-<p>采用MVC设计模式，建包时我分成了这几个方面：</p>
-<blockquote>
-  <p>dao</p>
+<p>这个语句块的意思就是，尝试去执行<strong>try</strong>语句块里的内容，如果没有异常当然是最好的，如果有异常，将其捕获，并执行<strong>catch</strong>语句块中的代码</p>
 
-  <p>page</p>
+<p>以打开文件的操作来举个例子：</p>
 
-  <p>product</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 
-  <p>service</p>
+public class Test {
+    public static void main(String[] args){
+        try{
+            FileInputStream in = new FileInputStream("text.txt");
+        }catch(FileNotFoundException e){
+            System.out.println("未找到文件");
+        }
+    }
+}
+</code></pre></div></div>
 
-  <p>servlet</p>
+<p>在这个源文件的同级目录下，没有文件”text.txt”，所以如果不适用try-catch语句就会提示可能产生异常，我们来运行一下：</p>
 
-  <p>以及在测试时的用例：demo</p>
-</blockquote>
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-3b4d182c4e201ee3.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
 
-<p>接下来介绍这几个包的内容：</p>
+<p>运行了catch语句中的代码</p>
 
-<ol>
-  <li>
-    <p>dao包：
-内含有一个Java文件：ProductDao，编写对于数据库的操作，增删改查之类</p>
-  </li>
-  <li>
-    <p>page包：
-查询后的数据需要分页显示，否则看起来很麻烦，page包中包含有一个Java文件：PageBean，配合content.jsp文件将查询结果分页显示</p>
-  </li>
-  <li>
-    <p>product包：
-内含有Product类，将商品的基本信息封装，便于其他类使用</p>
-  </li>
-  <li>
-    <p>service包
-内含有一个Java文件：ProductService，实现了ProductDao类中定义的方法，并封装，降低程序中的代码重复性，更加简洁</p>
-  </li>
-  <li>
-    <p>servlet包
-内含有ProductServlet，实现了ProductService类中定义的方法，并和JSP页面进行通信</p>
-  </li>
-  <li>
-    <p>demo包
-在完成项目后，需要测试用例来进行测试</p>
-  </li>
-</ol>
+<p>在catch语句的参数中我们定义了具体的异常类型，但是这些具体的异常都是Exception的子类，所以我们可以通过将参数改为<strong>Exception e</strong> 来捕获所有异常<strong>（但是不建议这么做，或者把捕获异常基类放到最后，因为有的时候你需要针对不同的异常做出一些不同的动作）</strong>：</p>
 
-<h5 id="5-mvc模式">5. MVC模式</h5>
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-89231daa5fb26d69.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
 
-<p>MVC模式：Model，View，Controller：</p>
+<h4 id="4-处理异常">4. 处理异常</h4>
 
-<p>Model：ProductDao类，PageBean类和Product类作为基本的模型</p>
+<p>在捕获了异常之后，我们还需要处理这些异常，我们可以将这些异常的消息输出，或者在捕获之后再抛出另外的异常：</p>
 
-<p>View：JSP文件，系统的页面</p>
+<p>常用的消息输出方式就是<strong>getMessage()</strong>以及<strong>printStackTrace()</strong></p>
 
-<p>Controller：ProductServlet，作为用户输入和数据库操作的控制者</p>
+<p>我们来做个实验：</p>
 
-<p>这样就使得代码较为简洁</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 
-<h5 id="6-运行前需要的准备">6. 运行前需要的准备</h5>
+public class Test {
+    public static void main(String[] args) throws FileNotFoundException {
+        try{
+            FileInputStream in = new FileInputStream("test.txt");
+        }catch (FileNotFoundException e){
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+        }
 
-<p>在Github上fork项目，并且clone至本地后，用IDEA打开，并按照这篇配置教程来配置web项目
-<a href="https://www.jianshu.com/p/8d49d36a3c7e">【JavaWeb】IDEA如何创建及配置Web项目（多图）</a></p>
+    }
+}
+</code></pre></div></div>
 
-<p>配置后，将<strong>src</strong>目录下的 <strong>c3p0-config.xml</strong> 文件中的数据库信息改为自己的数据库信息，运行Tomcat，岂不是美滋滋</p>
+<p>打印出来结果是这样的：</p>
 
-<h5 id="7-思维导图">7. 思维导图</h5>
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-f040d1cbd3eb25ed.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
 
-<p><img src="http://upload-images.jianshu.io/upload_images/3426615-cfa3d4b11fc240e8.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
+<p>异常所输出的信息是<strong>test.txt (系统找不到指定的文件。)</strong></p>
 
-<p>结合这篇文章和项目根目录中的 <a href="https://github.com/lihanxiang/ProductManagement/blob/master/README.md">README.md</a> 文档，开始自己的JavaWeb之旅吧！</p>
+<p><strong>printStackTrace()</strong>的目的是打印栈轨迹，也就是将抛出异常的位置到诉你，包括输出了异常信息，就像如图所示，Main()函数的第七行有问题，在程序调试的时候经常用<strong>printStackTrace()</strong></p>
+
+<h4 id="5-异常说明">5. 异常说明</h4>
+
+<p>如果有别人需要阅读你的代码，就需要知道你的代码会抛出什么异常，那么你就要写异常说明，形式通常为：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>void method() throws ....{
+
+}
+</code></pre></div></div>
+
+<p>首先，我们在原先的代码的方法名后加上可能会出现的异常：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+
+public class Test {
+    public void input() throws FileNotFoundException {
+            //不需要try-catch语句块，因为我们没有在此处捕获异常
+            FileInputStream in = new FileInputStream("test.txt");
+    }
+}
+</code></pre></div></div>
+
+<p>然后，我们新建一个类，创建Test类的实例，会发现有提示：</p>
+
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-1fb40d6ea2bf8eab.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
+
+<p>因为我们写方法时，告诉外界可能会产生什么样的异常了，其他人在调用的时候就能够发现</p>
+
+<h4 id="6-throw和throws的区别">6. throw和throws的区别</h4>
+
+<p>关于这两个的区别，其实在于究竟在哪个地方处理异常，举个例子来说：</p>
+
+<p>在方法A中，如果在产生异常的时候，不需要马上捕获，在方法B调用方法A的时候再进行捕获，那么就在A的方法名后添加<strong>throws</strong>，如果需要在方法A中进行捕获，则直接使用<strong>throw</strong></p>
+
+<p>看捕获异常的对象是谁，再决定应该如何来使用</p>
+
+<p>那么，关于Java异常处理的基本介绍就结束了，接下来会有针对异常信息的专题文章会发布</p>
+
 
 
                 <hr>
@@ -299,10 +345,10 @@
 
                 <ul class="pager">
                     
-                    
-                    <li class="next">
-                        <a href="/2018/04/17/IDEA%E5%A6%82%E4%BD%95%E5%88%9B%E5%BB%BA%E5%8F%8A%E9%85%8D%E7%BD%AEWeb%E9%A1%B9%E7%9B%AE-%E5%A4%9A%E5%9B%BE/" data-toggle="tooltip" data-placement="top" title="IDEA如何创建及配置Web项目（多图）">Next Post &rarr;</a>
+                    <li class="previous">
+                        <a href="/2018/04/23/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E4%BA%8C-%E5%AD%97%E7%AC%A6%E4%B8%B2/" data-toggle="tooltip" data-placement="top" title="Java基础知识梳理（二）字符串">&larr; Previous Post</a>
                     </li>
+                    
                     
                 </ul>
 
@@ -384,8 +430,8 @@
 <script type="text/javascript">
     /* * * CONFIGURATION VARIABLES * * */
     var disqus_shortname = "http-hxblog-site";
-    var disqus_identifier = "/2018/04/16/简易商品信息管理系统——首个Web项目";
-    var disqus_url = "http://hxblog.site/2018/04/16/%E7%AE%80%E6%98%93%E5%95%86%E5%93%81%E4%BF%A1%E6%81%AF%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F-%E9%A6%96%E4%B8%AAWeb%E9%A1%B9%E7%9B%AE/";
+    var disqus_identifier = "/2018/04/24/Java基础知识梳理（三）异常处理基础知识";
+    var disqus_url = "http://hxblog.site/2018/04/24/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E4%B8%89-%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/";
 
     (function() {
         var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
