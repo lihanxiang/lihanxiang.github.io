@@ -5,9 +5,213 @@
     <description>写写Java，一天就过去了</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Tue, 24 Apr 2018 17:46:15 -0700</pubDate>
-    <lastBuildDate>Tue, 24 Apr 2018 17:46:15 -0700</lastBuildDate>
+    <pubDate>Wed, 25 Apr 2018 03:14:32 -0700</pubDate>
+    <lastBuildDate>Wed, 25 Apr 2018 03:14:32 -0700</lastBuildDate>
     <generator>Jekyll v3.8.0</generator>
+    
+      <item>
+        <title>Java基础知识梳理（四）异常处理进阶</title>
+        <description>&lt;h3 id=&quot;正文之前&quot;&gt;正文之前&lt;/h3&gt;
+
+&lt;p&gt;上一篇文章已经介绍了异常的基本信息，这次来说一点不一样的：&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;ol&gt;
+    &lt;li&gt;try-catch-finally语句（其实是上次忘了说）&lt;/li&gt;
+    &lt;li&gt;自定义异常&lt;/li&gt;
+    &lt;li&gt;查看异常信息&lt;/li&gt;
+  &lt;/ol&gt;
+&lt;/blockquote&gt;
+
+&lt;h3 id=&quot;正文&quot;&gt;正文&lt;/h3&gt;
+
+&lt;h4 id=&quot;1-try-catch-finally语句&quot;&gt;1. try-catch-finally语句&lt;/h4&gt;
+
+&lt;p&gt;上一篇文章讲到了try-catch语句捕获异常，在这个语句上有一个延伸，就是finally关键字的使用&lt;/p&gt;
+
+&lt;p&gt;finally翻译过来的意思就是”最后”，故名思意，finally语句块中的内容最后都会被执行，我们来试一试：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+
+public class Test {
+    public static void main(String[] args){
+        try{
+            FileInputStream in = new FileInputStream(&quot;test.txt&quot;);
+        }catch (FileNotFoundException e){
+            System.out.println(e.getMessage());
+        }finally {
+            System.out.println(&quot;无论如何我还是会执行的&quot;);
+            in.close();
+        }
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-87e46a1d76c18c92.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;最后成功打印出了finally语句块中的内容&lt;/p&gt;
+
+&lt;h4 id=&quot;2-自定义异常&quot;&gt;2. 自定义异常&lt;/h4&gt;
+
+&lt;p&gt;在我们自定义异常之前，先来看看官方给出的异常类型（JDK 8）：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-768bfa13619c7a96.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;大部分都是没见过的，不要紧，我们可以自己来定义属于自己的异常：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-7ccca6c46490423c.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;具体的异常都是继承自&lt;strong&gt;Exception&lt;/strong&gt;类，所以我们要自定义的异常也需要继承这个基类：&lt;/p&gt;
+
+&lt;p&gt;我们自定义异常，命名MyException，需要继承基类Exception，然后我们调用基类的构造方法，带一个参数：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-a10501bcc885fcb8.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public class MyException extends Exception {
+    public MyException(String message){
+        super(message);
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;然后我们测试这个异常，因为是测试，所以直接抛出定义的异常：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public class Test {
+    public static void main(String[] args)throws MyException{
+        try{
+            throw new MyException(&quot;自定义异常&quot;);
+        }catch (MyException e){
+            System.out.println(e.getMessage());
+        }
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;然后得出结果：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-c239db209f241fa4.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;现在项目做的很少，所以自定义异常并没有用过几次，可以参考一下&lt;a href=&quot;https://github.com/lihanxiang/Register_login_interface&quot;&gt;这个项目&lt;/a&gt;中定义的用户异常&lt;/p&gt;
+
+&lt;h4 id=&quot;3-查看异常信息&quot;&gt;3. 查看异常信息&lt;/h4&gt;
+
+&lt;p&gt;有时候我们会需要查看异常信息来进行调试，JDK中给出了13种继承自&lt;strong&gt;Throwable&lt;/strong&gt;基类的方法：&lt;/p&gt;
+
+&lt;p&gt;先说说 &lt;strong&gt;getMessage()&lt;/strong&gt; :&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;the detail message string of this Throwable instance (which may be null)&lt;/p&gt;
+
+  &lt;p&gt;将Throwable实例（通常所说的异常）的具体信息以String类型给出（可能不存在）&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;接下来解释另外一个和查看异常信息有关的方法：&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;printStackTrace()&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;前提：&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;在说着三种之前，需要先提及&lt;strong&gt;toString()方法&lt;/strong&gt;，Throwable类中覆盖了toString()方法：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-4ce46206c08ae114.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;这里面的意思是：&lt;/p&gt;
+
+&lt;p&gt;toString()方法返回一个字符串，代表了Throwable实例（异常）的信息，具体格式为：对象名字: 本地化的信息&lt;/p&gt;
+
+&lt;p&gt;我拿上一篇文章中的例子来看：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-9a256a9efecb6923.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;运行出来的结果第二行：&lt;/p&gt;
+
+&lt;p&gt;java.io.FileNotFoundException: test.txt（系统找不到指定的文件。）
+at …&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;java.io.FileNotFoundException&lt;/strong&gt;就是Throwable的实例，text.txt…后面的信息就是本地化的信息了，针对不同的位置给出具体的信息，用来调试就能很快进行定位&lt;/p&gt;
+
+&lt;h6 id=&quot;exception类中的方法感觉一环扣一环的接下来会专门写一篇exception类源码解析&quot;&gt;Exception类中的方法感觉一环扣一环的，接下来会专门写一篇Exception类源码解析&lt;/h6&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;printStackTrace()&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;这个方法有三种类型：无参，带参数&lt;strong&gt;PrintStream&lt;/strong&gt;和带参数&lt;strong&gt;PrintWriter&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;先说无参，无参的printStackTrace()方法也就是我们平常使用的查看异常信息的方式，直接在控制台打印&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;带参数&lt;strong&gt;PrintStream&lt;/strong&gt;（打印输出流）：能够将信息通过流输出至其他地方，做个测试：&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;import java.io.*;
+
+public class Test {
+    public static void main(String[] args) throws IOException{
+        OutputStream out;
+        try{
+            throw new RuntimeException();
+        }catch (RuntimeException e){
+            out = new FileOutputStream(&quot;C:\\Users\\94545\\Desktop\\test.txt&quot;);
+            //将FileOutputStream作为PrintStream的输出流
+            PrintStream printStream = new PrintStream(out);
+            e.printStackTrace(printStream);
+            out.close();
+            printStream.close();
+        }
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-5de76ee338ba68df.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;成功打印出了信息&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;带参数&lt;strong&gt;PrintWriter&lt;/strong&gt;（字符打印输出流）：将信息输出至其他地方&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;import java.io.*;
+
+public class Test {
+    public static void main(String[] args) throws Exception{
+        OutputStream out;
+        try{
+            throw new RuntimeException();
+        }catch (RuntimeException e){
+            out = new FileOutputStream(&quot;C:\\Users\\94545\\Desktop\\test.txt&quot;);
+            PrintWriter printWriter = new PrintWriter(out,true);
+            e.printStackTrace(printWriter);
+            out.close();
+            printWriter.close();
+        }
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-18e1286f6abb9850.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;也成功的打印出了信息&lt;/p&gt;
+
+&lt;p&gt;关于其他的继承自Throwable类的方法会专门写一篇源码解读&lt;/p&gt;
+</description>
+        <pubDate>Wed, 25 Apr 2018 00:00:00 -0700</pubDate>
+        <link>http://localhost:4000/2018/04/25/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E5%9B%9B-%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86%E8%BF%9B%E9%98%B6/</link>
+        <guid isPermaLink="true">http://localhost:4000/2018/04/25/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E5%9B%9B-%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86%E8%BF%9B%E9%98%B6/</guid>
+        
+        <category>Java基础</category>
+        
+        
+      </item>
     
       <item>
         <title>Java基础知识梳理（三）异常处理基础知识</title>
@@ -1533,125 +1737,6 @@ lib：整个项目所用到的JAR文件存放位置
         <category>Java Web</category>
         
         <category>IntelliJ IDEA</category>
-        
-        
-      </item>
-    
-      <item>
-        <title>简易商品信息管理系统——首个Web项目</title>
-        <description>&lt;p&gt;这篇文章转载自&lt;a href=&quot;https://www.jianshu.com/p/737effb5ecc8&quot;&gt;我的简书&lt;/a&gt;&lt;/p&gt;
-
-&lt;h3 id=&quot;正文之前&quot;&gt;正文之前&lt;/h3&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;在学习了一段时间的Java Web的内容之后，当然需要有个项目来练练手，我相信大多数人的首选项目都是信息管理系统吧，所以我选择了商品信息管理系统&lt;/p&gt;
-
-  &lt;p&gt;目前项目源码已全部上传至GitHub，欢迎大家来&lt;strong&gt;fork&lt;/strong&gt; —— &lt;a href=&quot;https://github.com/lihanxiang/ProductManagement&quot;&gt;商品信息管理系统&lt;/a&gt;&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;hr /&gt;
-
-&lt;h3 id=&quot;正文&quot;&gt;正文&lt;/h3&gt;
-
-&lt;h4 id=&quot;项目构思&quot;&gt;项目构思&lt;/h4&gt;
-
-&lt;p&gt;简易的管理系统，结构为 &lt;strong&gt;Servlet + JSP + MySQL&lt;/strong&gt;，使用IntelliJ IDEA，搭建起了这个项目，源码中有很详细的注释，如果刚开始学习JavaWeb的内容，学一下Servlet，再搭配这个项目，岂不是美滋滋，有需要就拿去，如果能够有帮助，在fork的同时也赏一个Star吧！&lt;/p&gt;
-
-&lt;p&gt;接下来就介绍一下过程：&lt;/p&gt;
-
-&lt;h5 id=&quot;1-数据库连接&quot;&gt;1. 数据库连接&lt;/h5&gt;
-
-&lt;p&gt;在这个项目中，并不是单独编写Java程序来连接数据库，而是使用&lt;strong&gt;c3p0-config.xml&lt;/strong&gt;文件来配置数据库连接池，使用 &lt;strong&gt;QueryRunner&lt;/strong&gt; 来执行数据库操作
-&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/3426615-e857443bcfbb5fcc.PNG?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;在运行项目之前，需要在图中所示文件中设置你自己的本地数据库名称和密码，否则，无法连接数据库&lt;/p&gt;
-
-&lt;h5 id=&quot;2-jar文件&quot;&gt;2. JAR文件&lt;/h5&gt;
-
-&lt;p&gt;在构建项目时，需要导入所需的Library&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/3426615-75b00af804bf378a.PNG?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;h5 id=&quot;3-建表&quot;&gt;3. 建表&lt;/h5&gt;
-
-&lt;p&gt;在创建数据库时，也需要一张表来配合运行项目，在项目中也给出了这张表的结构&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/3426615-103c57fa0bd8e7df.PNG?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;h5 id=&quot;4-建包&quot;&gt;4. 建包&lt;/h5&gt;
-
-&lt;p&gt;采用MVC设计模式，建包时我分成了这几个方面：&lt;/p&gt;
-&lt;blockquote&gt;
-  &lt;p&gt;dao&lt;/p&gt;
-
-  &lt;p&gt;page&lt;/p&gt;
-
-  &lt;p&gt;product&lt;/p&gt;
-
-  &lt;p&gt;service&lt;/p&gt;
-
-  &lt;p&gt;servlet&lt;/p&gt;
-
-  &lt;p&gt;以及在测试时的用例：demo&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;接下来介绍这几个包的内容：&lt;/p&gt;
-
-&lt;ol&gt;
-  &lt;li&gt;
-    &lt;p&gt;dao包：
-内含有一个Java文件：ProductDao，编写对于数据库的操作，增删改查之类&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;page包：
-查询后的数据需要分页显示，否则看起来很麻烦，page包中包含有一个Java文件：PageBean，配合content.jsp文件将查询结果分页显示&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;product包：
-内含有Product类，将商品的基本信息封装，便于其他类使用&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;service包
-内含有一个Java文件：ProductService，实现了ProductDao类中定义的方法，并封装，降低程序中的代码重复性，更加简洁&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;servlet包
-内含有ProductServlet，实现了ProductService类中定义的方法，并和JSP页面进行通信&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;demo包
-在完成项目后，需要测试用例来进行测试&lt;/p&gt;
-  &lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;h5 id=&quot;5-mvc模式&quot;&gt;5. MVC模式&lt;/h5&gt;
-
-&lt;p&gt;MVC模式：Model，View，Controller：&lt;/p&gt;
-
-&lt;p&gt;Model：ProductDao类，PageBean类和Product类作为基本的模型&lt;/p&gt;
-
-&lt;p&gt;View：JSP文件，系统的页面&lt;/p&gt;
-
-&lt;p&gt;Controller：ProductServlet，作为用户输入和数据库操作的控制者&lt;/p&gt;
-
-&lt;p&gt;这样就使得代码较为简洁&lt;/p&gt;
-
-&lt;h5 id=&quot;6-运行前需要的准备&quot;&gt;6. 运行前需要的准备&lt;/h5&gt;
-
-&lt;p&gt;在Github上fork项目，并且clone至本地后，用IDEA打开，并按照这篇配置教程来配置web项目
-&lt;a href=&quot;https://www.jianshu.com/p/8d49d36a3c7e&quot;&gt;【JavaWeb】IDEA如何创建及配置Web项目（多图）&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;配置后，将&lt;strong&gt;src&lt;/strong&gt;目录下的 &lt;strong&gt;c3p0-config.xml&lt;/strong&gt; 文件中的数据库信息改为自己的数据库信息，运行Tomcat，岂不是美滋滋&lt;/p&gt;
-
-&lt;h5 id=&quot;7-思维导图&quot;&gt;7. 思维导图&lt;/h5&gt;
-
-&lt;p&gt;&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/3426615-cfa3d4b11fc240e8.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;结合这篇文章和项目根目录中的 &lt;a href=&quot;https://github.com/lihanxiang/ProductManagement/blob/master/README.md&quot;&gt;README.md&lt;/a&gt; 文档，开始自己的JavaWeb之旅吧！&lt;/p&gt;
-</description>
-        <pubDate>Mon, 16 Apr 2018 00:00:00 -0700</pubDate>
-        <link>http://localhost:4000/2018/04/16/%E7%AE%80%E6%98%93%E5%95%86%E5%93%81%E4%BF%A1%E6%81%AF%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F-%E9%A6%96%E4%B8%AAWeb%E9%A1%B9%E7%9B%AE/</link>
-        <guid isPermaLink="true">http://localhost:4000/2018/04/16/%E7%AE%80%E6%98%93%E5%95%86%E5%93%81%E4%BF%A1%E6%81%AF%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F-%E9%A6%96%E4%B8%AAWeb%E9%A1%B9%E7%9B%AE/</guid>
-        
-        <category>Java Web</category>
         
         
       </item>

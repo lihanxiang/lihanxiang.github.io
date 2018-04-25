@@ -19,9 +19,9 @@
     <meta name="keyword"  content="Java">
     <link rel="shortcut icon" href="/img/favicon.ico">
 
-    <title>Java基础知识梳理（三）异常处理基础知识 - 李汉祥的博客 | L Blog</title>
+    <title>李汉祥的博客 | L Blog</title>
 
-    <link rel="canonical" href="http://localhost:4000/2018/04/24/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E4%B8%89-%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/">
+    <link rel="canonical" href="http://localhost:4000/page2/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -141,313 +141,204 @@
 </script>
 
 
-    <!-- Image to hack wechat -->
-<!-- <img src="/img/post/2018-04/24.jpg" width="0" height="0"> -->
-
-<!-- Post Header -->
-<style type="text/css">
-    header.intro-header{
-        background-image: url('/img/post/2018-04/24.jpg')
-    }
-</style>
-<header class="intro-header" >
+    <!-- Page Header -->
+<header class="intro-header" style="background-image: url('/img/top.jpg')">
     <div class="container">
         <div class="row">
-            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
-                <div class="post-heading">
-                    <div class="tags">
-                        
-                        <a class="tag" href="/tags/#Java基础" title="Java基础">Java基础</a>
-                        
-                    </div>
-                    <h1>Java基础知识梳理（三）异常处理基础知识</h1>
-                    
-                    
-                    <h2 class="subheading">知识点回顾</h2>
-                    
-                    <span class="meta">Posted by L on April 24, 2018</span>
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 ">
+                <div class="site-heading">
+                    <h1>L Blog</h1>
+                    <!--<hr class="small">-->
+                    <span class="subheading"></span>
                 </div>
             </div>
         </div>
     </div>
 </header>
 
-<!-- Post Content -->
-<article>
-    <div class="container">
-        <div class="row">
+<!-- Main Content -->
+<div class="container">
+	<div class="row">
+        
 
+<!-- USE SIDEBAR -->
     <!-- Post Container -->
-            <div class="
-                col-lg-8 col-lg-offset-2
-                col-md-10 col-md-offset-1
-                post-container">
+    		<div class="
+                col-lg-8 col-lg-offset-1
+                col-md-8 col-md-offset-1
+                col-sm-12
+                col-xs-12
+                post-container
+            ">
+    			
+<div class="post-preview">
+    <a href="/2018/04/16/%E7%AE%80%E6%98%93%E5%95%86%E5%93%81%E4%BF%A1%E6%81%AF%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F-%E9%A6%96%E4%B8%AAWeb%E9%A1%B9%E7%9B%AE/">
+        <h2 class="post-title">
+            简易商品信息管理系统——首个Web项目
+        </h2>
+        
+        <h3 class="post-subtitle">
+            练手项目
+        </h3>
+        
+        <div class="post-content-preview">
+            这篇文章转载自我的简书
 
-				<h3 id="正文之前">正文之前</h3>
+正文之前
 
-<p>有句话说的不错，来自《Java核心技术 卷一》：</p>
 
-<blockquote>
-  <p>在理想状态下，用户输入数据的格式永远都是正确的，选择打开的文件也一定存在，并且永远不会出现bug</p>
-</blockquote>
+  在学习了一段时间的Java Web的内容之后，当然需要有个项目来练练手，我相信大多数人的首选项目都是信息管理系统吧，所以我选择了商品信息管理系统
 
-<p>相信这个，你就天真了，这次我们来介绍以下Java异常处理的基本知识：</p>
+  目前项目源码已全部上传至GitHub，欢迎大家来fork —— 商品信息管理系统
 
-<blockquote>
-  <ol>
-    <li>异常分类</li>
-    <li>抛出异常</li>
-    <li>捕获异常</li>
-    <li>处理异常</li>
-    <li>异常说明</li>
-    <li>throw 和 throws的区别</li>
-  </ol>
-</blockquote>
 
-<hr />
 
-<h3 id="正文">正文</h3>
 
-<h4 id="1-异常分类">1. 异常分类</h4>
+正文
 
-<p>在Java中，每个异常都是一个名叫<strong>Throwable</strong>的类的一个实例</p>
+项目构思
 
-<p><img src="http://upload-images.jianshu.io/upload_images/3426615-5482653285cf17fa.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
+简易的管理系统，结构为 Servlet + JSP + MySQL，使用IntelliJ...
+        </div>
+    </a>
+    <p class="post-meta">
+        Posted by L on April 16, 2018
+    </p>
+</div>
+<hr>
 
-<p>在《Java核心技术 卷一》有这么一句话：“如果出现runtime exception异常,那么就一定是你的问题”，具体都有哪些异常，这里就不赘述</p>
 
-<h4 id="2-抛出异常">2. 抛出异常</h4>
+<!-- Pager -->
 
-<p>在抛出异常之前，要先确定异常的类型，举个例子：</p>
+<ul class="pager">
+    
+    <li class="previous">
+        <a href="/">&larr; Newer Posts</a>
+    </li>
+    
+    
+</ul>
 
-<p><strong>EOFException</strong>：在输入过程，遇到了预期之外的EOF之后的信号</p>
 
-<p><img src="http://upload-images.jianshu.io/upload_images/3426615-44b796cb99af6c76.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
-
-<h4 id="3-捕获异常">3. 捕获异常</h4>
-
-<p>使用 try-catch 语句来进行异常的捕获：</p>
-
-<p>基本格式：</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>try{
-    //一段代码
-}
-catch(Exception Type){
-    //另一段代码
-}
-</code></pre></div></div>
-
-<p>这个语句块的意思就是，尝试去执行<strong>try</strong>语句块里的内容，如果没有异常当然是最好的，如果有异常，将其捕获，并执行<strong>catch</strong>语句块中的代码</p>
-
-<p>以打开文件的操作来举个例子：</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-
-public class Test {
-    public static void main(String[] args){
-        try{
-            FileInputStream in = new FileInputStream("text.txt");
-        }catch(FileNotFoundException e){
-            System.out.println("未找到文件");
-        }
-    }
-}
-</code></pre></div></div>
-
-<p>在这个源文件的同级目录下，没有文件”text.txt”，所以如果不适用try-catch语句就会提示可能产生异常，我们来运行一下：</p>
-
-<p><img src="https://upload-images.jianshu.io/upload_images/3426615-3b4d182c4e201ee3.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
-
-<p>运行了catch语句中的代码</p>
-
-<p>在catch语句的参数中我们定义了具体的异常类型，但是这些具体的异常都是Exception的子类，所以我们可以通过将参数改为<strong>Exception e</strong> 来捕获所有异常<strong>（但是不建议这么做，或者把捕获异常基类放到最后，因为有的时候你需要针对不同的异常做出一些不同的动作）</strong>：</p>
-
-<p><img src="https://upload-images.jianshu.io/upload_images/3426615-89231daa5fb26d69.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
-
-<h4 id="4-处理异常">4. 处理异常</h4>
-
-<p>在捕获了异常之后，我们还需要处理这些异常，我们可以将这些异常的消息输出，或者在捕获之后再抛出另外的异常：</p>
-
-<p>常用的消息输出方式就是<strong>getMessage()</strong>以及<strong>printStackTrace()</strong></p>
-
-<p>我们来做个实验：</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-
-public class Test {
-    public static void main(String[] args) throws FileNotFoundException {
-        try{
-            FileInputStream in = new FileInputStream("test.txt");
-        }catch (FileNotFoundException e){
-            System.out.println(e.getMessage());
-            e.printStackTrace();
-        }
-
-    }
-}
-</code></pre></div></div>
-
-<p>打印出来结果是这样的：</p>
-
-<p><img src="https://upload-images.jianshu.io/upload_images/3426615-f040d1cbd3eb25ed.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
-
-<p>异常所输出的信息是<strong>test.txt (系统找不到指定的文件。)</strong></p>
-
-<p><strong>printStackTrace()</strong>的目的是打印栈轨迹，也就是将抛出异常的位置到诉你，包括输出了异常信息，就像如图所示，Main()函数的第七行有问题，在程序调试的时候经常用<strong>printStackTrace()</strong></p>
-
-<h4 id="5-异常说明">5. 异常说明</h4>
-
-<p>如果有别人需要阅读你的代码，就需要知道你的代码会抛出什么异常，那么你就要写异常说明，形式通常为：</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>void method() throws ....{
-
-}
-</code></pre></div></div>
-
-<p>首先，我们在原先的代码的方法名后加上可能会出现的异常：</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-
-public class Test {
-    public void input() throws FileNotFoundException {
-            //不需要try-catch语句块，因为我们没有在此处捕获异常
-            FileInputStream in = new FileInputStream("test.txt");
-    }
-}
-</code></pre></div></div>
-
-<p>然后，我们新建一个类，创建Test类的实例，会发现有提示：</p>
-
-<p><img src="https://upload-images.jianshu.io/upload_images/3426615-1fb40d6ea2bf8eab.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
-
-<p>因为我们写方法时，告诉外界可能会产生什么样的异常了，其他人在调用的时候就能够发现</p>
-
-<h4 id="6-throw-和-throws的区别">6. throw 和 throws的区别</h4>
-
-<p>关于这两个的区别，其实在于究竟在哪个地方处理异常，举个例子来说：</p>
-
-<p>在方法A中，如果在产生异常的时候，不需要马上捕获，在方法B调用方法A的时候再进行捕获，那么就在A的方法名后添加<strong>throws</strong>，如果需要在方法A中进行捕获，则直接使用<strong>throw</strong></p>
-
-<p>看捕获异常的对象是谁，再决定应该如何来使用</p>
-
-<p>那么，关于Java异常处理的基本介绍就结束了，接下来会有针对异常信息的专题文章会发布</p>
-
-
-
-                <hr>
-
-               
-
-
-                <ul class="pager">
-                    
-                    <li class="previous">
-                        <a href="/2018/04/23/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E4%BA%8C-%E5%AD%97%E7%AC%A6%E4%B8%B2/" data-toggle="tooltip" data-placement="top" title="Java基础知识梳理（二）字符串">&larr; Previous Post</a>
-                    </li>
-                    
-                    
-                    <li class="next">
-                        <a href="/2018/04/25/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E5%9B%9B-%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86%E8%BF%9B%E9%98%B6/" data-toggle="tooltip" data-placement="top" title="Java基础知识梳理（四）异常处理进阶">Next Post &rarr;</a>
-                    </li>
-                    
-                </ul>
-
-		
-                <!-- disqus 评论框 start -->
-                <div class="comment">
-                    <div id="disqus_thread" class="disqus-thread"></div>
-                </div>
-                <!-- disqus 评论框 end -->
-                
-
-
-
-            </div>
-
+    		</div>
     <!-- Sidebar Container -->
             <div class="
-                col-lg-8 col-lg-offset-2
-                col-md-10 col-md-offset-1
-                sidebar-container">
-
+                col-lg-3 col-lg-offset-0
+                col-md-3 col-md-offset-0
+                col-sm-12
+                col-xs-12
+                sidebar-container
+            ">
                 <!-- Featured Tags -->
                 
                 <section>
                     <hr class="hidden-sm hidden-xs">
                     <h5><a href="/tags/">FEATURED TAGS</a></h5>
                     <div class="tags">
-        				
+                        
                             
-                				<a href="/tags/#Java Web" title="Java Web" rel="3">
+                                <a href="/tags/#Java Web" title="Java Web" rel="3">
                                     Java Web
                                 </a>
                             
-        				
+                        
                             
-                				<a href="/tags/#IntelliJ IDEA" title="IntelliJ IDEA" rel="1">
+                                <a href="/tags/#IntelliJ IDEA" title="IntelliJ IDEA" rel="1">
                                     IntelliJ IDEA
                                 </a>
                             
-        				
+                        
                             
-                				<a href="/tags/#Spring MVC" title="Spring MVC" rel="1">
+                                <a href="/tags/#Spring MVC" title="Spring MVC" rel="1">
                                     Spring MVC
                                 </a>
                             
-        				
+                        
                             
-                				<a href="/tags/#随笔" title="随笔" rel="1">
+                                <a href="/tags/#随笔" title="随笔" rel="1">
                                     随笔
                                 </a>
                             
-        				
+                        
                             
-                				<a href="/tags/#树莓派" title="树莓派" rel="3">
+                                <a href="/tags/#树莓派" title="树莓派" rel="3">
                                     树莓派
                                 </a>
                             
-        				
+                        
                             
-                				<a href="/tags/#Java基础" title="Java基础" rel="4">
+                                <a href="/tags/#Java基础" title="Java基础" rel="4">
                                     Java基础
                                 </a>
                             
-        				
-        			</div>
+                        
+                    </div>
                 </section>
                 
 
+                <!-- Short About -->
+                <section class="visible-md visible-lg">
+                    <hr><h5><a href="/about/">ABOUT ME</a></h5>
+                    <div class="short-about">
+                        
+                            <img src="/img/Hank.jpg" />
+                        
+                        
+                            <p>写写Java，一天就过去了</p>
+                        
+                        <!-- SNS Link -->
+                        <ul class="list-inline">
+                            
+                           
+			    
+                            <li>
+                                <a target="_blank" href="https://www.jianshu.com/u/fbc9284d5523">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fa fa-circle fa-stack-2x"></i>
+                                        <i class="fa  fa-stack-1x fa-inverse">简</i>
+                                    </span>
+                                </a>
+                            </li>
+                            
+				
+                            
+                            <li>
+                                <a target="_blank" href="https://www.zhihu.com/people/li-han-xiang-54-15">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fa fa-circle fa-stack-2x"></i>
+                                        <i class="fa  fa-stack-1x fa-inverse">知</i>
+                                    </span>
+                                </a>
+                            </li>
+                            
+                            
+                            
+                            <li>
+                                <a target="_blank" href="https://github.com/lihanxiang">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fa fa-circle fa-stack-2x"></i>
+                                        <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                                    </span>
+                                </a>
+                            </li>
+                            
+                        </ul>
+                    </div>
+                </section>
                 <!-- Something else -->
                 
-            </div>
-        </div>
-    </div>
-</article>
-
-<!-- disqus 公共JS代码 end -->
-
-<!-- disqus 公共JS代码 start (一个网页只需插入一次) -->
-<script type="text/javascript">
-    /* * * CONFIGURATION VARIABLES * * */
-    var disqus_shortname = "http-hxblog-site";
-    var disqus_identifier = "/2018/04/24/Java基础知识梳理（三）异常处理基础知识";
-    var disqus_url = "http://localhost:4000/2018/04/24/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E4%B8%89-%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/";
-
-    (function() {
-        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
-        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-    })();
-</script>
-<!-- disqus 公共JS代码 end -->
-
-
-
-
+                <hr>
+                <h5>Something else</h5>
+                <ul class="list-inline">
+                    
+                        <li><a href="http://www.cnblogs.com/lihanxiang">博客园</a></li>
+                    
+                </ul>
+                
+    		</div>
+        
+	</div>
+</div>
 
 
     <!-- Footer -->
