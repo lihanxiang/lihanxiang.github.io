@@ -3,11 +3,127 @@
   <channel>
     <title>L Blog</title>
     <description>写写Java，一天就过去了</description>
-    <link>http://localhost:4000/</link>
-    <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Mon, 30 Apr 2018 19:17:36 -0700</pubDate>
-    <lastBuildDate>Mon, 30 Apr 2018 19:17:36 -0700</lastBuildDate>
+    <link>http://hxblog.site/</link>
+    <atom:link href="http://hxblog.site/feed.xml" rel="self" type="application/rss+xml" />
+    <pubDate>Tue, 01 May 2018 19:40:16 -0700</pubDate>
+    <lastBuildDate>Tue, 01 May 2018 19:40:16 -0700</lastBuildDate>
     <generator>Jekyll v3.8.0</generator>
+    
+      <item>
+        <title>c3p0连接池</title>
+        <description>&lt;p&gt;这篇博客来自&lt;a href=&quot;https://www.jianshu.com/p/8a28342099ce&quot;&gt;我的简书&lt;/a&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;正文之前&quot;&gt;正文之前&lt;/h3&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;在之前的文章讲到了传统的&lt;a href=&quot;https://www.jianshu.com/p/28d17df0608a&quot;&gt;JDBC连接MySQL&lt;/a&gt;的方式，但是这样的方式在进行多个连接时，就显得效率低下，明显不如连接池的效率，所以我们这次来讲解一下JDBC连接池之一：c3p0&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;hr /&gt;
+
+&lt;h3 id=&quot;正文&quot;&gt;正文&lt;/h3&gt;
+
+&lt;h4 id=&quot;1-准备工作&quot;&gt;1. 准备工作&lt;/h4&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;IntelliJ IDEA&lt;/li&gt;
+  &lt;li&gt;c3p0-0.9.5.2（jar）&lt;/li&gt;
+  &lt;li&gt;MySQL&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;2-配置-c3p0-configxml&quot;&gt;2. 配置 c3p0-config.xml&lt;/h4&gt;
+
+&lt;h5 id=&quot;default-config&quot;&gt;default-config&lt;/h5&gt;
+
+&lt;p&gt;在配置之前，需要先进行建立数据库的工作，本文还是采用上篇文章中的名为 &lt;strong&gt;customer&lt;/strong&gt; 的数据库&lt;/p&gt;
+
+&lt;p&gt;然后在工程的 &lt;strong&gt;src&lt;/strong&gt; 目录下新建一个名为 &lt;strong&gt;c3p0-config&lt;/strong&gt; 的XML文件（文件名不能自定义）&lt;/p&gt;
+
+&lt;p&gt;然后开始配置：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;        &amp;lt;!-- 数据库地址 --&amp;gt;
+        &amp;lt;property name=&quot;jdbcUrl&quot;&amp;gt;jdbc:mysql://localhost:3306/customer&amp;lt;/property&amp;gt;
+        &amp;lt;!-- 数据库驱动 --&amp;gt;
+        &amp;lt;property name=&quot;driverClass&quot;&amp;gt;com.mysql.jdbc.Driver&amp;lt;/property&amp;gt;
+        &amp;lt;!-- 用户名 --&amp;gt;
+        &amp;lt;property name=&quot;user&quot;&amp;gt;root&amp;lt;/property&amp;gt;
+        &amp;lt;!-- 密码 --&amp;gt;
+        &amp;lt;property name=&quot;password&quot;&amp;gt;3865933&amp;lt;/property&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;先写基本的数据库信息，然后我们再来写常用的连接池属性，若要查询全部属性，可阅读官网指南，属性也包含于&lt;default-config&gt;中：&lt;/default-config&gt;&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;        &amp;lt;!-- 连接池初始化时创建的连接数 --&amp;gt;
+        &amp;lt;property name=&quot;initialPoolSize&quot;&amp;gt;1&amp;lt;/property&amp;gt;
+        &amp;lt;!-- 连接池中的最小连接数 --&amp;gt;
+        &amp;lt;property name=&quot;minPoolSize&quot;&amp;gt;1&amp;lt;/property&amp;gt;
+        &amp;lt;!-- 连接池中的最小连接数 --&amp;gt;
+        &amp;lt;property name=&quot;maxPoolSize&quot;&amp;gt;2&amp;lt;/property&amp;gt;
+        &amp;lt;!-- 无空闲连接可用时，可一次性创建新连接的数量 --&amp;gt;
+        &amp;lt;property name=&quot;acquireIncrement&quot;&amp;gt;1&amp;lt;/property&amp;gt;
+        &amp;lt;!-- 获取数据库连接失败后重复尝试的次数 --&amp;gt;
+        &amp;lt;property name=&quot;acquireRetryAttempts&quot;&amp;gt;1&amp;lt;/property&amp;gt;
+        &amp;lt;!-- 两次连接的间隔时间，单位为毫秒 --&amp;gt;
+        &amp;lt;property name = &quot;acquireRetryDelay&quot;&amp;gt;1000&amp;lt;/property&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;给出完整的文件图片：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/3426615-be8b3d2e09987f4e.PNG?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;h5 id=&quot;named-config&quot;&gt;named-config&lt;/h5&gt;
+
+&lt;p&gt;可以添加 named-config 来增加数据库配置，内容与default-config一致，我连接了另一个数据库 product ：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/3426615-ec0573266c9488c6.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;3-写个demo&quot;&gt;3. 写个demo&lt;/h4&gt;
+
+&lt;p&gt;先搞定数据源：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    private static ComboPooledDataSource dataSource1 = new ComboPooledDataSource(&quot;test&quot;);
+    private static ComboPooledDataSource dataSource2 = new ComboPooledDataSource();
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;根据数据源，进行连接&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    private static void getConnection(){
+        try{
+            Connection connection = dataSource1.getConnection();
+            System.out.println(&quot;连接数据库 product 成功！&quot;);
+            connection.close();
+            System.out.println(&quot;数据库连接已关闭！&quot;);
+        }catch(Exception e){
+            System.out.println(&quot;连接数据库失败！&quot;);
+        }
+        try{
+            Connection connection = dataSource2.getConnection();
+            System.out.println(&quot;连接数据库 customer 成功！&quot;);
+            connection.close();
+            System.out.println(&quot;数据库连接已关闭！&quot;);
+        }catch(Exception e){
+            System.out.println(&quot;连接数据库失败！&quot;);
+        }
+    }
+    public static void main(String[] args){
+        getConnection();
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;运行结果：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/3426615-c3253249e36992ac.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;如果需要有多个连接，使用连接池是不二之选，关于c3p0的讲解到此为止了，谢谢。&lt;/p&gt;
+</description>
+        <pubDate>Tue, 01 May 2018 00:00:00 -0700</pubDate>
+        <link>http://hxblog.site/2018/05/01/c3p0%E8%BF%9E%E6%8E%A5%E6%B1%A0/</link>
+        <guid isPermaLink="true">http://hxblog.site/2018/05/01/c3p0%E8%BF%9E%E6%8E%A5%E6%B1%A0/</guid>
+        
+        <category>MySQL</category>
+        
+        
+      </item>
     
       <item>
         <title>Java基础知识梳理（四）异常处理进阶</title>
@@ -205,8 +321,8 @@ public class Test {
 &lt;p&gt;关于其他的继承自Throwable类的方法会专门写一篇源码解读&lt;/p&gt;
 </description>
         <pubDate>Wed, 25 Apr 2018 00:00:00 -0700</pubDate>
-        <link>http://localhost:4000/2018/04/25/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E5%9B%9B-%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86%E8%BF%9B%E9%98%B6/</link>
-        <guid isPermaLink="true">http://localhost:4000/2018/04/25/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E5%9B%9B-%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86%E8%BF%9B%E9%98%B6/</guid>
+        <link>http://hxblog.site/2018/04/25/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E5%9B%9B-%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86%E8%BF%9B%E9%98%B6/</link>
+        <guid isPermaLink="true">http://hxblog.site/2018/04/25/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E5%9B%9B-%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86%E8%BF%9B%E9%98%B6/</guid>
         
         <category>Java基础</category>
         
@@ -370,8 +486,8 @@ public class Test {
 
 </description>
         <pubDate>Tue, 24 Apr 2018 00:00:00 -0700</pubDate>
-        <link>http://localhost:4000/2018/04/24/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E4%B8%89-%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/</link>
-        <guid isPermaLink="true">http://localhost:4000/2018/04/24/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E4%B8%89-%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/</guid>
+        <link>http://hxblog.site/2018/04/24/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E4%B8%89-%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/</link>
+        <guid isPermaLink="true">http://hxblog.site/2018/04/24/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E4%B8%89-%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/</guid>
         
         <category>Java基础</category>
         
@@ -713,8 +829,8 @@ Integer.valueOf(String s)&lt;/p&gt;
 &lt;p&gt;关于字符串的基本知识就到这里啦！&lt;/p&gt;
 </description>
         <pubDate>Mon, 23 Apr 2018 00:00:00 -0700</pubDate>
-        <link>http://localhost:4000/2018/04/23/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E4%BA%8C-%E5%AD%97%E7%AC%A6%E4%B8%B2/</link>
-        <guid isPermaLink="true">http://localhost:4000/2018/04/23/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E4%BA%8C-%E5%AD%97%E7%AC%A6%E4%B8%B2/</guid>
+        <link>http://hxblog.site/2018/04/23/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E4%BA%8C-%E5%AD%97%E7%AC%A6%E4%B8%B2/</link>
+        <guid isPermaLink="true">http://hxblog.site/2018/04/23/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E4%BA%8C-%E5%AD%97%E7%AC%A6%E4%B8%B2/</guid>
         
         <category>Java基础</category>
         
@@ -897,8 +1013,8 @@ Integer.valueOf(String s)&lt;/p&gt;
 
 </description>
         <pubDate>Sun, 22 Apr 2018 00:00:00 -0700</pubDate>
-        <link>http://localhost:4000/2018/04/22/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E4%B8%80/</link>
-        <guid isPermaLink="true">http://localhost:4000/2018/04/22/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E4%B8%80/</guid>
+        <link>http://hxblog.site/2018/04/22/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E4%B8%80/</link>
+        <guid isPermaLink="true">http://hxblog.site/2018/04/22/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E4%B8%80/</guid>
         
         <category>Java基础</category>
         
@@ -1043,8 +1159,8 @@ time.sleep(time) 表示的是经过 time 秒后执行下一步操作，就是休
 &lt;p&gt;关于树莓派信息的内容就先告一段落&lt;/p&gt;
 </description>
         <pubDate>Sat, 21 Apr 2018 00:00:00 -0700</pubDate>
-        <link>http://localhost:4000/2018/04/21/%E6%A0%91%E8%8E%93%E6%B4%BE%E5%B0%8F%E8%BD%A6-%E4%B8%89-Python%E6%8E%A7%E5%88%B6%E5%B0%8F%E8%BD%A6/</link>
-        <guid isPermaLink="true">http://localhost:4000/2018/04/21/%E6%A0%91%E8%8E%93%E6%B4%BE%E5%B0%8F%E8%BD%A6-%E4%B8%89-Python%E6%8E%A7%E5%88%B6%E5%B0%8F%E8%BD%A6/</guid>
+        <link>http://hxblog.site/2018/04/21/%E6%A0%91%E8%8E%93%E6%B4%BE%E5%B0%8F%E8%BD%A6-%E4%B8%89-Python%E6%8E%A7%E5%88%B6%E5%B0%8F%E8%BD%A6/</link>
+        <guid isPermaLink="true">http://hxblog.site/2018/04/21/%E6%A0%91%E8%8E%93%E6%B4%BE%E5%B0%8F%E8%BD%A6-%E4%B8%89-Python%E6%8E%A7%E5%88%B6%E5%B0%8F%E8%BD%A6/</guid>
         
         <category>树莓派</category>
         
@@ -1120,8 +1236,8 @@ time.sleep(time) 表示的是经过 time 秒后执行下一步操作，就是休
 &lt;p&gt;关于小车的组装就完成了，在下一篇文章中将会给出驱动小车的Python代码&lt;/p&gt;
 </description>
         <pubDate>Fri, 20 Apr 2018 00:00:00 -0700</pubDate>
-        <link>http://localhost:4000/2018/04/20/%E6%A0%91%E8%8E%93%E6%B4%BE%E5%B0%8F%E8%BD%A6-%E4%BA%8C-%E6%A0%91%E8%8E%93%E6%B4%BE-%E5%B0%8F%E8%BD%A6%E5%92%8C%E7%BA%A2%E5%A4%96%E7%BA%BF%E6%A8%A1%E5%9D%97%E8%BF%9E%E6%8E%A5/</link>
-        <guid isPermaLink="true">http://localhost:4000/2018/04/20/%E6%A0%91%E8%8E%93%E6%B4%BE%E5%B0%8F%E8%BD%A6-%E4%BA%8C-%E6%A0%91%E8%8E%93%E6%B4%BE-%E5%B0%8F%E8%BD%A6%E5%92%8C%E7%BA%A2%E5%A4%96%E7%BA%BF%E6%A8%A1%E5%9D%97%E8%BF%9E%E6%8E%A5/</guid>
+        <link>http://hxblog.site/2018/04/20/%E6%A0%91%E8%8E%93%E6%B4%BE%E5%B0%8F%E8%BD%A6-%E4%BA%8C-%E6%A0%91%E8%8E%93%E6%B4%BE-%E5%B0%8F%E8%BD%A6%E5%92%8C%E7%BA%A2%E5%A4%96%E7%BA%BF%E6%A8%A1%E5%9D%97%E8%BF%9E%E6%8E%A5/</link>
+        <guid isPermaLink="true">http://hxblog.site/2018/04/20/%E6%A0%91%E8%8E%93%E6%B4%BE%E5%B0%8F%E8%BD%A6-%E4%BA%8C-%E6%A0%91%E8%8E%93%E6%B4%BE-%E5%B0%8F%E8%BD%A6%E5%92%8C%E7%BA%A2%E5%A4%96%E7%BA%BF%E6%A8%A1%E5%9D%97%E8%BF%9E%E6%8E%A5/</guid>
         
         <category>树莓派</category>
         
@@ -1247,8 +1363,8 @@ time.sleep(time) 表示的是经过 time 秒后执行下一步操作，就是休
 &lt;p&gt;关于小车的基础模型的安装就到这里了，接下来的文章会讲解用Pyhton驱动小车，以及红外避障小车的制作&lt;/p&gt;
 </description>
         <pubDate>Thu, 19 Apr 2018 00:00:00 -0700</pubDate>
-        <link>http://localhost:4000/2018/04/19/%E6%A0%91%E8%8E%93%E6%B4%BE%E5%B0%8F%E8%BD%A6-%E4%B8%80-%E5%B0%8F%E8%BD%A6%E9%85%8D%E4%BB%B6%E9%80%89%E8%B4%AD%E5%8F%8A%E5%AE%89%E8%A3%85/</link>
-        <guid isPermaLink="true">http://localhost:4000/2018/04/19/%E6%A0%91%E8%8E%93%E6%B4%BE%E5%B0%8F%E8%BD%A6-%E4%B8%80-%E5%B0%8F%E8%BD%A6%E9%85%8D%E4%BB%B6%E9%80%89%E8%B4%AD%E5%8F%8A%E5%AE%89%E8%A3%85/</guid>
+        <link>http://hxblog.site/2018/04/19/%E6%A0%91%E8%8E%93%E6%B4%BE%E5%B0%8F%E8%BD%A6-%E4%B8%80-%E5%B0%8F%E8%BD%A6%E9%85%8D%E4%BB%B6%E9%80%89%E8%B4%AD%E5%8F%8A%E5%AE%89%E8%A3%85/</link>
+        <guid isPermaLink="true">http://hxblog.site/2018/04/19/%E6%A0%91%E8%8E%93%E6%B4%BE%E5%B0%8F%E8%BD%A6-%E4%B8%80-%E5%B0%8F%E8%BD%A6%E9%85%8D%E4%BB%B6%E9%80%89%E8%B4%AD%E5%8F%8A%E5%AE%89%E8%A3%85/</guid>
         
         <category>树莓派</category>
         
@@ -1297,8 +1413,8 @@ time.sleep(time) 表示的是经过 time 秒后执行下一步操作，就是休
 &lt;p&gt;哎呦，到了结尾，就先这样吧&lt;/p&gt;
 </description>
         <pubDate>Wed, 18 Apr 2018 00:00:00 -0700</pubDate>
-        <link>http://localhost:4000/2018/04/18/%E5%8D%9A%E5%AE%A2%E4%BB%8B%E7%BB%8D/</link>
-        <guid isPermaLink="true">http://localhost:4000/2018/04/18/%E5%8D%9A%E5%AE%A2%E4%BB%8B%E7%BB%8D/</guid>
+        <link>http://hxblog.site/2018/04/18/%E5%8D%9A%E5%AE%A2%E4%BB%8B%E7%BB%8D/</link>
+        <guid isPermaLink="true">http://hxblog.site/2018/04/18/%E5%8D%9A%E5%AE%A2%E4%BB%8B%E7%BB%8D/</guid>
         
         <category>随笔</category>
         
@@ -1609,134 +1725,12 @@ public class ProductController {
 
 </description>
         <pubDate>Tue, 17 Apr 2018 00:00:00 -0700</pubDate>
-        <link>http://localhost:4000/2018/04/17/%E5%88%9D%E5%A7%8BSpring-MVC-%E7%BB%83%E6%89%8B%E5%B0%8F%E9%A1%B9%E7%9B%AE/</link>
-        <guid isPermaLink="true">http://localhost:4000/2018/04/17/%E5%88%9D%E5%A7%8BSpring-MVC-%E7%BB%83%E6%89%8B%E5%B0%8F%E9%A1%B9%E7%9B%AE/</guid>
+        <link>http://hxblog.site/2018/04/17/%E5%88%9D%E5%A7%8BSpring-MVC-%E7%BB%83%E6%89%8B%E5%B0%8F%E9%A1%B9%E7%9B%AE/</link>
+        <guid isPermaLink="true">http://hxblog.site/2018/04/17/%E5%88%9D%E5%A7%8BSpring-MVC-%E7%BB%83%E6%89%8B%E5%B0%8F%E9%A1%B9%E7%9B%AE/</guid>
         
         <category>Spring MVC</category>
         
         <category>Java Web</category>
-        
-        
-      </item>
-    
-      <item>
-        <title>IDEA如何创建及配置Web项目（多图）</title>
-        <description>&lt;p&gt;这篇文章转载自&lt;a href=&quot;https://www.jianshu.com/p/8d49d36a3c7e&quot;&gt;我的简书&lt;/a&gt;&lt;/p&gt;
-
-&lt;h3 id=&quot;正文之前&quot;&gt;正文之前&lt;/h3&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;在学习Java Web时，第一个遇到的问题就是如何创建或配置Web项目了，今天，就用IntelliJ IDEA 来进行Web项目配置：&lt;/p&gt;
-  &lt;ol&gt;
-    &lt;li&gt;创建Web项目&lt;/li&gt;
-    &lt;li&gt;配置web项目&lt;/li&gt;
-  &lt;/ol&gt;
-&lt;/blockquote&gt;
-
-&lt;hr /&gt;
-
-&lt;h3 id=&quot;正文&quot;&gt;正文&lt;/h3&gt;
-
-&lt;h4 id=&quot;创建web项目&quot;&gt;创建Web项目&lt;/h4&gt;
-
-&lt;ol&gt;
-  &lt;li&gt;
-    &lt;p&gt;新建Web项目
-&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/3426615-ddb0f4073c436700.PNG?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;
-&lt;br /&gt;&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;File - Project Structure
-&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/3426615-89271f34e5f3b809.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;
-&lt;br /&gt;&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;Modules - Sources
-在web目录下新建一个目录，名为 &lt;strong&gt;WEB-INF&lt;/strong&gt;，在&lt;strong&gt;WEB-INF&lt;/strong&gt;目录下新建两个目录，名为 &lt;strong&gt;classes&lt;/strong&gt; 和 &lt;strong&gt;lib&lt;/strong&gt;
-classes：.class文件存放位置
-lib：整个项目所用到的JAR文件存放位置
-&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/3426615-2bb22296a04f3409.PNG?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;
-&lt;br /&gt;&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;Modules - Paths
-勾选 &lt;strong&gt;Use module compile output path&lt;/strong&gt;，并将 &lt;strong&gt;Output path&lt;/strong&gt; 和 &lt;strong&gt;Test output path&lt;/strong&gt; 改为刚才&lt;strong&gt;web&lt;/strong&gt;目录下新建的 &lt;strong&gt;classes&lt;/strong&gt; 文件夹&lt;br /&gt;
-&lt;strong&gt;目的：&lt;/strong&gt;在构建项目时，能将.class文件输出至 &lt;strong&gt;classes&lt;/strong&gt; 文件夹中
-&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/3426615-e41a436471433fc8.PNG?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;
-&lt;br /&gt;&lt;/p&gt;
-  &lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;p&gt;在下面的JavaDoc中添加&lt;strong&gt;web&lt;/strong&gt;目录下的 &lt;strong&gt;lib&lt;/strong&gt;文件夹
-&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/3426615-37cddc22213a1b5b.PNG?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;
-&lt;br /&gt;&lt;/p&gt;
-
-&lt;ol&gt;
-  &lt;li&gt;
-    &lt;p&gt;Modules - Dependencies 
-添加web目录下的&lt;strong&gt;lib&lt;/strong&gt;文件夹以及Tomcat的Library
-在添加 &lt;strong&gt;lib&lt;/strong&gt;文件夹时选择 &lt;strong&gt;Jar Directory&lt;/strong&gt;
-&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/3426615-eed4f6391ccbfbb9.PNG?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;
-&lt;br /&gt;&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;Libraries
-添加web目录下的&lt;strong&gt;lib&lt;/strong&gt;文件夹，选择 &lt;strong&gt;Jar Directory&lt;/strong&gt;
-&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/3426615-fb3a36060f52bd79.PNG?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;
-&lt;br /&gt;&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;Facets
-在Deployment Descriptor中添加 &lt;strong&gt;web.xml&lt;/strong&gt; 文件
-&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/3426615-82800832c2b676b8.PNG?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;
-&lt;br /&gt;&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;Artifacts
-勾选 &lt;strong&gt;Include in project build&lt;/strong&gt; 和 &lt;strong&gt;Show content of elements&lt;/strong&gt; 两个选项，点击OK
-&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/3426615-89fa2470fa132079.PNG?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;
-&lt;br /&gt;&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;Edit Configurations - Tomcat Server - Local
-这是配置Tomcat的过程
-&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/3426615-3bafc20a17cc8bb1.PNG?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;
-&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/3426615-5356db8234b58f39.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;
-&lt;br /&gt;&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;Tomcat
-修改名称，在Deployment中添加第8步中的Artifact
-&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/3426615-964817df2fc7bd52.PNG?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-  &lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;p&gt;这就是新建Web项目所需要的配置了&lt;/p&gt;
-
-&lt;hr /&gt;
-
-&lt;h4 id=&quot;配置web项目&quot;&gt;配置Web项目&lt;/h4&gt;
-
-&lt;p&gt;打开已存在的项目，配置JDK，执行上面所述的第第4步至第10步&lt;/p&gt;
-
-&lt;h5 id=&quot;有一点要注意&quot;&gt;有一点要注意&lt;/h5&gt;
-
-&lt;p&gt;在Facets中，&lt;strong&gt;Web Resource Directories&lt;/strong&gt; 需要定位到拥有全部web项目资源的文件夹，在不同的工程中或许有不同的名称，在上面所述的例子中，需要定位到&lt;strong&gt;web&lt;/strong&gt;文件夹
-&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/3426615-fc8fe98f22101804.PNG?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;
-&lt;br /&gt;&lt;/p&gt;
-
-&lt;p&gt;在进行工程配置时，往往会遗漏一些步骤，往往是小东西影响了整个项目的执行，在工程初期，就需要将配置完成，以免产生不必要的麻烦&lt;/p&gt;
-
-&lt;p&gt;有需要的可以私信，我一定尽力解答，谢谢！&lt;/p&gt;
-
-</description>
-        <pubDate>Tue, 17 Apr 2018 00:00:00 -0700</pubDate>
-        <link>http://localhost:4000/2018/04/17/IDEA%E5%A6%82%E4%BD%95%E5%88%9B%E5%BB%BA%E5%8F%8A%E9%85%8D%E7%BD%AEWeb%E9%A1%B9%E7%9B%AE-%E5%A4%9A%E5%9B%BE/</link>
-        <guid isPermaLink="true">http://localhost:4000/2018/04/17/IDEA%E5%A6%82%E4%BD%95%E5%88%9B%E5%BB%BA%E5%8F%8A%E9%85%8D%E7%BD%AEWeb%E9%A1%B9%E7%9B%AE-%E5%A4%9A%E5%9B%BE/</guid>
-        
-        <category>Java Web</category>
-        
-        <category>IntelliJ IDEA</category>
         
         
       </item>
