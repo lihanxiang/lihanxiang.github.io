@@ -19,9 +19,9 @@
     <meta name="keyword"  content="Java">
     <link rel="shortcut icon" href="/img/favicon.ico">
 
-    <title>初始Spring MVC——练手小项目 - 李汉祥的博客 | L Blog</title>
+    <title>登陆界面模块解析——生成图片验证码 - 李汉祥的博客 | L Blog</title>
 
-    <link rel="canonical" href="http://hxblog.site/2018/04/17/%E5%88%9D%E5%A7%8BSpring-MVC-%E7%BB%83%E6%89%8B%E5%B0%8F%E9%A1%B9%E7%9B%AE/">
+    <link rel="canonical" href="http://hxblog.site/2018/05/06/%E7%99%BB%E9%99%86%E7%95%8C%E9%9D%A2%E6%A8%A1%E5%9D%97%E8%A7%A3%E6%9E%90-%E7%94%9F%E6%88%90%E5%9B%BE%E7%89%87%E9%AA%8C%E8%AF%81%E7%A0%81/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -142,12 +142,12 @@
 
 
     <!-- Image to hack wechat -->
-<!-- <img src="/img/post/2018-04/17(2).jpg" width="0" height="0"> -->
+<!-- <img src="/img/post/2018-05/6.jpg" width="0" height="0"> -->
 
 <!-- Post Header -->
 <style type="text/css">
     header.intro-header{
-        background-image: url('/img/post/2018-04/17(2).jpg')
+        background-image: url('/img/post/2018-05/6.jpg')
     }
 </style>
 <header class="intro-header" >
@@ -157,17 +157,15 @@
                 <div class="post-heading">
                     <div class="tags">
                         
-                        <a class="tag" href="/tags/#Spring MVC" title="Spring MVC">Spring MVC</a>
-                        
-                        <a class="tag" href="/tags/#Java Web" title="Java Web">Java Web</a>
+                        <a class="tag" href="/tags/#项目模块" title="项目模块">项目模块</a>
                         
                     </div>
-                    <h1>初始Spring MVC——练手小项目</h1>
+                    <h1>登陆界面模块解析——生成图片验证码</h1>
                     
                     
-                    <h2 class="subheading">练手项目</h2>
+                    <h2 class="subheading">练手项目模块</h2>
                     
-                    <span class="meta">Posted by L on April 17, 2018</span>
+                    <span class="meta">Posted by L on May 6, 2018</span>
                 </div>
             </div>
         </div>
@@ -185,306 +183,131 @@
                 col-md-10 col-md-offset-1
                 post-container">
 
-				<h3 id="初始spring-mvc">初始Spring MVC</h3>
+				<h3 id="正文之前">正文之前</h3>
 
 <blockquote>
-  <p>前几天开始了我的spring学习之旅，由于之前使用过MVC模式来做项目，所以我先下手的是 Spring MVC，做个练手项目，非常简单</p>
+  <p>之前做过一个练手的Web项目<a href="https://github.com/lihanxiang/Register_login_interface">登陆界面</a>，其中有一个验证码模块，涉及到JavaIO和Java AWT工具所以打算写一篇介绍，顺便对练手项目的源码做一点小变动</p>
 </blockquote>
 
-<h5 id="项目介绍">项目介绍：</h5>
+<h3 id="正文">正文</h3>
 
-<p>用户输入信息 -&gt; 后台处理 -&gt; 输出信息</p>
+<h5 id="1-变量">1. 变量</h5>
 
-<h5 id="开始">开始</h5>
+<p>首先先定义几个需要的变量</p>
 
-<ol>
-  <li>创建Spring MVC 项目（创建时下载所需文件）</li>
-</ol>
-
-<p><img src="https://upload-images.jianshu.io/upload_images/3426615-d084130830d4db65.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" />
-<br />
-2.创建完的项目目录是这样的</p>
-
-<p><img src="https://upload-images.jianshu.io/upload_images/3426615-78e04adbbf1a2c54.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" />
-<br /></p>
-<ol>
-  <li>配置Web项目结构</li>
-</ol>
-
-<p>参考另一篇文章<a href="https://www.jianshu.com/p/8d49d36a3c7e">IDEA如何创建及配置Web项目（多图）</a></p>
-
-<p>有变化的是： 不需要自己创建 <strong>lib</strong> 文件夹，在创建项目时已经建立，另外在 <strong>WEB-INF</strong> 建立 <strong>jsp</strong> 用于存放 <strong>.jsp</strong> 文件，其他的都没什么区别</p>
-
-<p>配置完的样子（文件夹旁有箭头是因为我在做完项目才截图，具体的类以及其他文件都已在内）：</p>
-
-<p><img src="https://upload-images.jianshu.io/upload_images/3426615-e4e64f432bfe4d12.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" />
-<br /></p>
-
-<ol>
-  <li>配置Spring MVC的核心 —— <strong>dispatcher-servlet.xml</strong>
-    <blockquote>
-      <p>Spring MVC provides an annotation-based programming model where <strong>@Controller</strong> and <strong>@RestController</strong> components use annotations to express request mappings, request input, exception handling, and more. Annotated controllers have flexible method signatures and do not have to extend base classes nor implement specific interfaces.</p>
-    </blockquote>
-  </li>
-</ol>
-
-<p>如官方文档所说，我也使用了注解来定义控制器（Controller）和服务（Service）.</p>
-
-<p>首先需要添加的是</p>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;context:component-scan base-package="controller"/&gt;
-&lt;context:component-scan base-package="service"/&gt;
-</code></pre></div></div>
-<p>这样我们就能通过注解来定义<strong>Controller</strong>以及<strong>Service</strong>.</p>
-
-<p>然后，我们需要配置视图解析器，在具体操作时只要写出视图的名称(xxx)，就可以采用URL拼接的方式，达到这种效果：/WEB-INF/jsp/xxx.jsp</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;bean class="org.springframework.web.servlet.view.InternalResourceViewResolver"&gt;
-    &lt;property name="prefix" value="/WEB-INF/jsp/"/&gt;
-    &lt;property name="suffix" value=".jsp"/&gt;
-&lt;/bean&gt;
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    private int width=50;                               //图片缓冲区的宽
+    private int height=15;                              //图片缓冲区的高
+    private Random random=new Random();                 //随机数字
+    private Color color=new Color(255,255,255);         //白色背景
+    private String text;                                //图片上的文本
 </code></pre></div></div>
 
-<ol>
-  <li>开始进行具体的操作</li>
-</ol>
+<h5 id="2-随机字符颜色">2. 随机字符、颜色</h5>
 
-<p>首先是基本数据类：</p>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public class Product {
-    private long id;
-    private String name;
-    private String price;
-    private String inventory;
+<p>随机字符包括了10位数字和26个字母</p>
 
-    public void setId(long id) {
-        this.id = id;
-    }
-    public long getId() {
-        return id;
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    //生成随机字符
+    private char randomChar()
+    {
+        //选取随机数字，生成字符
+        String numbers = "1234567890qwertyuiopasdfghjklzxcvbnm";
+        int index=random.nextInt(numbers.length());
+        //转换为char类型
+        return numbers.charAt(index);
     }
 
-    public void setName(String name) {
-        this.name = name;
+    //生成随机颜色
+    private Color randomColor()
+    {
+        //以RGB形式表示颜色
+        int red=random.nextInt(255);
+        int green=random.nextInt(255);
+        int blue=random.nextInt(255);
+        //返回随机生成的颜色
+        return new Color(red,green,blue);
     }
-    public String getName() { return name; }
-    public void setPrice(String price) {
-        this.price = price;
-    }
-    public String getPrice() { return price; }
-    public void setInventory(String inventory) {
-        this.inventory = inventory;
-    }
-    public String getInventory() { return inventory; }
-}
-</code></pre></div></div>
-<p><br /></p>
-
-<p>接下来是收集用户输入所需要的表单类：</p>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public class ProductForm {
-    private String name;
-    private String price;
-    private String inventory;
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setPrice(String price) {
-        this.price = price;
-    }
-
-    public void setInventory(String inventory) {
-        this.inventory = inventory;
-    }
-
-    public String getName() {
-        return name;
-    }
-    public String getPrice() {
-        return price;
-    }
-    public String getInventory() {
-        return inventory;
-    }
-}
-</code></pre></div></div>
-<p><br /></p>
-
-<p>然后编写服务接口，以及它的实现类</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>import domain.Product;
-
-public interface ProductService {
-    Product add(Product product);
-    Product get(long id);
-}
-
 </code></pre></div></div>
 
-<p><strong>ProductServiceImpl</strong>就是刚才配置的服务（Service）</p>
+<h5 id="3-干扰线">3. 干扰线</h5>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>import domain.Product;
-import org.springframework.stereotype.Service;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicLong;
-
-@Service
-public class ProductServiceImpl implements ProductService{
-    private Map&lt;Long, Product&gt; productMap = new HashMap&lt;&gt;();
-    private AtomicLong atomicLong = new AtomicLong();
-
-    @Override
-    public Product add(Product product){
-        long id = atomicLong.incrementAndGet();
-        product.setId(id);
-        productMap.put(id, product);
-        return product;
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    //画干扰线
+    private void drawLine(Graphics g){
+        for (int i = 0; i &lt; 2; i++) {
+            //设置线的颜色
+            g.setColor(randomColor());
+            //线的长度从(x1,y1)到(x2,y2)
+            g.drawLine(random.nextInt(width), random.nextInt(height),
+                    random.nextInt(width), random.nextInt(height));
+        }
     }
+</code></pre></div></div>
 
-    @Override
-    public Product get(long id){
-        return productMap.get(id);
+<h5 id="4-验证码中的文本">4. 验证码中的文本</h5>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>//返回验证码图片中的文本
+    public String getText()
+    {
+        return text;
     }
-}
 </code></pre></div></div>
-<p><br /></p>
 
-<p>最重要的是<strong>控制器</strong>：</p>
+<h5 id="5-图片缓冲区">5. 图片缓冲区</h5>
 
-<p>采用<strong>@Autowired</strong>注解的方式自动装配Service，
-使用<strong>@RequestMapping</strong>注解的方式，将注解中的路径映射到控制器：</p>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>import domain.Product;
-import form.ProductForm;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import service.ProductService;
-
-@Controller
-public class ProductController {
-    //日志记录具体操作
-    private static final Log logger = LogFactory.getLog(ProductController.class);
-
-    @Autowired
-    private  ProductService productService;
-
-    //method = RequestMethod.POST表示只接受POST形式的请求
-    @RequestMapping(value = "/product_save", method = RequestMethod.POST)
-    //采用POST的方式发送请求
-    public String saveProduct(ProductForm productForm, RedirectAttributes redirectAttributes){
-        logger.info("saveProduct called");
-
-        //获得用户输入
-        Product product = new Product();
-        product.setName(productForm.getName());
-        product.setPrice(productForm.getPrice());
-        product.setInventory(productForm.getInventory());
-
-        //添加有记录的产品，并且根据ID进行重定向
-        Product savedProduct = productService.add(product);
-        redirectAttributes.addFlashAttribute("message", "Add product Successfully");
-        return "redirect:/product_view/" + savedProduct.getId();
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    //创造图片缓冲区
+    private BufferedImage createImage()
+    {
+        //参数为宽度，高度和图像类型
+        BufferedImage image=new BufferedImage(width,height,BufferedImage.TYPE_INT_RGB);
+        Graphics g=image.getGraphics();
+        //设置颜色
+        g.setColor(color);
+        //填充内容
+        g.fillRect(0,0,width,height);
+        return image;
     }
+</code></pre></div></div>
 
-    //根据ID，将用户输入展示在ProductView中
-    @RequestMapping(value = "product_view/{id}")
-    public String viewProduct(@PathVariable Long id, Model model){
-        //根据ID得到信息
-        Product product = productService.get(id);
-        model.addAttribute("product", product);
-        //ProductView.jsp
-        return "ProductView";
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    //得到图片缓冲区
+    public BufferedImage getImage()
+    {
+        BufferedImage image = createImage();                    //创建缓冲区
+        Graphics g = image.getGraphics();                       //得到绘制环境
+        StringBuilder stringBuilder = new StringBuilder();      //验证码文本
+
+        //验证码长度为4
+        for (int i=0;i&lt;4;i++)
+        {
+            String str = String.valueOf(randomChar());           //产生随机字符,将char类型转为String类型
+            stringBuilder.append(str);                           //将生成的随机字符添加至stringBuilder
+            g.setColor(randomColor());                           //产生随机颜色
+            g.drawString(str, i * width / 4, height);           //绘制文本
+        }
+        drawLine(g);                                             //添加干扰线
+        text = stringBuilder.toString();                         //把生成字符串赋给文本，以便于验证
+        return image;
     }
-}
 </code></pre></div></div>
-<p><br />
-需要注意的是，在现在的Spring版本中，如果直接对Service进行注解，将会有产生警告：
-<img src="https://upload-images.jianshu.io/upload_images/3426615-5c63d619a6d6712e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
 
-<p>按住Alt + Enter 修正错误，会看见提示：</p>
+<h5 id="6-输出图片">6. 输出图片</h5>
 
-<p><img src="https://upload-images.jianshu.io/upload_images/3426615-4b63db8e4d3d88fe.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
-
-<p>官方推荐使用构造器注入</p>
-
-<p>到此为止，后台工作就结束了</p>
-
-<ol>
-  <li>页面</li>
-</ol>
-
-<p>接下来是JSP的编写：</p>
-
-<p>首先是用户输入的页面 (ProductForm.jsp)</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;body&gt;
-    &lt;div&gt;
-        &lt;form action="product_save" method="post"&gt;
-            &lt;fieldset&gt;
-                &lt;legend&gt;Add a product&lt;/legend&gt;
-                &lt;p&gt;
-                    &lt;label for="name"&gt;Product Name: &lt;/label&gt;
-                    &lt;input type="text" id="name" name="name"&gt;
-                &lt;/p&gt;
-                &lt;p&gt;
-                    &lt;label for="price"&gt;Price: &lt;/label&gt;
-                    &lt;input type="text" id="price" name="price"&gt;
-                &lt;/p&gt;
-                &lt;p&gt;
-                    &lt;label for="inventory"&gt;Inventory: &lt;/label&gt;
-                    &lt;input type="text" id="inventory" name="inventory"&gt;
-                &lt;/p&gt;
-                &lt;p&gt;
-                    &lt;input id="reset" type="reset" tabindex="4"&gt;
-                    &lt;input id="submit" type="submit" tabindex="5" value="Add Product"&gt;
-                &lt;/p&gt;
-            &lt;/fieldset&gt;
-        &lt;/form&gt;
-    &lt;/div&gt;
-&lt;/body&gt;
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    //使用输出流打印图片
+    public static void output(BufferedImage image, OutputStream out) throws IOException {
+        //作为JPEG格式输出图片
+        ImageIO.write(image,"JPG",out);
+    }
 </code></pre></div></div>
-<p>比较表单中的<strong>&lt;form action="product_save"&gt;</strong>
-和控制器中的<strong>@RequestMapping(value = “/product_save”)</strong>就能够知道，通过@RequestMapping注解，任何<strong>“/product_save”</strong>开头的路径都会被映射到控制器中，并采用saveProduct()方法</p>
 
-<p>然后是显示用户输入的页面 (ProductView.jsp)</p>
+<h5 id="demo">Demo</h5>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;body&gt;
-    &lt;div&gt;
-        &lt;h3&gt;${message}&lt;/h3&gt;
-        &lt;h4&gt;Details:&lt;/h4&gt;
-        Product Name: ${product.name}&lt;br&gt;
-        Price: ${product.price}&lt;br&gt;
-        Inventory: ${product.inventory}&lt;br&gt;
-    &lt;/div&gt;
-&lt;/body&gt;
-</code></pre></div></div>
-<p>${message}就是刚才在控制器中重定向页面的属性，它会在页面头部输出”Add product Successfully”</p>
+<p>直接输出图片到我的桌面</p>
 
-<h5 id="项目构建完毕">项目构建完毕</h5>
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-ab5d18773816796f.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
 
-<p>最终的目录结构是这样：</p>
+<p>运行之后的结果：</p>
 
-<p><img src="https://upload-images.jianshu.io/upload_images/3426615-3c9d0a81f74d2c04.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-c80d837ecc0c8b1a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
 
-<p>然后我们运行， 输入：</p>
-
-<p><img src="https://upload-images.jianshu.io/upload_images/3426615-70edad81b60fb0a7.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
-
-<p>页面难看，主要是用Spring MVC做出来的就可以了</p>
-
-<p>结果是这样的：</p>
-
-<p><img src="https://upload-images.jianshu.io/upload_images/3426615-97cced76b8bcbbe2.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
-
-<p>目光移至URL，填写信息提交后，页面重定向至 <strong>product_view/{id}</strong> 处，当前id = 1</p>
-
-<p>到处，我们的这个练手的小项目就结束了，有什么问题都可以私信我</p>
-
+<p>就这样，简单的验证码就做完了</p>
 
 
                 <hr>
@@ -495,13 +318,9 @@ public class ProductController {
                 <ul class="pager">
                     
                     <li class="previous">
-                        <a href="/2018/04/17/IDEA%E5%A6%82%E4%BD%95%E5%88%9B%E5%BB%BA%E5%8F%8A%E9%85%8D%E7%BD%AEWeb%E9%A1%B9%E7%9B%AE-%E5%A4%9A%E5%9B%BE/" data-toggle="tooltip" data-placement="top" title="IDEA如何创建及配置Web项目（多图）">&larr; Previous Post</a>
+                        <a href="/2018/05/04/ArrayList%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E4%B8%80/" data-toggle="tooltip" data-placement="top" title="ArrayList源码分析（一）">&larr; Previous Post</a>
                     </li>
                     
-                    
-                    <li class="next">
-                        <a href="/2018/04/18/%E5%8D%9A%E5%AE%A2%E4%BB%8B%E7%BB%8D/" data-toggle="tooltip" data-placement="top" title="博客介绍">Next Post &rarr;</a>
-                    </li>
                     
                 </ul>
 
@@ -601,8 +420,8 @@ public class ProductController {
 <script type="text/javascript">
     /* * * CONFIGURATION VARIABLES * * */
     var disqus_shortname = "http-hxblog-site";
-    var disqus_identifier = "/2018/04/17/初始Spring MVC——练手小项目";
-    var disqus_url = "http://hxblog.site/2018/04/17/%E5%88%9D%E5%A7%8BSpring-MVC-%E7%BB%83%E6%89%8B%E5%B0%8F%E9%A1%B9%E7%9B%AE/";
+    var disqus_identifier = "/2018/05/06/登陆界面模块解析——生成图片验证码";
+    var disqus_url = "http://hxblog.site/2018/05/06/%E7%99%BB%E9%99%86%E7%95%8C%E9%9D%A2%E6%A8%A1%E5%9D%97%E8%A7%A3%E6%9E%90-%E7%94%9F%E6%88%90%E5%9B%BE%E7%89%87%E9%AA%8C%E8%AF%81%E7%A0%81/";
 
     (function() {
         var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;

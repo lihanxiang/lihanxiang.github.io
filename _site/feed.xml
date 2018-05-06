@@ -3,17 +3,152 @@
   <channel>
     <title>L Blog</title>
     <description>写写Java，一天就过去了</description>
-    <link>http://localhost:4000/</link>
-    <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Fri, 04 May 2018 05:19:51 -0700</pubDate>
-    <lastBuildDate>Fri, 04 May 2018 05:19:51 -0700</lastBuildDate>
+    <link>http://hxblog.site/</link>
+    <atom:link href="http://hxblog.site/feed.xml" rel="self" type="application/rss+xml" />
+    <pubDate>Sun, 06 May 2018 04:27:51 -0700</pubDate>
+    <lastBuildDate>Sun, 06 May 2018 04:27:51 -0700</lastBuildDate>
     <generator>Jekyll v3.8.0</generator>
+    
+      <item>
+        <title>登陆界面模块解析——生成图片验证码</title>
+        <description>&lt;h3 id=&quot;正文之前&quot;&gt;正文之前&lt;/h3&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;之前做过一个练手的Web项目&lt;a href=&quot;https://github.com/lihanxiang/Register_login_interface&quot;&gt;登陆界面&lt;/a&gt;，其中有一个验证码模块，涉及到JavaIO和Java AWT工具所以打算写一篇介绍，顺便对练手项目的源码做一点小变动&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h3 id=&quot;正文&quot;&gt;正文&lt;/h3&gt;
+
+&lt;h5 id=&quot;1-变量&quot;&gt;1. 变量&lt;/h5&gt;
+
+&lt;p&gt;首先先定义几个需要的变量&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    private int width=50;                               //图片缓冲区的宽
+    private int height=15;                              //图片缓冲区的高
+    private Random random=new Random();                 //随机数字
+    private Color color=new Color(255,255,255);         //白色背景
+    private String text;                                //图片上的文本
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h5 id=&quot;2-随机字符颜色&quot;&gt;2. 随机字符、颜色&lt;/h5&gt;
+
+&lt;p&gt;随机字符包括了10位数字和26个字母&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    //生成随机字符
+    private char randomChar()
+    {
+        //选取随机数字，生成字符
+        String numbers = &quot;1234567890qwertyuiopasdfghjklzxcvbnm&quot;;
+        int index=random.nextInt(numbers.length());
+        //转换为char类型
+        return numbers.charAt(index);
+    }
+
+    //生成随机颜色
+    private Color randomColor()
+    {
+        //以RGB形式表示颜色
+        int red=random.nextInt(255);
+        int green=random.nextInt(255);
+        int blue=random.nextInt(255);
+        //返回随机生成的颜色
+        return new Color(red,green,blue);
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h5 id=&quot;3-干扰线&quot;&gt;3. 干扰线&lt;/h5&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    //画干扰线
+    private void drawLine(Graphics g){
+        for (int i = 0; i &amp;lt; 2; i++) {
+            //设置线的颜色
+            g.setColor(randomColor());
+            //线的长度从(x1,y1)到(x2,y2)
+            g.drawLine(random.nextInt(width), random.nextInt(height),
+                    random.nextInt(width), random.nextInt(height));
+        }
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h5 id=&quot;4-验证码中的文本&quot;&gt;4. 验证码中的文本&lt;/h5&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;//返回验证码图片中的文本
+    public String getText()
+    {
+        return text;
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h5 id=&quot;5-图片缓冲区&quot;&gt;5. 图片缓冲区&lt;/h5&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    //创造图片缓冲区
+    private BufferedImage createImage()
+    {
+        //参数为宽度，高度和图像类型
+        BufferedImage image=new BufferedImage(width,height,BufferedImage.TYPE_INT_RGB);
+        Graphics g=image.getGraphics();
+        //设置颜色
+        g.setColor(color);
+        //填充内容
+        g.fillRect(0,0,width,height);
+        return image;
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    //得到图片缓冲区
+    public BufferedImage getImage()
+    {
+        BufferedImage image = createImage();                    //创建缓冲区
+        Graphics g = image.getGraphics();                       //得到绘制环境
+        StringBuilder stringBuilder = new StringBuilder();      //验证码文本
+
+        //验证码长度为4
+        for (int i=0;i&amp;lt;4;i++)
+        {
+            String str = String.valueOf(randomChar());           //产生随机字符,将char类型转为String类型
+            stringBuilder.append(str);                           //将生成的随机字符添加至stringBuilder
+            g.setColor(randomColor());                           //产生随机颜色
+            g.drawString(str, i * width / 4, height);           //绘制文本
+        }
+        drawLine(g);                                             //添加干扰线
+        text = stringBuilder.toString();                         //把生成字符串赋给文本，以便于验证
+        return image;
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h5 id=&quot;6-输出图片&quot;&gt;6. 输出图片&lt;/h5&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    //使用输出流打印图片
+    public static void output(BufferedImage image, OutputStream out) throws IOException {
+        //作为JPEG格式输出图片
+        ImageIO.write(image,&quot;JPG&quot;,out);
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h5 id=&quot;demo&quot;&gt;Demo&lt;/h5&gt;
+
+&lt;p&gt;直接输出图片到我的桌面&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-ab5d18773816796f.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;运行之后的结果：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-c80d837ecc0c8b1a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;就这样，简单的验证码就做完了&lt;/p&gt;
+</description>
+        <pubDate>Sun, 06 May 2018 00:00:00 -0700</pubDate>
+        <link>http://hxblog.site/2018/05/06/%E7%99%BB%E9%99%86%E7%95%8C%E9%9D%A2%E6%A8%A1%E5%9D%97%E8%A7%A3%E6%9E%90-%E7%94%9F%E6%88%90%E5%9B%BE%E7%89%87%E9%AA%8C%E8%AF%81%E7%A0%81/</link>
+        <guid isPermaLink="true">http://hxblog.site/2018/05/06/%E7%99%BB%E9%99%86%E7%95%8C%E9%9D%A2%E6%A8%A1%E5%9D%97%E8%A7%A3%E6%9E%90-%E7%94%9F%E6%88%90%E5%9B%BE%E7%89%87%E9%AA%8C%E8%AF%81%E7%A0%81/</guid>
+        
+        <category>项目模块</category>
+        
+        
+      </item>
     
       <item>
         <title>ArrayList源码分析（一）</title>
         <description>&lt;h3 id=&quot;正文之前&quot;&gt;正文之前&lt;/h3&gt;
-
-&lt;p&gt;这篇博客来自&lt;a href=&quot;https://www.jianshu.com/p/1766dc3b25f5&quot;&gt;我的简书&lt;/a&gt;&lt;/p&gt;
 
 &lt;blockquote&gt;
   &lt;p&gt;最近在复习Java基础，感觉又学到了好多，集合作为Java的一大重点，之前是看着《Java编程思想》学的，这次刚好配合着源码重新学一遍，首先学的是ArrayList，顺便做点总结（迭代器无关）：&lt;/p&gt;
@@ -577,8 +712,8 @@ public class Test {
 
 </description>
         <pubDate>Fri, 04 May 2018 00:00:00 -0700</pubDate>
-        <link>http://localhost:4000/2018/05/04/ArrayList%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E4%B8%80/</link>
-        <guid isPermaLink="true">http://localhost:4000/2018/05/04/ArrayList%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E4%B8%80/</guid>
+        <link>http://hxblog.site/2018/05/04/ArrayList%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E4%B8%80/</link>
+        <guid isPermaLink="true">http://hxblog.site/2018/05/04/ArrayList%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E4%B8%80/</guid>
         
         <category>Java源码解析</category>
         
@@ -693,10 +828,10 @@ public class Test {
 &lt;p&gt;如果需要有多个连接，使用连接池是不二之选，关于c3p0的讲解到此为止了，谢谢。&lt;/p&gt;
 </description>
         <pubDate>Tue, 01 May 2018 00:00:00 -0700</pubDate>
-        <link>http://localhost:4000/2018/05/01/c3p0%E8%BF%9E%E6%8E%A5%E6%B1%A0/</link>
-        <guid isPermaLink="true">http://localhost:4000/2018/05/01/c3p0%E8%BF%9E%E6%8E%A5%E6%B1%A0/</guid>
+        <link>http://hxblog.site/2018/05/01/c3p0%E8%BF%9E%E6%8E%A5%E6%B1%A0/</link>
+        <guid isPermaLink="true">http://hxblog.site/2018/05/01/c3p0%E8%BF%9E%E6%8E%A5%E6%B1%A0/</guid>
         
-        <category>MySQL</category>
+        <category>MySQL,项目模块</category>
         
         
       </item>
@@ -897,8 +1032,8 @@ public class Test {
 &lt;p&gt;关于其他的继承自Throwable类的方法会专门写一篇源码解读&lt;/p&gt;
 </description>
         <pubDate>Wed, 25 Apr 2018 00:00:00 -0700</pubDate>
-        <link>http://localhost:4000/2018/04/25/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E5%9B%9B-%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86%E8%BF%9B%E9%98%B6/</link>
-        <guid isPermaLink="true">http://localhost:4000/2018/04/25/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E5%9B%9B-%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86%E8%BF%9B%E9%98%B6/</guid>
+        <link>http://hxblog.site/2018/04/25/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E5%9B%9B-%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86%E8%BF%9B%E9%98%B6/</link>
+        <guid isPermaLink="true">http://hxblog.site/2018/04/25/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E5%9B%9B-%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86%E8%BF%9B%E9%98%B6/</guid>
         
         <category>Java基础</category>
         
@@ -1062,8 +1197,8 @@ public class Test {
 
 </description>
         <pubDate>Tue, 24 Apr 2018 00:00:00 -0700</pubDate>
-        <link>http://localhost:4000/2018/04/24/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E4%B8%89-%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/</link>
-        <guid isPermaLink="true">http://localhost:4000/2018/04/24/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E4%B8%89-%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/</guid>
+        <link>http://hxblog.site/2018/04/24/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E4%B8%89-%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/</link>
+        <guid isPermaLink="true">http://hxblog.site/2018/04/24/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E4%B8%89-%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/</guid>
         
         <category>Java基础</category>
         
@@ -1405,8 +1540,8 @@ Integer.valueOf(String s)&lt;/p&gt;
 &lt;p&gt;关于字符串的基本知识就到这里啦！&lt;/p&gt;
 </description>
         <pubDate>Mon, 23 Apr 2018 00:00:00 -0700</pubDate>
-        <link>http://localhost:4000/2018/04/23/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E4%BA%8C-%E5%AD%97%E7%AC%A6%E4%B8%B2/</link>
-        <guid isPermaLink="true">http://localhost:4000/2018/04/23/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E4%BA%8C-%E5%AD%97%E7%AC%A6%E4%B8%B2/</guid>
+        <link>http://hxblog.site/2018/04/23/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E4%BA%8C-%E5%AD%97%E7%AC%A6%E4%B8%B2/</link>
+        <guid isPermaLink="true">http://hxblog.site/2018/04/23/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E4%BA%8C-%E5%AD%97%E7%AC%A6%E4%B8%B2/</guid>
         
         <category>Java基础</category>
         
@@ -1589,8 +1724,8 @@ Integer.valueOf(String s)&lt;/p&gt;
 
 </description>
         <pubDate>Sun, 22 Apr 2018 00:00:00 -0700</pubDate>
-        <link>http://localhost:4000/2018/04/22/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E4%B8%80/</link>
-        <guid isPermaLink="true">http://localhost:4000/2018/04/22/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E4%B8%80/</guid>
+        <link>http://hxblog.site/2018/04/22/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E4%B8%80/</link>
+        <guid isPermaLink="true">http://hxblog.site/2018/04/22/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E4%B8%80/</guid>
         
         <category>Java基础</category>
         
@@ -1735,8 +1870,8 @@ time.sleep(time) 表示的是经过 time 秒后执行下一步操作，就是休
 &lt;p&gt;关于树莓派信息的内容就先告一段落&lt;/p&gt;
 </description>
         <pubDate>Sat, 21 Apr 2018 00:00:00 -0700</pubDate>
-        <link>http://localhost:4000/2018/04/21/%E6%A0%91%E8%8E%93%E6%B4%BE%E5%B0%8F%E8%BD%A6-%E4%B8%89-Python%E6%8E%A7%E5%88%B6%E5%B0%8F%E8%BD%A6/</link>
-        <guid isPermaLink="true">http://localhost:4000/2018/04/21/%E6%A0%91%E8%8E%93%E6%B4%BE%E5%B0%8F%E8%BD%A6-%E4%B8%89-Python%E6%8E%A7%E5%88%B6%E5%B0%8F%E8%BD%A6/</guid>
+        <link>http://hxblog.site/2018/04/21/%E6%A0%91%E8%8E%93%E6%B4%BE%E5%B0%8F%E8%BD%A6-%E4%B8%89-Python%E6%8E%A7%E5%88%B6%E5%B0%8F%E8%BD%A6/</link>
+        <guid isPermaLink="true">http://hxblog.site/2018/04/21/%E6%A0%91%E8%8E%93%E6%B4%BE%E5%B0%8F%E8%BD%A6-%E4%B8%89-Python%E6%8E%A7%E5%88%B6%E5%B0%8F%E8%BD%A6/</guid>
         
         <category>树莓派</category>
         
@@ -1812,8 +1947,8 @@ time.sleep(time) 表示的是经过 time 秒后执行下一步操作，就是休
 &lt;p&gt;关于小车的组装就完成了，在下一篇文章中将会给出驱动小车的Python代码&lt;/p&gt;
 </description>
         <pubDate>Fri, 20 Apr 2018 00:00:00 -0700</pubDate>
-        <link>http://localhost:4000/2018/04/20/%E6%A0%91%E8%8E%93%E6%B4%BE%E5%B0%8F%E8%BD%A6-%E4%BA%8C-%E6%A0%91%E8%8E%93%E6%B4%BE-%E5%B0%8F%E8%BD%A6%E5%92%8C%E7%BA%A2%E5%A4%96%E7%BA%BF%E6%A8%A1%E5%9D%97%E8%BF%9E%E6%8E%A5/</link>
-        <guid isPermaLink="true">http://localhost:4000/2018/04/20/%E6%A0%91%E8%8E%93%E6%B4%BE%E5%B0%8F%E8%BD%A6-%E4%BA%8C-%E6%A0%91%E8%8E%93%E6%B4%BE-%E5%B0%8F%E8%BD%A6%E5%92%8C%E7%BA%A2%E5%A4%96%E7%BA%BF%E6%A8%A1%E5%9D%97%E8%BF%9E%E6%8E%A5/</guid>
+        <link>http://hxblog.site/2018/04/20/%E6%A0%91%E8%8E%93%E6%B4%BE%E5%B0%8F%E8%BD%A6-%E4%BA%8C-%E6%A0%91%E8%8E%93%E6%B4%BE-%E5%B0%8F%E8%BD%A6%E5%92%8C%E7%BA%A2%E5%A4%96%E7%BA%BF%E6%A8%A1%E5%9D%97%E8%BF%9E%E6%8E%A5/</link>
+        <guid isPermaLink="true">http://hxblog.site/2018/04/20/%E6%A0%91%E8%8E%93%E6%B4%BE%E5%B0%8F%E8%BD%A6-%E4%BA%8C-%E6%A0%91%E8%8E%93%E6%B4%BE-%E5%B0%8F%E8%BD%A6%E5%92%8C%E7%BA%A2%E5%A4%96%E7%BA%BF%E6%A8%A1%E5%9D%97%E8%BF%9E%E6%8E%A5/</guid>
         
         <category>树莓派</category>
         
@@ -1939,60 +2074,10 @@ time.sleep(time) 表示的是经过 time 秒后执行下一步操作，就是休
 &lt;p&gt;关于小车的基础模型的安装就到这里了，接下来的文章会讲解用Pyhton驱动小车，以及红外避障小车的制作&lt;/p&gt;
 </description>
         <pubDate>Thu, 19 Apr 2018 00:00:00 -0700</pubDate>
-        <link>http://localhost:4000/2018/04/19/%E6%A0%91%E8%8E%93%E6%B4%BE%E5%B0%8F%E8%BD%A6-%E4%B8%80-%E5%B0%8F%E8%BD%A6%E9%85%8D%E4%BB%B6%E9%80%89%E8%B4%AD%E5%8F%8A%E5%AE%89%E8%A3%85/</link>
-        <guid isPermaLink="true">http://localhost:4000/2018/04/19/%E6%A0%91%E8%8E%93%E6%B4%BE%E5%B0%8F%E8%BD%A6-%E4%B8%80-%E5%B0%8F%E8%BD%A6%E9%85%8D%E4%BB%B6%E9%80%89%E8%B4%AD%E5%8F%8A%E5%AE%89%E8%A3%85/</guid>
+        <link>http://hxblog.site/2018/04/19/%E6%A0%91%E8%8E%93%E6%B4%BE%E5%B0%8F%E8%BD%A6-%E4%B8%80-%E5%B0%8F%E8%BD%A6%E9%85%8D%E4%BB%B6%E9%80%89%E8%B4%AD%E5%8F%8A%E5%AE%89%E8%A3%85/</link>
+        <guid isPermaLink="true">http://hxblog.site/2018/04/19/%E6%A0%91%E8%8E%93%E6%B4%BE%E5%B0%8F%E8%BD%A6-%E4%B8%80-%E5%B0%8F%E8%BD%A6%E9%85%8D%E4%BB%B6%E9%80%89%E8%B4%AD%E5%8F%8A%E5%AE%89%E8%A3%85/</guid>
         
         <category>树莓派</category>
-        
-        
-      </item>
-    
-      <item>
-        <title>博客介绍</title>
-        <description>&lt;h3 id=&quot;终于开通了自己的个人博客&quot;&gt;终于开通了自己的个人博客&lt;/h3&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;2天前，突发奇想，为什么不去申请一个自己的个人博客呢，毕竟我接触GitHub也有一年了。GitHub为每一位用户都提供了一个创建个人博客的机会，也就是GitHub Pages，在此就不详述创建的过程了，如有需要，另写一篇&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;h4 id=&quot;博客主题&quot;&gt;博客主题&lt;/h4&gt;
-
-&lt;p&gt;由于我才开始接触Jekyll（静态页面生成器），想要自己做一个网页模板是没有那么快的，所以采用了他人的开源模板，在暑假的时候去自创一个&lt;/p&gt;
-
-&lt;p&gt;在此要特别感谢从前端设计师大佬 &lt;a href=&quot;https://github.com/Huxpro/huxblog-boilerplate&quot;&gt;@Huxpro/huxblog-boilerplate&lt;/a&gt; 获得的模板样本，感觉做的很不错，如果有人觉得我是盗用模板，先去弄清楚什么叫&lt;strong&gt;开源&lt;/strong&gt;吧&lt;/p&gt;
-
-&lt;h4 id=&quot;博客名字&quot;&gt;博客名字&lt;/h4&gt;
-
-&lt;p&gt;博客首页的名字是 &lt;strong&gt;L Blog&lt;/strong&gt;，用姓的首字母吧，这样看上去好像比较高逼格。但是在 SEO（搜索引擎优化）使用的名字是 &lt;strong&gt;李汉祥的博客&lt;/strong&gt;，绑定了自己的域名之后，好像就搜不到了，如果用 &lt;strong&gt;github.io&lt;/strong&gt; 做域名后缀是搜得到的，估计过个半年就可以了吧&lt;/p&gt;
-
-&lt;h4 id=&quot;博客域名&quot;&gt;博客域名&lt;/h4&gt;
-
-&lt;p&gt;我觉得GitHub给的名字有点长了，估计是我自己的用户名太长，然后去买了个域名 &lt;strong&gt;http://hxblog.site/&lt;/strong&gt;， 从阿里云买的，有个对需要买域名的同学们的忠告，遇见便宜的，能买十年就买十年吧，才发现第二年续费贵了好几倍，对于我的域名来说，买一年续九年（我）的价格 （￥400+）是一次买十年的价格的两倍（￥200+）&lt;/p&gt;
-
-&lt;p&gt;在万网买的域名，实名认证也挺快的，拍个身份证照片上传，本来以为要几天，一个小时后就让我的博客上线了&lt;/p&gt;
-
-&lt;h4 id=&quot;博客内容&quot;&gt;博客内容&lt;/h4&gt;
-
-&lt;p&gt;既然是计算机相关专业的学生，博客的大部分内容会是计算机相关的，偶尔有一些随笔，比如现在这一篇，目前的计算机相关内容将会是&lt;strong&gt;Java基础&lt;/strong&gt;以及&lt;strong&gt;Spring框架&lt;/strong&gt;的内容，有一些练手项目，概念解读和源码解读&lt;/p&gt;
-
-&lt;h4 id=&quot;文章搬迁&quot;&gt;文章搬迁&lt;/h4&gt;
-
-&lt;p&gt;由于在未创立个人博客之前，我的文章都是在简书上发布的，所以最近会将简书上的文章搬过来，在文章开头都会有标志 &lt;strong&gt;这篇文章转载自我的个人博客&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;当然，接下来的文章都会先在个人博客上发布，然后在简书中进行转载&lt;/p&gt;
-
-&lt;h4 id=&quot;原创性&quot;&gt;原创性&lt;/h4&gt;
-
-&lt;p&gt;我的 &lt;strong&gt;所有的文章都是原创&lt;/strong&gt; ，即使有引用，也只是引用 &lt;a href=&quot;https://zh.wikipedia.org/wiki/Wikipedia:%E9%A6%96%E9%A1%B5&quot;&gt;维基百科&lt;/a&gt; 上的相关概念简介，所有主要内容全是个人总结
-文章的作者署名都是 &lt;strong&gt;L&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;哎呦，到了结尾，就先这样吧&lt;/p&gt;
-</description>
-        <pubDate>Wed, 18 Apr 2018 00:00:00 -0700</pubDate>
-        <link>http://localhost:4000/2018/04/18/%E5%8D%9A%E5%AE%A2%E4%BB%8B%E7%BB%8D/</link>
-        <guid isPermaLink="true">http://localhost:4000/2018/04/18/%E5%8D%9A%E5%AE%A2%E4%BB%8B%E7%BB%8D/</guid>
-        
-        <category>随笔</category>
         
         
       </item>
