@@ -3,10 +3,10 @@
   <channel>
     <title>L Blog</title>
     <description>写写Java，一天就过去了</description>
-    <link>http://hxblog.site/</link>
-    <atom:link href="http://hxblog.site/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Sun, 06 May 2018 04:27:51 -0700</pubDate>
-    <lastBuildDate>Sun, 06 May 2018 04:27:51 -0700</lastBuildDate>
+    <link>http://localhost:4000/</link>
+    <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
+    <pubDate>Sun, 06 May 2018 04:33:58 -0700</pubDate>
+    <lastBuildDate>Sun, 06 May 2018 04:33:58 -0700</lastBuildDate>
     <generator>Jekyll v3.8.0</generator>
     
       <item>
@@ -138,8 +138,8 @@
 &lt;p&gt;就这样，简单的验证码就做完了&lt;/p&gt;
 </description>
         <pubDate>Sun, 06 May 2018 00:00:00 -0700</pubDate>
-        <link>http://hxblog.site/2018/05/06/%E7%99%BB%E9%99%86%E7%95%8C%E9%9D%A2%E6%A8%A1%E5%9D%97%E8%A7%A3%E6%9E%90-%E7%94%9F%E6%88%90%E5%9B%BE%E7%89%87%E9%AA%8C%E8%AF%81%E7%A0%81/</link>
-        <guid isPermaLink="true">http://hxblog.site/2018/05/06/%E7%99%BB%E9%99%86%E7%95%8C%E9%9D%A2%E6%A8%A1%E5%9D%97%E8%A7%A3%E6%9E%90-%E7%94%9F%E6%88%90%E5%9B%BE%E7%89%87%E9%AA%8C%E8%AF%81%E7%A0%81/</guid>
+        <link>http://localhost:4000/2018/05/06/%E7%99%BB%E9%99%86%E7%95%8C%E9%9D%A2%E6%A8%A1%E5%9D%97%E8%A7%A3%E6%9E%90-%E7%94%9F%E6%88%90%E5%9B%BE%E7%89%87%E9%AA%8C%E8%AF%81%E7%A0%81/</link>
+        <guid isPermaLink="true">http://localhost:4000/2018/05/06/%E7%99%BB%E9%99%86%E7%95%8C%E9%9D%A2%E6%A8%A1%E5%9D%97%E8%A7%A3%E6%9E%90-%E7%94%9F%E6%88%90%E5%9B%BE%E7%89%87%E9%AA%8C%E8%AF%81%E7%A0%81/</guid>
         
         <category>项目模块</category>
         
@@ -712,8 +712,8 @@ public class Test {
 
 </description>
         <pubDate>Fri, 04 May 2018 00:00:00 -0700</pubDate>
-        <link>http://hxblog.site/2018/05/04/ArrayList%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E4%B8%80/</link>
-        <guid isPermaLink="true">http://hxblog.site/2018/05/04/ArrayList%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E4%B8%80/</guid>
+        <link>http://localhost:4000/2018/05/04/ArrayList%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E4%B8%80/</link>
+        <guid isPermaLink="true">http://localhost:4000/2018/05/04/ArrayList%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E4%B8%80/</guid>
         
         <category>Java源码解析</category>
         
@@ -828,10 +828,12 @@ public class Test {
 &lt;p&gt;如果需要有多个连接，使用连接池是不二之选，关于c3p0的讲解到此为止了，谢谢。&lt;/p&gt;
 </description>
         <pubDate>Tue, 01 May 2018 00:00:00 -0700</pubDate>
-        <link>http://hxblog.site/2018/05/01/c3p0%E8%BF%9E%E6%8E%A5%E6%B1%A0/</link>
-        <guid isPermaLink="true">http://hxblog.site/2018/05/01/c3p0%E8%BF%9E%E6%8E%A5%E6%B1%A0/</guid>
+        <link>http://localhost:4000/2018/05/01/c3p0%E8%BF%9E%E6%8E%A5%E6%B1%A0/</link>
+        <guid isPermaLink="true">http://localhost:4000/2018/05/01/c3p0%E8%BF%9E%E6%8E%A5%E6%B1%A0/</guid>
         
-        <category>MySQL,项目模块</category>
+        <category>MySQL</category>
+        
+        <category>项目模块</category>
         
         
       </item>
@@ -1032,8 +1034,8 @@ public class Test {
 &lt;p&gt;关于其他的继承自Throwable类的方法会专门写一篇源码解读&lt;/p&gt;
 </description>
         <pubDate>Wed, 25 Apr 2018 00:00:00 -0700</pubDate>
-        <link>http://hxblog.site/2018/04/25/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E5%9B%9B-%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86%E8%BF%9B%E9%98%B6/</link>
-        <guid isPermaLink="true">http://hxblog.site/2018/04/25/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E5%9B%9B-%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86%E8%BF%9B%E9%98%B6/</guid>
+        <link>http://localhost:4000/2018/04/25/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E5%9B%9B-%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86%E8%BF%9B%E9%98%B6/</link>
+        <guid isPermaLink="true">http://localhost:4000/2018/04/25/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E5%9B%9B-%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86%E8%BF%9B%E9%98%B6/</guid>
         
         <category>Java基础</category>
         
@@ -1197,8 +1199,8 @@ public class Test {
 
 </description>
         <pubDate>Tue, 24 Apr 2018 00:00:00 -0700</pubDate>
-        <link>http://hxblog.site/2018/04/24/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E4%B8%89-%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/</link>
-        <guid isPermaLink="true">http://hxblog.site/2018/04/24/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E4%B8%89-%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/</guid>
+        <link>http://localhost:4000/2018/04/24/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E4%B8%89-%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/</link>
+        <guid isPermaLink="true">http://localhost:4000/2018/04/24/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E4%B8%89-%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/</guid>
         
         <category>Java基础</category>
         
@@ -1540,8 +1542,8 @@ Integer.valueOf(String s)&lt;/p&gt;
 &lt;p&gt;关于字符串的基本知识就到这里啦！&lt;/p&gt;
 </description>
         <pubDate>Mon, 23 Apr 2018 00:00:00 -0700</pubDate>
-        <link>http://hxblog.site/2018/04/23/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E4%BA%8C-%E5%AD%97%E7%AC%A6%E4%B8%B2/</link>
-        <guid isPermaLink="true">http://hxblog.site/2018/04/23/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E4%BA%8C-%E5%AD%97%E7%AC%A6%E4%B8%B2/</guid>
+        <link>http://localhost:4000/2018/04/23/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E4%BA%8C-%E5%AD%97%E7%AC%A6%E4%B8%B2/</link>
+        <guid isPermaLink="true">http://localhost:4000/2018/04/23/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E4%BA%8C-%E5%AD%97%E7%AC%A6%E4%B8%B2/</guid>
         
         <category>Java基础</category>
         
@@ -1724,8 +1726,8 @@ Integer.valueOf(String s)&lt;/p&gt;
 
 </description>
         <pubDate>Sun, 22 Apr 2018 00:00:00 -0700</pubDate>
-        <link>http://hxblog.site/2018/04/22/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E4%B8%80/</link>
-        <guid isPermaLink="true">http://hxblog.site/2018/04/22/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E4%B8%80/</guid>
+        <link>http://localhost:4000/2018/04/22/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E4%B8%80/</link>
+        <guid isPermaLink="true">http://localhost:4000/2018/04/22/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E4%B8%80/</guid>
         
         <category>Java基础</category>
         
@@ -1870,8 +1872,8 @@ time.sleep(time) 表示的是经过 time 秒后执行下一步操作，就是休
 &lt;p&gt;关于树莓派信息的内容就先告一段落&lt;/p&gt;
 </description>
         <pubDate>Sat, 21 Apr 2018 00:00:00 -0700</pubDate>
-        <link>http://hxblog.site/2018/04/21/%E6%A0%91%E8%8E%93%E6%B4%BE%E5%B0%8F%E8%BD%A6-%E4%B8%89-Python%E6%8E%A7%E5%88%B6%E5%B0%8F%E8%BD%A6/</link>
-        <guid isPermaLink="true">http://hxblog.site/2018/04/21/%E6%A0%91%E8%8E%93%E6%B4%BE%E5%B0%8F%E8%BD%A6-%E4%B8%89-Python%E6%8E%A7%E5%88%B6%E5%B0%8F%E8%BD%A6/</guid>
+        <link>http://localhost:4000/2018/04/21/%E6%A0%91%E8%8E%93%E6%B4%BE%E5%B0%8F%E8%BD%A6-%E4%B8%89-Python%E6%8E%A7%E5%88%B6%E5%B0%8F%E8%BD%A6/</link>
+        <guid isPermaLink="true">http://localhost:4000/2018/04/21/%E6%A0%91%E8%8E%93%E6%B4%BE%E5%B0%8F%E8%BD%A6-%E4%B8%89-Python%E6%8E%A7%E5%88%B6%E5%B0%8F%E8%BD%A6/</guid>
         
         <category>树莓派</category>
         
@@ -1947,8 +1949,8 @@ time.sleep(time) 表示的是经过 time 秒后执行下一步操作，就是休
 &lt;p&gt;关于小车的组装就完成了，在下一篇文章中将会给出驱动小车的Python代码&lt;/p&gt;
 </description>
         <pubDate>Fri, 20 Apr 2018 00:00:00 -0700</pubDate>
-        <link>http://hxblog.site/2018/04/20/%E6%A0%91%E8%8E%93%E6%B4%BE%E5%B0%8F%E8%BD%A6-%E4%BA%8C-%E6%A0%91%E8%8E%93%E6%B4%BE-%E5%B0%8F%E8%BD%A6%E5%92%8C%E7%BA%A2%E5%A4%96%E7%BA%BF%E6%A8%A1%E5%9D%97%E8%BF%9E%E6%8E%A5/</link>
-        <guid isPermaLink="true">http://hxblog.site/2018/04/20/%E6%A0%91%E8%8E%93%E6%B4%BE%E5%B0%8F%E8%BD%A6-%E4%BA%8C-%E6%A0%91%E8%8E%93%E6%B4%BE-%E5%B0%8F%E8%BD%A6%E5%92%8C%E7%BA%A2%E5%A4%96%E7%BA%BF%E6%A8%A1%E5%9D%97%E8%BF%9E%E6%8E%A5/</guid>
+        <link>http://localhost:4000/2018/04/20/%E6%A0%91%E8%8E%93%E6%B4%BE%E5%B0%8F%E8%BD%A6-%E4%BA%8C-%E6%A0%91%E8%8E%93%E6%B4%BE-%E5%B0%8F%E8%BD%A6%E5%92%8C%E7%BA%A2%E5%A4%96%E7%BA%BF%E6%A8%A1%E5%9D%97%E8%BF%9E%E6%8E%A5/</link>
+        <guid isPermaLink="true">http://localhost:4000/2018/04/20/%E6%A0%91%E8%8E%93%E6%B4%BE%E5%B0%8F%E8%BD%A6-%E4%BA%8C-%E6%A0%91%E8%8E%93%E6%B4%BE-%E5%B0%8F%E8%BD%A6%E5%92%8C%E7%BA%A2%E5%A4%96%E7%BA%BF%E6%A8%A1%E5%9D%97%E8%BF%9E%E6%8E%A5/</guid>
         
         <category>树莓派</category>
         
@@ -2074,8 +2076,8 @@ time.sleep(time) 表示的是经过 time 秒后执行下一步操作，就是休
 &lt;p&gt;关于小车的基础模型的安装就到这里了，接下来的文章会讲解用Pyhton驱动小车，以及红外避障小车的制作&lt;/p&gt;
 </description>
         <pubDate>Thu, 19 Apr 2018 00:00:00 -0700</pubDate>
-        <link>http://hxblog.site/2018/04/19/%E6%A0%91%E8%8E%93%E6%B4%BE%E5%B0%8F%E8%BD%A6-%E4%B8%80-%E5%B0%8F%E8%BD%A6%E9%85%8D%E4%BB%B6%E9%80%89%E8%B4%AD%E5%8F%8A%E5%AE%89%E8%A3%85/</link>
-        <guid isPermaLink="true">http://hxblog.site/2018/04/19/%E6%A0%91%E8%8E%93%E6%B4%BE%E5%B0%8F%E8%BD%A6-%E4%B8%80-%E5%B0%8F%E8%BD%A6%E9%85%8D%E4%BB%B6%E9%80%89%E8%B4%AD%E5%8F%8A%E5%AE%89%E8%A3%85/</guid>
+        <link>http://localhost:4000/2018/04/19/%E6%A0%91%E8%8E%93%E6%B4%BE%E5%B0%8F%E8%BD%A6-%E4%B8%80-%E5%B0%8F%E8%BD%A6%E9%85%8D%E4%BB%B6%E9%80%89%E8%B4%AD%E5%8F%8A%E5%AE%89%E8%A3%85/</link>
+        <guid isPermaLink="true">http://localhost:4000/2018/04/19/%E6%A0%91%E8%8E%93%E6%B4%BE%E5%B0%8F%E8%BD%A6-%E4%B8%80-%E5%B0%8F%E8%BD%A6%E9%85%8D%E4%BB%B6%E9%80%89%E8%B4%AD%E5%8F%8A%E5%AE%89%E8%A3%85/</guid>
         
         <category>树莓派</category>
         
