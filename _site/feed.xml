@@ -5,9 +5,278 @@
     <description>写写Java，一天就过去了</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Sun, 06 May 2018 04:33:58 -0700</pubDate>
-    <lastBuildDate>Sun, 06 May 2018 04:33:58 -0700</lastBuildDate>
+    <pubDate>Wed, 09 May 2018 00:48:43 -0700</pubDate>
+    <lastBuildDate>Wed, 09 May 2018 00:48:43 -0700</lastBuildDate>
     <generator>Jekyll v3.8.0</generator>
+    
+      <item>
+        <title>ArrayList源码分析（二）</title>
+        <description>&lt;h3 id=&quot;正文之前&quot;&gt;正文之前&lt;/h3&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;上一篇文章分析了&lt;a href=&quot;http://hxblog.site/2018/05/04/ArrayList%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E4%B8%80/&quot;&gt;ArrayList的构造器和基本操作的源码&lt;/a&gt;，这一次来讲一讲ArrayList常用方法剩下的源码（迭代器的留到下次说）&lt;/p&gt;
+
+  &lt;p&gt;主要内容&lt;/p&gt;
+  &lt;ol&gt;
+    &lt;li&gt;容器容量&lt;/li&gt;
+    &lt;li&gt;查找特定元素，包含特定元素，克隆之类的基本用法&lt;/li&gt;
+  &lt;/ol&gt;
+&lt;/blockquote&gt;
+
+&lt;h3 id=&quot;正文&quot;&gt;正文&lt;/h3&gt;
+
+&lt;p&gt;开始正题之前，需要先分清楚两个概念，容器的capacity和size，capacity指的是容器的容量，最多能装多少，而size指的是当前容器中元素的数量&lt;/p&gt;
+
+&lt;p&gt;接下来直奔正题&lt;/p&gt;
+
+&lt;h4 id=&quot;1-扩容&quot;&gt;1. 扩容&lt;/h4&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;设定容量&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    public void ensureCapacity(int minCapacity) {
+        //如果初始时有设定容量，就按设定的来，没有就按默认的来
+        int minExpand = (elementData != DEFAULTCAPACITY_EMPTY_ELEMENTDATA)
+            // any size if not default element table
+            ? 0
+            // larger than default for default empty table. It's already
+            // supposed to be at default size.
+            : DEFAULT_CAPACITY;
+        //如果给定的比上述的要大，就按给定的来
+        if (minCapacity &amp;gt; minExpand) {
+            //这个方法在下面
+            ensureExplicitCapacity(minCapacity);
+        }
+    }
+    //私有方法，用来确定容量
+    private void ensureExplicitCapacity(int minCapacity) {
+        modCount++;
+        //增加容量
+        // overflow-conscious code
+        if (minCapacity - elementData.length &amp;gt; 0)
+            grow(minCapacity);
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;增长&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;/**
+     * The maximum size of array to allocate.
+     * Some VMs reserve some header words in an array.
+     * Attempts to allocate larger arrays may result in
+     * OutOfMemoryError: Requested array size exceeds VM limit
+     */
+    //注解说是因为有的虚拟机要保留数组的前几位，这个常量的值为2147483639
+    private static final int MAX_ARRAY_SIZE = Integer.MAX_VALUE - 8;
+
+    /**
+     * Increases the capacity to ensure that it can hold at least the
+     * number of elements specified by the minimum capacity argument.
+     *
+     * @param minCapacity the desired minimum capacity
+     */
+    private void grow(int minCapacity) {
+        // overflow-conscious code
+        int oldCapacity = elementData.length;
+        //右移一位，相当于除以2
+        int newCapacity = oldCapacity + (oldCapacity &amp;gt;&amp;gt; 1);
+        //两者相比，用更大的一个作为容量
+        if (newCapacity - minCapacity &amp;lt; 0)
+            newCapacity = minCapacity;
+        //容量特别大时的操作
+        if (newCapacity - MAX_ARRAY_SIZE &amp;gt; 0)
+            newCapacity = hugeCapacity(minCapacity);
+        //按照新容量复制数组
+        // minCapacity is usually close to size, so this is a win:
+        elementData = Arrays.copyOf(elementData, newCapacity);
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;大容量&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    private static int hugeCapacity(int minCapacity) {
+        //溢出
+        if (minCapacity &amp;lt; 0) // overflow
+            throw new OutOfMemoryError();
+        return (minCapacity &amp;gt; MAX_ARRAY_SIZE) ?
+            Integer.MAX_VALUE :
+            MAX_ARRAY_SIZE;
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;2-调整大小&quot;&gt;2. 调整大小&lt;/h4&gt;
+
+&lt;p&gt;如果发现容量多了很多，有点浪费，就可以调整容器大小到当前大小&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    public void trimToSize() {
+        modCount++;
+        //如果确实有多余部分
+        if (size &amp;lt; elementData.length) {
+            //如果size不为0，则按照size复制数组
+            elementData = (size == 0)
+              ? EMPTY_ELEMENTDATA
+              : Arrays.copyOf(elementData, size);
+        }
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;3-列表元素数量&quot;&gt;3. 列表元素数量&lt;/h4&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    public int size() {
+        return size;
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;4-列表是否为空&quot;&gt;4. 列表是否为空&lt;/h4&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    public boolean isEmpty() {
+        return size == 0;
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;5-查找列表中特定元素的位置&quot;&gt;5. 查找列表中特定元素的位置&lt;/h4&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    public int indexOf(Object o) {
+        if (o == null) {
+            for (int i = 0; i &amp;lt; size; i++)
+                if (elementData[i]==null)
+                    return i;
+        } else {
+            //遍历数组查找
+            for (int i = 0; i &amp;lt; size; i++)
+                if (o.equals(elementData[i]))
+                    return i;
+        }
+        return -1;
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;6-判断列表是否包含特定元素&quot;&gt;6. 判断列表是否包含特定元素&lt;/h4&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    public boolean contains(Object o) {
+        return indexOf(o) &amp;gt;= 0;
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;7-如果列表中有多个特定元素&quot;&gt;7. 如果列表中有多个特定元素&lt;/h4&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    public int lastIndexOf(Object o) {
+        if (o == null) {
+            for (int i = size-1; i &amp;gt;= 0; i--)
+                if (elementData[i]==null)
+                    return i;
+        } else {
+            //从尾部开始遍历 
+            for (int i = size-1; i &amp;gt;= 0; i--)
+                if (o.equals(elementData[i]))
+                    return i;
+        }
+        return -1;
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;8-克隆&quot;&gt;8. 克隆&lt;/h4&gt;
+
+&lt;p&gt;需要先说明一个概念：浅拷贝和深拷贝&lt;/p&gt;
+
+&lt;p&gt;浅拷贝，两个ArrayList在内存中的地址是不一样的，但是他们中的元素都指向同一个地址，手绘一个图解释一下：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-fe5135fa0eac5629.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;深拷贝，不仅ArrayList在内存中的地址是不一样的，他们中的元素也不指向同一个地址，也手绘个图解释一下：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-2eaa529c4d75f2d9.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;深拷贝可能好理解一些，就是所有的东西都拷贝一下，完全分离的状态&lt;/p&gt;
+
+&lt;p&gt;ArrayList的&lt;strong&gt;clone()&lt;/strong&gt;方法是浅拷贝，我们来做个实验：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public class Test {
+    public static void main(String[] args) {
+        ArrayList&amp;lt;String&amp;gt; list = new ArrayList&amp;lt;&amp;gt;();
+        for (int i = 0; i &amp;lt; 10; i++) {
+            list.add(String.valueOf(i));
+        }
+        //强制类型转换
+        ArrayList&amp;lt;String&amp;gt; list1 = (ArrayList&amp;lt;String&amp;gt;)list.clone();
+        System.out.println(&quot;list&quot; + list);
+        System.out.println(&quot;list1&quot; + list1);
+        System.out.println(&quot;二者对于某个特定元素是否相同 &quot; + (list.get(1) == list1.get(1)));
+        System.out.println(&quot;二者的地址是否相同 &quot; + (list == list1));
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-c982020574740d1c.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;
+&lt;br /&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;9-转换为数组&quot;&gt;9. 转换为数组&lt;/h4&gt;
+
+&lt;p&gt;ArrayList是一个列表，和数组不一样，不能直接用下标访问元素，转换为数组就可以了，转换为数组有两种方法：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    //按照列表中元素的顺序，将列表中元素复制到一个数组
+    public Object[] toArray() {
+        return Arrays.copyOf(elementData, size);
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-2758119e63ef391c.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;
+&lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;这一种方法可能会抛出数组存储异常和空指针异常，这里讲述两种情况（数组大小小于列表元素数量）：&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;
+    &lt;p&gt;传入的数组类型和列表元素相同或者是列表元素的基类型，直接将列表中元素赋值在数组内&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;传入的数组类型不是列表元素的基类型，抛出数组存储异常&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    public &amp;lt;T&amp;gt; T[] toArray(T[] a) {
+        //传入的数组大小更小
+        if (a.length &amp;lt; size)
+            //创建一个数组，类型是数组a的运行时类型
+            // Make a new array of a's runtime type, but my contents:
+            return (T[]) Arrays.copyOf(elementData, size, a.getClass());
+        System.arraycopy(elementData, 0, a, 0, size);
+        if (a.length &amp;gt; size)
+            a[size] = null;
+        return a;
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;传入的数组 s 是Object类型的，符合上述的情况一：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-47e4fb7279f616f6.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;接下来是情况二：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-3a3506b06f27cb29.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;这样子，ArrayList常用的方法就讲完了，下一篇就会是与ArrayList有关的迭代器的使用了&lt;/p&gt;
+</description>
+        <pubDate>Wed, 09 May 2018 00:00:00 -0700</pubDate>
+        <link>http://localhost:4000/2018/05/09/ArrayList%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E4%BA%8C/</link>
+        <guid isPermaLink="true">http://localhost:4000/2018/05/09/ArrayList%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E4%BA%8C/</guid>
+        
+        <category>Java源码解析</category>
+        
+        
+      </item>
     
       <item>
         <title>登陆界面模块解析——生成图片验证码</title>
@@ -1951,133 +2220,6 @@ time.sleep(time) 表示的是经过 time 秒后执行下一步操作，就是休
         <pubDate>Fri, 20 Apr 2018 00:00:00 -0700</pubDate>
         <link>http://localhost:4000/2018/04/20/%E6%A0%91%E8%8E%93%E6%B4%BE%E5%B0%8F%E8%BD%A6-%E4%BA%8C-%E6%A0%91%E8%8E%93%E6%B4%BE-%E5%B0%8F%E8%BD%A6%E5%92%8C%E7%BA%A2%E5%A4%96%E7%BA%BF%E6%A8%A1%E5%9D%97%E8%BF%9E%E6%8E%A5/</link>
         <guid isPermaLink="true">http://localhost:4000/2018/04/20/%E6%A0%91%E8%8E%93%E6%B4%BE%E5%B0%8F%E8%BD%A6-%E4%BA%8C-%E6%A0%91%E8%8E%93%E6%B4%BE-%E5%B0%8F%E8%BD%A6%E5%92%8C%E7%BA%A2%E5%A4%96%E7%BA%BF%E6%A8%A1%E5%9D%97%E8%BF%9E%E6%8E%A5/</guid>
-        
-        <category>树莓派</category>
-        
-        
-      </item>
-    
-      <item>
-        <title>树莓派小车（一）小车配件选购及安装</title>
-        <description>&lt;p&gt;这篇文章转载自&lt;a href=&quot;https://www.jianshu.com/p/2692875cc8d7&quot;&gt;我的简书&lt;/a&gt;&lt;/p&gt;
-
-&lt;h3 id=&quot;正文之前&quot;&gt;正文之前&lt;/h3&gt;
-
-&lt;p&gt;在考试之后突发奇想，想要用身边的树莓派做点事情，作为入门级的树莓派玩法，应该当属小车了吧，我先做的是红外避障小车&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-f60dec482ce908ee.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;接下来说重点，说一说配件的选购和小车的拼装&lt;/p&gt;
-
-&lt;hr /&gt;
-
-&lt;h3 id=&quot;1配件选购&quot;&gt;1.配件选购&lt;/h3&gt;
-
-&lt;p&gt;买配件当然是从某宝买入，建议大家去一些做零件批发的店，如果去专卖店的话，就有些小贵了。而且也要学着如何去确定自己所需要的零件，而不是直接购买一整辆小车的零件&lt;/p&gt;
-
-&lt;p&gt;对于需要哪些零件，我说一说我自己的购物清单：&lt;/p&gt;
-
-&lt;ol&gt;
-  &lt;li&gt;
-    &lt;p&gt;树莓派1只（必须的，建议买英国版）&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;小车底盘，四只直流电机，四个车轮，20线测速码盘，铜柱、螺丝、螺帽、紧固件若干&lt;/p&gt;
-  &lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;p&gt;（商家自配电池盒以及电线若干）&lt;/p&gt;
-
-&lt;ol&gt;
-  &lt;li&gt;
-    &lt;p&gt;L298N驱动板&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;充电宝（必须有2A输出的）&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;杜邦线若干（公对公，母对母，公对母最好都买一些）&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;4节5号电池（建议买充电电池，小车耗电量太大了）&lt;/p&gt;
-  &lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;p&gt;以上是做小车基础模型所必需的，由于我做的是红外避障小车，所以还需要买红外传感器&lt;/p&gt;
-
-&lt;p&gt;还买了迷你摄像头，打算过一段时间加一个拍摄功能&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-9686214962edf9c8.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-5f6b38a4612f182b.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;加上运费差不多75元左右，建议大家可以多买一些配件，反正玩小车都有可能用到，比如超声波传感，红外测距，测速模块，人体感应模块和声音检测传感器之类的&lt;/p&gt;
-
-&lt;h3 id=&quot;2小车底盘安装&quot;&gt;2.小车底盘安装&lt;/h3&gt;
-
-&lt;p&gt;配件到手之后，就可以开始动手安装了，先说一说下小车车驱动的思路：&lt;/p&gt;
-
-&lt;h4 id=&quot;电池盒中的四节电池是用来给驱动板供电的驱动板给电机提供动力电机带动车轮转动由于此车是没有用到舵机的所以转弯的方式是通过单边车轮前进或后退来进行转弯的&quot;&gt;电池盒中的四节电池是用来给驱动板供电的，驱动板给电机提供动力，电机带动车轮转动，由于此车是没有用到舵机的，所以转弯的方式是通过单边车轮前进或后退来进行转弯的&lt;/h4&gt;
-
-&lt;p&gt;还需要说一下供电的问题，关于树莓派的供电问题一直是大家的一大焦点，本次安装中，充电宝是给树莓派单独供电的，电池则是给驱动板供电（用充电电池比较环保，四驱车耗电量太大）。千万不能用充电宝给树莓派和L298N同时供电（不然又要去买树莓派了）&lt;/p&gt;
-
-&lt;h3 id=&quot;开始组装&quot;&gt;开始组装&lt;/h3&gt;
-
-&lt;p&gt;1.电机的连接&lt;/p&gt;
-
-&lt;p&gt;将去掉外皮的电线连接至电机末尾的铜环处&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-f80b0f6e05d95915.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;2.将车轮和电机固定至底盘&lt;/p&gt;
-
-&lt;p&gt;使用配件中的紧固件、螺丝和螺帽将车轮、码盘和电机固定在底盘&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-39708a29f65d9b41.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;3.电机与L298N驱动板的连接&lt;/p&gt;
-
-&lt;p&gt;关于L298N的知识在此不赘述，大家自行解决。&lt;/p&gt;
-
-&lt;p&gt;将两边电机的负极连至L298N的OUT1和OUT3处，正极连至OUT2和OUT4处。&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-88fff7dd0b8294c3.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;4.驱动板供电&lt;/p&gt;
-
-&lt;p&gt;将4节五号电池装入电池盒，将电池盒与驱动板的接地口和12V输入口相连&lt;/p&gt;
-
-&lt;p&gt;正极（红线）连接12V供电&lt;/p&gt;
-
-&lt;p&gt;负极（黑线）接地&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-8ca765338a87b652.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-dc9a98bf5e804db0.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;5.驱动板与树莓派连接&lt;/p&gt;
-
-&lt;p&gt;L298N驱动板上共有4个信息输入口，为IN1,IN2,IN3,IN4。&lt;/p&gt;
-
-&lt;p&gt;这四个口就是与树莓派的GPIO接口相连的。&lt;/p&gt;
-
-&lt;p&gt;关于GPIO接口，有时间另说，读者可以科学上网解决此问题&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-419925c3ca591a02.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;5.安装完成&lt;/p&gt;
-
-&lt;p&gt;根据个人喜好，我连接的树莓派GPIO为引脚编号11，12，13，15的接口。&lt;/p&gt;
-
-&lt;p&gt;读者可以另选其他位置接口（只要符合连接规则就行）&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-c31e3b62f027d11e.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;关于小车的基础模型的安装就到这里了，接下来的文章会讲解用Pyhton驱动小车，以及红外避障小车的制作&lt;/p&gt;
-</description>
-        <pubDate>Thu, 19 Apr 2018 00:00:00 -0700</pubDate>
-        <link>http://localhost:4000/2018/04/19/%E6%A0%91%E8%8E%93%E6%B4%BE%E5%B0%8F%E8%BD%A6-%E4%B8%80-%E5%B0%8F%E8%BD%A6%E9%85%8D%E4%BB%B6%E9%80%89%E8%B4%AD%E5%8F%8A%E5%AE%89%E8%A3%85/</link>
-        <guid isPermaLink="true">http://localhost:4000/2018/04/19/%E6%A0%91%E8%8E%93%E6%B4%BE%E5%B0%8F%E8%BD%A6-%E4%B8%80-%E5%B0%8F%E8%BD%A6%E9%85%8D%E4%BB%B6%E9%80%89%E8%B4%AD%E5%8F%8A%E5%AE%89%E8%A3%85/</guid>
         
         <category>树莓派</category>
         
