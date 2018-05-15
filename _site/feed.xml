@@ -5,9 +5,415 @@
     <description>写写Java，一天就过去了</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Wed, 09 May 2018 00:48:43 -0700</pubDate>
-    <lastBuildDate>Wed, 09 May 2018 00:48:43 -0700</lastBuildDate>
+    <pubDate>Tue, 15 May 2018 06:23:28 -0700</pubDate>
+    <lastBuildDate>Tue, 15 May 2018 06:23:28 -0700</lastBuildDate>
     <generator>Jekyll v3.8.0</generator>
+    
+      <item>
+        <title>ArrayList源码分析（三）</title>
+        <description>&lt;h3 id=&quot;正文之前&quot;&gt;正文之前&lt;/h3&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;在先前的&lt;a href=&quot;http://hxblog.site/2018/05/04/ArrayList%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E4%B8%80/&quot;&gt;第一篇文章&lt;/a&gt;以及&lt;a href=&quot;http://hxblog.site/2018/05/09/ArrayList%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E4%BA%8C/&quot;&gt;第二篇文章&lt;/a&gt;中已经讲述了ArrayList的常用方法，但是没有使用迭代器，这一篇文章就来讲讲使用迭代器操作ArrayList的基本方法&lt;/p&gt;
+
+  &lt;p&gt;主要内容:&lt;/p&gt;
+  &lt;ol&gt;
+    &lt;li&gt;迭代器的构造&lt;/li&gt;
+    &lt;li&gt;使用迭代器进行增删改查&lt;/li&gt;
+  &lt;/ol&gt;
+&lt;/blockquote&gt;
+
+&lt;h3 id=&quot;正文&quot;&gt;正文&lt;/h3&gt;
+
+&lt;h4 id=&quot;1-构造迭代器所需的类&quot;&gt;1. 构造迭代器所需的类&lt;/h4&gt;
+
+&lt;p&gt;在源码中，有两个私有类：&lt;strong&gt;Itr&lt;/strong&gt;以及&lt;strong&gt;ListItr&lt;/strong&gt;，第一个是单向操作，第二个能够支持双向操作&lt;/p&gt;
+
+&lt;p&gt;需要先看一下这两个类的源码，它们对于迭代器的构造必不可少：&lt;/p&gt;
+
+&lt;h5 id=&quot;itr类&quot;&gt;Itr类&lt;/h5&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;实现接口&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;//实现了Iterator接口
+private class Itr implements Iterator&amp;lt;E&amp;gt; {}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;变量&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;在这里，关于迭代器的操作，我觉得用指针来形容十分恰当，指针移动到哪一个位置，就表示迭代器操作的位置在哪，在源码中有这么两个变量：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;        int cursor;       // index of next element to return
+        int lastRet = -1; // index of last element returned; -1 if no such
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;那我们就把第一个变量称为指针1，指向下一个要返回的元素，把第二个变量称为指针2，指向刚返回的元素，这里的指向，其实就是一个位置的关系，下面慢慢会讲到&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;判断后一个元素&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;        //判断是否还有下一个元素
+        public boolean hasNext() {
+            return cursor != size;
+        }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;向后移动&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;        public E next() {
+            //这一语句涉及并发，不参与讨论
+            checkForComodification();
+            //i = 指针1的位置
+            int i = cursor;
+            //超出数组长度
+            if (i &amp;gt;= size)
+                throw new NoSuchElementException();
+            //复制
+            Object[] elementData = ArrayList.this.elementData;
+            if (i &amp;gt;= elementData.length)
+                throw new ConcurrentModificationException();
+            //指针后移一位，也就是说，指针1的位置在下一个元素的位置
+            cursor = i + 1;
+            //设置lastRet = i，然后返回这个位置的值，指针2的位置就在这了
+            return (E) elementData[lastRet = i];
+        }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;删除&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;如果删除了一个，指针2就会重置，这时候如果再删除指针就会报错&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;        public void remove() {
+            //如果下标不符合
+            if (lastRet &amp;lt; 0)
+                throw new IllegalStateException();
+            checkForComodification();
+
+            try {
+                ArrayList.this.remove(lastRet);
+                //指针1移动到指针2的位置
+                cursor = lastRet;
+                //重置指针2的位置
+                lastRet = -1;
+                expectedModCount = modCount;
+            } catch (IndexOutOfBoundsException ex) {
+                throw new ConcurrentModificationException();
+            }
+        }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;做个测试&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;        ArrayList&amp;lt;Integer&amp;gt; list1 = new ArrayList&amp;lt;&amp;gt;();
+
+        for (int i = 0; i &amp;lt; 10; i++) {
+            list1.add(i);
+        }
+
+        Iterator iterator1 = list1.iterator();
+
+        iterator1.next();
+        iterator1.remove();
+        System.out.println(&quot;进行删除之后的数据：&quot;);
+        for (int i:
+                list1) {
+            System.out.print(i + &quot; &quot;);
+        }
+        System.out.println();
+        System.out.println(&quot;再次进行删除操作：&quot;);
+        try {
+            iterator1.remove();
+        } catch (IllegalStateException e){
+            System.out.println(&quot;操作失败&quot;);
+        }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;结果是：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-6f6361dae4f01a6d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;h5 id=&quot;listitr&quot;&gt;ListItr&lt;/h5&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;实现接口&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;//这个类继承自上面的**Itr**类，实现**ListIterator**接口，这个接口是继承自**Iterator**接口的
+private class ListItr extends Itr implements ListIterator&amp;lt;E&amp;gt; {}
+
+public interface ListIterator&amp;lt;E&amp;gt; extends Iterator&amp;lt;E&amp;gt; {}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;构造器&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;        ListItr(int index) {
+            super();
+            cursor = index;
+        }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;判断前一个元素&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;        //如果不是第一个元素，就有前一个元素
+	    public boolean hasPrevious() {
+            return cursor != 0;
+        }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;判断前后位置&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    public int nextIndex() {
+            return cursor;
+        }
+
+        public int previousIndex() {
+            return cursor - 1;
+        }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;获得前一个元素&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;        public E previous() {
+            checkForComodification();
+            int i = cursor - 1;
+            if (i &amp;lt; 0)
+                throw new NoSuchElementException();
+            Object[] elementData = ArrayList.this.elementData;
+            if (i &amp;gt;= elementData.length)
+                throw new ConcurrentModificationException();
+            //指针1向前移一位
+            cursor = i;
+            //指针2指向这个元素
+            return (E) elementData[lastRet = i];
+        }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;修改元素&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;        public void set(E e) {
+            if (lastRet &amp;lt; 0)
+                throw new IllegalStateException();
+            checkForComodification();
+    
+            try {
+                //将指针2指向的位置的值修改
+                ArrayList.this.set(lastRet, e);
+            } catch (IndexOutOfBoundsException ex) {
+                throw new ConcurrentModificationException();
+            }
+        }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;添加元素&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;        public void add(E e) {
+            checkForComodification();
+
+            try {
+                int i = cursor;
+                //在指针1指向的位置添加元素
+                ArrayList.this.add(i, e);
+                //指针1向后移一位
+                cursor = i + 1;
+                //重置指针2
+                lastRet = -1;
+                expectedModCount = modCount;
+            } catch (IndexOutOfBoundsException ex) {
+                throw new ConcurrentModificationException();
+            }
+        }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;2-迭代器的构造&quot;&gt;2. 迭代器的构造&lt;/h4&gt;
+
+&lt;p&gt;&lt;strong&gt;Itr&lt;/strong&gt;和&lt;strong&gt;ListItr&lt;/strong&gt;这两个类都是私有的，他们是为了迭代器的构造而准备的&lt;/p&gt;
+
+&lt;h5 id=&quot;1-itr-类的使用&quot;&gt;1. Itr 类的使用&lt;/h5&gt;
+
+&lt;p&gt;调用iterator()方法就会得到：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    public Iterator&amp;lt;E&amp;gt; iterator() {
+        return new Itr();
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;h5 id=&quot;2-listitr-类的使用&quot;&gt;2. ListItr 类的使用&lt;/h5&gt;
+
+&lt;p&gt;分为两种，指定迭代器初始位置或使用默认位置&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;指定初始位置&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    public ListIterator&amp;lt;E&amp;gt; listIterator(int index) {
+        if (index &amp;lt; 0 || index &amp;gt; size)
+            throw new IndexOutOfBoundsException(&quot;Index: &quot;+index);
+        //指针1指向输入的index，设定为初始位置
+        return new ListItr(index);
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;使用默认位置&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    public ListIterator&amp;lt;E&amp;gt; listIterator() {
+        //默认位置为首部
+        return new ListItr(0);
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;3-使用迭代器进行增删改查&quot;&gt;3. 使用迭代器进行增删改查&lt;/h4&gt;
+
+&lt;p&gt;每一次测试都初始化一次，保证每次测试的列表元素都是相同的&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;初始化&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;        ArrayList&amp;lt;Integer&amp;gt; list1 = new ArrayList&amp;lt;&amp;gt;();
+        ArrayList&amp;lt;Integer&amp;gt; list2 = new ArrayList&amp;lt;&amp;gt;();
+
+        for (int i = 0; i &amp;lt; 10; i++) {
+            list1.add(i);
+            list2.add(i);
+        }
+
+        ListIterator&amp;lt;Integer&amp;gt; iterator1 = list1.listIterator();
+        ListIterator&amp;lt;Integer&amp;gt; iterator2 = list2.listIterator(5);
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;增加数据&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;         //增加数据
+        iterator1.add(100);
+        for (int i :
+                list1) {
+            System.out.print(i + &quot; &quot;);
+        }
+        System.out.println();
+        iterator2.add(200);
+        for (int i :
+                list2) {
+            System.out.print(i + &quot; &quot;);
+        }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-76b6488edb5b0f7b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;
+&lt;br /&gt;&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;删除数据&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;        //删除数据
+        iterator1.next();
+        iterator1.remove();
+        for (int i :
+                list1) {
+            System.out.print(i + &quot; &quot;);
+        }
+        System.out.println();
+        iterator2.next();
+        iterator2.remove();
+        for (int i :
+                list2) {
+            System.out.print(i + &quot; &quot;);
+        }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-8ed2720c12e1cf2f.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;
+&lt;br /&gt;&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;修改数据&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;        //修改数据
+        iterator1.next();
+        iterator1.set(100);
+        for (int i :
+                list1) {
+            System.out.print(i + &quot; &quot;);
+        }
+        System.out.println();
+        iterator2.next();
+        iterator2.set(200);
+        for (int i :
+                list2) {
+            System.out.print(i + &quot; &quot;);
+        }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-5973d494503f9669.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;查看数据&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;使用迭代器遍历数组并输出&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;        //查看数据
+        while (iterator1.hasNext()){
+            System.out.print(iterator1.next() + &quot; &quot;);
+        }
+        System.out.println();
+        while (iterator2.hasNext()){
+            System.out.print(iterator2.next() + &quot; &quot;);
+        }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-8efaae0d3d9302c8.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;到此，ArrayList的基本用法的源码解读就告一段落了，接下来会是LinkedList的源码解析&lt;/p&gt;
+</description>
+        <pubDate>Tue, 15 May 2018 00:00:00 -0700</pubDate>
+        <link>http://localhost:4000/2018/05/15/ArrayList%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E4%B8%89/</link>
+        <guid isPermaLink="true">http://localhost:4000/2018/05/15/ArrayList%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E4%B8%89/</guid>
+        
+        <category>Java源码解析</category>
+        
+        
+      </item>
     
       <item>
         <title>ArrayList源码分析（二）</title>
@@ -2143,83 +2549,6 @@ time.sleep(time) 表示的是经过 time 秒后执行下一步操作，就是休
         <pubDate>Sat, 21 Apr 2018 00:00:00 -0700</pubDate>
         <link>http://localhost:4000/2018/04/21/%E6%A0%91%E8%8E%93%E6%B4%BE%E5%B0%8F%E8%BD%A6-%E4%B8%89-Python%E6%8E%A7%E5%88%B6%E5%B0%8F%E8%BD%A6/</link>
         <guid isPermaLink="true">http://localhost:4000/2018/04/21/%E6%A0%91%E8%8E%93%E6%B4%BE%E5%B0%8F%E8%BD%A6-%E4%B8%89-Python%E6%8E%A7%E5%88%B6%E5%B0%8F%E8%BD%A6/</guid>
-        
-        <category>树莓派</category>
-        
-        
-      </item>
-    
-      <item>
-        <title>树莓派小车（二）树莓派、小车和红外线模块连接</title>
-        <description>&lt;p&gt;这篇文章转载自&lt;a href=&quot;https://www.jianshu.com/p/27b256f1afa8&quot;&gt;我的简书&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;上一篇文章介绍了小车底盘以及驱动板的安装，这一次来讲一讲树莓派与驱动板以及红外线模块的安装&lt;/p&gt;
-
-&lt;h3 id=&quot;树莓派的gpio引脚定义&quot;&gt;树莓派的GPIO引脚定义：&lt;/h3&gt;
-
-&lt;p&gt;树莓派的GPIO引脚共分为两种类型，一种是&lt;strong&gt;PHYSICAL NUMBERING&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-787c3854e8eeb8d2.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;单纯地用从上至下，从左至右的顺序来定义引脚&lt;/p&gt;
-
-&lt;p&gt;在我们的小车中：&lt;/p&gt;
-
-&lt;p&gt;黄色的GPIO接口连接L298N驱动板以及其他模块如红外线模块等等&lt;/p&gt;
-
-&lt;p&gt;黑色的Ground接口连接红外线模块上的GND接口&lt;/p&gt;
-
-&lt;p&gt;红色的5V供电接口连接L298N驱动板上的+5V接口&lt;br /&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-05c31686331df76c.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;采用特殊（未知）的方式来标记GPIO接口&lt;/p&gt;
-
-&lt;p&gt;黄色的GPIO接口连接L298N驱动板以及其他模块如红外线模块等等&lt;/p&gt;
-
-&lt;p&gt;黑色的Ground接口连接红外线模块上的GND接口&lt;/p&gt;
-
-&lt;p&gt;红色的5V供电接口连接L298N驱动板上的+5V接口&lt;br /&gt;&lt;/p&gt;
-
-&lt;p&gt;我采用的是第二种，关于如何设置哪一种类型以及编写代码驱动小车，将会在树莓派小车系列之三中介绍&lt;/p&gt;
-
-&lt;h3 id=&quot;连接驱动板和树莓派&quot;&gt;连接驱动板和树莓派：&lt;/h3&gt;
-
-&lt;p&gt;&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/3426615-a268ffc4720ec730?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;h3 id=&quot;连接红外线模块和树莓派&quot;&gt;连接红外线模块和树莓派：&lt;/h3&gt;
-
-&lt;p&gt;我购买的是四路探测红外线模块，先拿其中两个红外线接发器来做前方探测&lt;/p&gt;
-
-&lt;p&gt;在模块电路板中，每个与红外线探测器相连的接口共有三种口，分别是：VCC，GND，IN（1，2，3，4）&lt;/p&gt;
-
-&lt;p&gt;在模块电路板与树莓派的接口中，也有三种口：VCC，GND，OUT（1，2，3，4）&lt;br /&gt;&lt;/p&gt;
-
-&lt;p&gt;在电路板与红外探测器之间连接时，按照对应接口：&lt;/p&gt;
-
-&lt;p&gt;VCC - VCC        GND - GND         IN - OUT&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/3426615-53434834eb9bd53a?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;在电路板与树莓派之间连接时，按照对应接口：&lt;/p&gt;
-
-&lt;p&gt;VCC - 3.3V         GND - GND         OUT - GPIO&lt;/p&gt;
-
-&lt;p&gt;将OUT1和OUT4接在GPIO22 和 GPIO24（读者随意，只要是GPIO口就行）&lt;/p&gt;
-
-&lt;p&gt;然后将红外线模块固定在车底部&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/3426615-deb5b0b27d74a22d?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;最后，在小车的第二层放上树莓派和充电宝，小车就全部组装完毕了&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/3426615-ca0153b77eb2b571?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;关于小车的组装就完成了，在下一篇文章中将会给出驱动小车的Python代码&lt;/p&gt;
-</description>
-        <pubDate>Fri, 20 Apr 2018 00:00:00 -0700</pubDate>
-        <link>http://localhost:4000/2018/04/20/%E6%A0%91%E8%8E%93%E6%B4%BE%E5%B0%8F%E8%BD%A6-%E4%BA%8C-%E6%A0%91%E8%8E%93%E6%B4%BE-%E5%B0%8F%E8%BD%A6%E5%92%8C%E7%BA%A2%E5%A4%96%E7%BA%BF%E6%A8%A1%E5%9D%97%E8%BF%9E%E6%8E%A5/</link>
-        <guid isPermaLink="true">http://localhost:4000/2018/04/20/%E6%A0%91%E8%8E%93%E6%B4%BE%E5%B0%8F%E8%BD%A6-%E4%BA%8C-%E6%A0%91%E8%8E%93%E6%B4%BE-%E5%B0%8F%E8%BD%A6%E5%92%8C%E7%BA%A2%E5%A4%96%E7%BA%BF%E6%A8%A1%E5%9D%97%E8%BF%9E%E6%8E%A5/</guid>
         
         <category>树莓派</category>
         
