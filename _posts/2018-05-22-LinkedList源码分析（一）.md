@@ -55,14 +55,14 @@ tags:
  *   List list = Collections.synchronizedList(new LinkedList(...));</pre>
 ```
 
-和**ArrayList**一样，这个容器也是非线程安全的，如果要在多线程环境下使用，也要**synchronizedList**包装起来
+和**ArrayList**一样，这个容器也是非线程安全的，如果要在多线程环境下使用，也要使用**synchronizedList**包装起来
 
 在源码中还有一些注释是关于迭代器的，等到以后的文章中再说明
 <br>
 
 #### 2. 节点
 
-1. 节点的表示
+###### 节点的表示
 
 需要先统一以下说法，Node叫做**节点**，Node.item叫做**元素**
 
@@ -82,7 +82,7 @@ tags:
     }
 ```
 
-2. 根据索引寻找节点
+###### 根据索引寻找节点
 
 在查找的过程要一个一个节点的迭代，所以**LinkedList**随机读取的开销要比**ArrayList**大
 
@@ -148,7 +148,7 @@ public class LinkedList<E>
 
 #### 4. 构造
 
-1. 空链表
+###### 空链表
 
 ```
     /**
@@ -158,7 +158,7 @@ public class LinkedList<E>
     }
 ```
 
-2. 带有其他容器元素的链表
+###### 带有其他容器元素的链表
 
 ```
     /**
@@ -321,7 +321,7 @@ public class LinkedList<E>
 
 ###### 还有直接添加另一个容器的元素至链表的方法：
 
-1. 将指定容器的元素添加至指定位置，插入的位置在index元素之前（若index = 1，表示第2个元素，则插入第1个和第2个元素之间）
+将指定容器的元素添加至指定位置，插入的位置在index元素之前（若index = 1，表示第2个元素，则插入第1个和第2个元素之间）
 
 ![](https://upload-images.jianshu.io/upload_images/3426615-e2ee83cac0cb9011.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
@@ -374,7 +374,7 @@ public class LinkedList<E>
     }
 ```
 
-2. 将指定容器的元素添加至链表尾：
+将指定容器的元素添加至链表尾：
 
 ```
     public boolean addAll(Collection<? extends E> c) {
@@ -598,7 +598,7 @@ public class LinkedList<E>
 
 ##### 查
 
-1. 查找首尾元素：
+###### 查找首尾元素：
 
 这个没什么好说的，直接上代码
 
@@ -618,7 +618,7 @@ public class LinkedList<E>
     }
 ```
 
-2. 判断是否含有某个元素
+###### 判断是否含有某个元素
 
 ```
     public boolean contains(Object o) {
@@ -627,7 +627,7 @@ public class LinkedList<E>
     }
 ```
 
-3. 根据索引查找
+###### 根据索引查找
 
 ```
     public E get(int index) {
@@ -637,7 +637,7 @@ public class LinkedList<E>
     }
 ```
 
-4. 根据元素得出索引
+###### 根据元素得出索引
 
 得到特定元素第一次出现的位置：
 
