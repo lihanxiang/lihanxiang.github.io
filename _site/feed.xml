@@ -3,11 +3,723 @@
   <channel>
     <title>L Blog</title>
     <description>写写Java，一天就过去了</description>
-    <link>http://localhost:4000/</link>
-    <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Tue, 15 May 2018 06:23:28 -0700</pubDate>
-    <lastBuildDate>Tue, 15 May 2018 06:23:28 -0700</lastBuildDate>
+    <link>http://hxblog.site/</link>
+    <atom:link href="http://hxblog.site/feed.xml" rel="self" type="application/rss+xml" />
+    <pubDate>Tue, 22 May 2018 00:01:03 -0700</pubDate>
+    <lastBuildDate>Tue, 22 May 2018 00:01:03 -0700</lastBuildDate>
     <generator>Jekyll v3.8.0</generator>
+    
+      <item>
+        <title>LinkedList源码分析（一）</title>
+        <description>&lt;h3 id=&quot;正文之前&quot;&gt;正文之前&lt;/h3&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;之前介绍过了&lt;strong&gt;ArrayList&lt;/strong&gt;的源码了，在刚学Java的时候，书籍中就经常拿&lt;strong&gt;ArrayList&lt;/strong&gt;和&lt;strong&gt;LinkedList&lt;/strong&gt;来举例子，学完了&lt;strong&gt;ArrayList&lt;/strong&gt;最常用部分的源码后，就打算把&lt;strong&gt;LinkedList&lt;/strong&gt;也学完，源码中有两种操作，一种是列表操作，一种是队列操作，分两篇文章来讲，今天先讲列表操作&lt;/p&gt;
+
+  &lt;p&gt;今天的内容有这些：&lt;/p&gt;
+  &lt;ol&gt;
+    &lt;li&gt;LinkedList 概念介绍&lt;/li&gt;
+    &lt;li&gt;结点&lt;/li&gt;
+    &lt;li&gt;类的基本信息&lt;/li&gt;
+    &lt;li&gt;构造&lt;/li&gt;
+    &lt;li&gt;增删改查&lt;/li&gt;
+  &lt;/ol&gt;
+&lt;/blockquote&gt;
+
+&lt;h3 id=&quot;正文&quot;&gt;正文&lt;/h3&gt;
+
+&lt;h4 id=&quot;1-概念介绍&quot;&gt;1. 概念介绍&lt;/h4&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; * Doubly-linked list implementation of the {@code List} and {@code Deque}
+ * interfaces.  Implements all optional list operations, and permits all
+ * elements (including {@code null}).
+ *
+ * &amp;lt;p&amp;gt;All of the operations perform as could be expected for a doubly-linked
+ * list.  Operations that index into the list will traverse the list from
+ * the beginning or the end, whichever is closer to the specified index.
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;按照注释给出的，&lt;strong&gt;LinkedList&lt;/strong&gt;叫做“双向链表”，实现了&lt;strong&gt;List&lt;/strong&gt;（列表）接口和&lt;strong&gt;Deque&lt;/strong&gt;（双向队列）接口，支持队列的操作&lt;/p&gt;
+
+&lt;p&gt;对特定的元素的操作，可以从列表的首或者尾开始，哪边离得近就从哪边开始&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; * &amp;lt;p&amp;gt;&amp;lt;strong&amp;gt;Note that this implementation is not synchronized.&amp;lt;/strong&amp;gt;
+ * If multiple threads access a linked list concurrently, and at least
+ * one of the threads modifies the list structurally, it &amp;lt;i&amp;gt;must&amp;lt;/i&amp;gt; be
+ * synchronized externally.  (A structural modification is any operation
+ * that adds or deletes one or more elements; merely setting the value of
+ * an element is not a structural modification.)  This is typically
+ * accomplished by synchronizing on some object that naturally
+ * encapsulates the list.
+ *
+ * If no such object exists, the list should be &quot;wrapped&quot; using the
+ * {@link Collections#synchronizedList Collections.synchronizedList}
+ * method.  This is best done at creation time, to prevent accidental
+ * unsynchronized access to the list:&amp;lt;pre&amp;gt;
+ *   List list = Collections.synchronizedList(new LinkedList(...));&amp;lt;/pre&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;和&lt;strong&gt;ArrayList&lt;/strong&gt;一样，这个容器也是非线程安全的，如果要在多线程环境下使用，也要&lt;strong&gt;synchronizedList&lt;/strong&gt;包装起来&lt;/p&gt;
+
+&lt;p&gt;在源码中还有一些注释是关于迭代器的，等到以后的文章中再说明
+&lt;br /&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;2-节点&quot;&gt;2. 节点&lt;/h4&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;节点的表示&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;需要先统一以下说法，Node叫做&lt;strong&gt;节点&lt;/strong&gt;，Node.item叫做&lt;strong&gt;元素&lt;/strong&gt;&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    //当前节点的类型是泛型
+    private static class Node&amp;lt;E&amp;gt; {
+        E item;
+        //前后节点都是Node类型，其中又包括了其当前节点和前后节点
+        Node&amp;lt;E&amp;gt; next;
+        Node&amp;lt;E&amp;gt; prev;
+
+        Node(Node&amp;lt;E&amp;gt; prev, E element, Node&amp;lt;E&amp;gt; next) {
+            this.item = element;
+            this.next = next;
+            this.prev = prev;
+        }
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;根据索引寻找节点&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;在查找的过程要一个一个节点的迭代，所以&lt;strong&gt;LinkedList&lt;/strong&gt;随机读取的开销要比&lt;strong&gt;ArrayList&lt;/strong&gt;大&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    /**
+     * Returns the (non-null) Node at the specified element index.
+     */
+    Node&amp;lt;E&amp;gt; node(int index) {
+        // assert isElementIndex(index);
+        //if-else来判断从头部还是尾部开始查找
+        if (index &amp;lt; (size &amp;gt;&amp;gt; 1)) {
+            Node&amp;lt;E&amp;gt; x = first;
+            //一直迭代然后得到特定节点
+            for (int i = 0; i &amp;lt; index; i++)
+                x = x.next;
+            return x;
+        } else {
+            Node&amp;lt;E&amp;gt; x = last;
+            for (int i = size - 1; i &amp;gt; index; i--)
+                x = x.prev;
+            return x;
+        }
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;3-类的基本信息&quot;&gt;3. 类的基本信息&lt;/h4&gt;
+
+&lt;p&gt;先来看看这个类继承了什么类，实现了什么接口&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public class LinkedList&amp;lt;E&amp;gt;
+    extends AbstractSequentialList&amp;lt;E&amp;gt;
+    implements List&amp;lt;E&amp;gt;, Deque&amp;lt;E&amp;gt;, Cloneable, java.io.Serializable{
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;继承了**AbstractSequentialList&lt;E&gt;**（AbstractList&lt;E&gt;的子类），多实现了一个**Deque&lt;E&gt;**接口，其他的和**ArrayList**是一样的&lt;/E&gt;&lt;/E&gt;&lt;/E&gt;&lt;/p&gt;
+
+&lt;p&gt;变量：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    //大小
+    transient int size = 0;
+
+    /**
+     * Pointer to first node.
+     * Invariant: (first == null &amp;amp;&amp;amp; last == null) ||
+     *            (first.prev == null &amp;amp;&amp;amp; first.item != null)
+     */ 
+    //第一个节点，满足上面这两个条件之一
+    transient Node&amp;lt;E&amp;gt; first;
+
+    /**
+     * Pointer to last node.
+     * Invariant: (first == null &amp;amp;&amp;amp; last == null) ||
+     *            (last.next == null &amp;amp;&amp;amp; last.item != null)
+     */
+    //最后一个节点，满足上面这两个条件之一
+    transient Node&amp;lt;E&amp;gt; last;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;4-构造&quot;&gt;4. 构造&lt;/h4&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;空链表&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    /**
+     * Constructs an empty list.
+     */
+    public LinkedList() {
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;带有其他容器元素的链表&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    /**
+     * Constructs a list containing the elements of the specified
+     * collection, in the order they are returned by the collection's
+     * iterator.
+     *
+     * @param  c the collection whose elements are to be placed into this list
+     * @throws NullPointerException if the specified collection is null
+     */
+    public LinkedList(Collection&amp;lt;? extends E&amp;gt; c) {
+        //先构造一个空链表
+        this();
+        //添加指定容器的元素的方法，下文讲述
+        addAll(c);
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;5-增删改查&quot;&gt;5. 增删改查&lt;/h4&gt;
+
+&lt;h5 id=&quot;增&quot;&gt;增&lt;/h5&gt;
+
+&lt;p&gt;因为链表是双向的，所以在增加元素的时候，要设置节点两边的指向，接下来说明指向的时候，会说明是&lt;strong&gt;向前指向&lt;/strong&gt;还是&lt;strong&gt;向后指向&lt;/strong&gt;，下文说的删除指向，就是把指向设为null&lt;/p&gt;
+
+&lt;h6 id=&quot;主要内容&quot;&gt;主要内容&lt;/h6&gt;
+
+&lt;blockquote&gt;
+  &lt;ul&gt;
+    &lt;li&gt;addFirst()
+      &lt;ul&gt;
+        &lt;li&gt;linkFirst()&lt;/li&gt;
+      &lt;/ul&gt;
+    &lt;/li&gt;
+    &lt;li&gt;addLast()
+      &lt;ul&gt;
+        &lt;li&gt;linkLast()&lt;/li&gt;
+      &lt;/ul&gt;
+    &lt;/li&gt;
+    &lt;li&gt;add()
+      &lt;ul&gt;
+        &lt;li&gt;linkLast()&lt;/li&gt;
+        &lt;li&gt;linkBefore()&lt;/li&gt;
+      &lt;/ul&gt;
+    &lt;/li&gt;
+    &lt;li&gt;addAll()&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;从内往外，先将内部方法，再讲公用方法：&lt;/p&gt;
+
+&lt;h6 id=&quot;增加至表头&quot;&gt;增加至表头&lt;/h6&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-328d501b8db4f6ce.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    /**
+     * Links e as first element.
+     */
+    //将元素添加至链表头
+    private void linkFirst(E e) {
+        //先定义一个节点
+        final Node&amp;lt;E&amp;gt; f = first;
+        //newNode向后指向f
+        final Node&amp;lt;E&amp;gt; newNode = new Node&amp;lt;&amp;gt;(null, e, f);
+        //新的节点作为第一个节点
+        first = newNode;
+        //如果f为null，表示链表里只有一个元素，这时候第一个和最后一个都是newNode
+        if (f == null)
+            last = newNode;
+        else
+            //f向前指向newNode
+            f.prev = newNode;
+        //大小加1
+        size++;
+        modCount++;
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h6 id=&quot;增加至表尾&quot;&gt;增加至表尾&lt;/h6&gt;
+
+&lt;p&gt;原理是一样的，就不画图了&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    /**
+     * Links e as last element.
+     */
+    //基本套路是一样的
+    void linkLast(E e) {
+        final Node&amp;lt;E&amp;gt; l = last;
+        //newNode向前指向l
+        final Node&amp;lt;E&amp;gt; newNode = new Node&amp;lt;&amp;gt;(l, e, null);
+        last = newNode;
+        if (l == null)
+            first = newNode;
+        else
+            //l向后指向newNode
+            l.next = newNode;
+        size++;
+        modCount++;
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h6 id=&quot;增加至指定位置&quot;&gt;增加至指定位置&lt;/h6&gt;
+
+&lt;p&gt;插入到指定位置，涉及三个元素，两两之间有关联，所有需要有四条指向&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-1fa23914082ab911.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    /**
+     * Inserts element e before non-null Node succ.
+     */
+    void linkBefore(E e, Node&amp;lt;E&amp;gt; succ) {
+        // assert succ != null;
+        //把指定位置的前一个节点拿出来
+        final Node&amp;lt;E&amp;gt; pred = succ.prev;
+        //在创建节点的时候就有两条指向了
+        final Node&amp;lt;E&amp;gt; newNode = new Node&amp;lt;&amp;gt;(pred, e, succ);
+        //succ向前指向newNode
+        succ.prev = newNode;
+        if (pred == null)
+            //如果插入的位置前面没有节点，则插入的节点作为第一个
+            first = newNode;
+        else
+            //刚才创建的pred节点，向后指向newNode
+            pred.next = newNode;
+        size++;
+        modCount++;
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;h6 id=&quot;刚才上面的三个方法都是为下面这些方法服务的&quot;&gt;刚才上面的三个方法都是为下面这些方法服务的：&lt;/h6&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    //添加至头部
+    public void addFirst(E e) {
+        linkFirst(e);
+    }
+  
+  //添加至尾部
+  public void addLast(E e) {
+        linkLast(e);
+    }
+
+    //和上面加至队尾是等价的，除了有返回值
+    public boolean add(E e) {
+        linkLast(e);
+        return true;
+    }
+
+    //在指定位置添加节点
+    public void add(int index, E element) {
+            //检查元素是否越界
+            checkPositionIndex(index);
+
+            /**
+             *  private void checkPositionIndex(int index) {
+             *      if (!isPositionIndex(index))
+             *          throw new IndexOutOfBoundsException(outOfBoundsMsg(index));
+             *  }
+             */
+            //如果索引在最后，直接加至队尾
+            if (index == size)
+                linkLast(element);
+            else
+                //调用node()方法寻找节点
+                linkBefore(element, node(index));
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;h6 id=&quot;还有直接添加另一个容器的元素至链表的方法&quot;&gt;还有直接添加另一个容器的元素至链表的方法：&lt;/h6&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;将指定容器的元素添加至指定位置，插入的位置在index元素之前（若index = 1，表示第2个元素，则插入第1个和第2个元素之间）&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-e2ee83cac0cb9011.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    public boolean addAll(int index, Collection&amp;lt;? extends E&amp;gt; c) {
+        //检查是否越界
+        checkPositionIndex(index);
+        //先用数组存放
+        Object[] a = c.toArray();
+        int numNew = a.length;
+        if (numNew == 0)
+            return false;
+
+        //前一个节点和当前节点
+        Node&amp;lt;E&amp;gt; pred, succ;
+        if (index == size) {
+            succ = null;
+            //将容器内元素元素添加到表尾
+            pred = last;
+        } else {
+            //查找指定添加位置
+            succ = node(index);
+            pred = succ.prev;
+        }
+
+        for (Object o : a) {
+            @SuppressWarnings(&quot;unchecked&quot;) E e = (E) o;
+            Node&amp;lt;E&amp;gt; newNode = new Node&amp;lt;&amp;gt;(pred, e, null);
+            //如果是第一个节点
+            if (pred == null)
+                first = newNode;
+            else
+                //把前一个节点向后指向newNode
+                pred.next = newNode;
+            //这个在if-else之外，如果没有这语句，pred节点就固定是那一个节点，所以需要在每一次循环内更换节点
+            pred = newNode;
+        }
+        //如果是最后节点
+        if (succ == null) {
+            last = pred;
+        } else {
+            //两个节点之间进行连接
+            pred.next = succ;
+            succ.prev = pred;
+        }
+
+        size += numNew;
+        modCount++;
+        return true;
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;将指定容器的元素添加至链表尾：&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    public boolean addAll(Collection&amp;lt;? extends E&amp;gt; c) {
+        return addAll(size, c);
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;h5 id=&quot;删&quot;&gt;删&lt;/h5&gt;
+
+&lt;p&gt;删除节点的方式，就是把节点的元素和两边的指向设为null，让GC来收集&lt;/p&gt;
+
+&lt;h6 id=&quot;主要内容-1&quot;&gt;主要内容&lt;/h6&gt;
+
+&lt;blockquote&gt;
+  &lt;ul&gt;
+    &lt;li&gt;removeFirst()
+      &lt;ul&gt;
+        &lt;li&gt;unlinkFirst()&lt;/li&gt;
+      &lt;/ul&gt;
+    &lt;/li&gt;
+    &lt;li&gt;removeLast()
+      &lt;ul&gt;
+        &lt;li&gt;unlinkLast()&lt;/li&gt;
+      &lt;/ul&gt;
+    &lt;/li&gt;
+    &lt;li&gt;remove()
+      &lt;ul&gt;
+        &lt;li&gt;unlink()&lt;/li&gt;
+      &lt;/ul&gt;
+    &lt;/li&gt;
+    &lt;li&gt;clear()&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;还是按照相同的顺序来：&lt;/p&gt;
+
+&lt;h6 id=&quot;删除第一个节点&quot;&gt;删除第一个节点&lt;/h6&gt;
+
+&lt;p&gt;删除节点内容，删除指向&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-c209c8234b344f59.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    private E unlinkFirst(Node&amp;lt;E&amp;gt; f) {
+        // assert f == first &amp;amp;&amp;amp; f != null;
+        //把指定节点的内容拿出来，最后返回
+        final E element = f.item;
+        final Node&amp;lt;E&amp;gt; next = f.next;
+        //节点内容设为空
+        f.item = null;
+        //清空节点的向后指向
+        f.next = null; // help GC
+        //指定节点的下一个节点作为第一个节点
+        first = next;
+        //如果没有下一个节点
+        if (next == null)
+            last = null;
+        else
+            //删除指向
+            next.prev = null;
+        //改变大小
+        size--;
+        modCount++;
+        return element;
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h6 id=&quot;删除最后一个节点&quot;&gt;删除最后一个节点&lt;/h6&gt;
+
+&lt;p&gt;步骤是类似的，就画个图，代码就不解释了&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-349e0ee65d5e9831.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    /**
+     * Unlinks non-null last node l.
+     */
+    private E unlinkLast(Node&amp;lt;E&amp;gt; l) {
+        // assert l == last &amp;amp;&amp;amp; l != null;
+        final E element = l.item;
+        final Node&amp;lt;E&amp;gt; prev = l.prev;
+        l.item = null;
+        l.prev = null; // help GC
+        last = prev;
+        if (prev == null)
+            first = null;
+        else
+            prev.next = null;
+        size--;
+        modCount++;
+        return element;
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h6 id=&quot;删除指定节点&quot;&gt;删除指定节点&lt;/h6&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-b22bded49c313f03.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    /**
+     * Unlinks non-null node x.
+     */
+    E unlink(Node&amp;lt;E&amp;gt; x) {
+        // assert x != null;
+        final E element = x.item;
+        final Node&amp;lt;E&amp;gt; next = x.next;
+        final Node&amp;lt;E&amp;gt; prev = x.prev;
+        
+        // 如果x是第一个节点，则设置下一个节点为第一节点
+        if (prev == null) {
+            first = next;
+        } else {
+            //x的前一个节点直接向后指向后一个节点
+            prev.next = next;
+            //删除x的前指向
+            x.prev = null;
+        }
+        
+        //如果x是最后一个节点
+        if (next == null) {
+            //向前指向last节点
+            last = prev;
+        } else {
+            //把后一个节点直接向前指向前一个节点，打个比方，就是1和3节点相连，跳过节点2
+            next.prev = prev;
+            //删除指向
+            x.next = null;
+        }
+        //删除节点内容
+        x.item = null;
+        //改变大小
+        size--;
+        modCount++;
+        return element;
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;h6 id=&quot;这三个删除的方法写来是被以下这些方法调用的&quot;&gt;这三个删除的方法写来是被以下这些方法调用的：&lt;/h6&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    //移除第一个节点
+    public E removeFirst() {
+        final Node&amp;lt;E&amp;gt; f = first;
+        if (f == null)
+            throw new NoSuchElementException();
+        return unlinkFirst(f);
+    }
+    
+    //移除最后节点
+    public E removeLast() {
+        final Node&amp;lt;E&amp;gt; l = last;
+        if (l == null)
+            throw new NoSuchElementException();
+        return unlinkLast(l);
+    }
+
+    //删除特定元素
+    public boolean remove(Object o) {
+        if (o == null) {
+            for (Node&amp;lt;E&amp;gt; x = first; x != null; x = x.next) {
+                if (x.item == null) {
+                    unlink(x);
+                    return true;
+                }
+            }
+        } else {
+            //遍历链表，删去拥有和指定元素相同的内容的节点
+            for (Node&amp;lt;E&amp;gt; x = first; x != null; x = x.next) {
+                if (o.equals(x.item)) {
+                    unlink(x);
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    //删除指定位置元素
+    public E remove(int index) {
+        checkElementIndex(index);
+        return unlink(node(index));
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;h6 id=&quot;清空链表&quot;&gt;清空链表&lt;/h6&gt;
+
+&lt;p&gt;没有用到上面的方法，直接将所有的设为null&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;  public void clear() {
+        // Clearing all of the links between nodes is &quot;unnecessary&quot;, but:
+        // - helps a generational GC if the discarded nodes inhabit
+        //   more than one generation
+        // - is sure to free memory even if there is a reachable Iterator
+        //不断迭代，把节点的三个属性设为null
+        for (Node&amp;lt;E&amp;gt; x = first; x != null; ) {
+            Node&amp;lt;E&amp;gt; next = x.next;
+            x.item = null;
+            x.next = null;
+            x.prev = null;
+            x = next;
+        }
+        //把首尾设为null，改变大小
+        first = last = null;
+        size = 0;
+        modCount++;
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;h5 id=&quot;改&quot;&gt;改&lt;/h5&gt;
+
+&lt;p&gt;链表中改变节点的方式就一个：set()方法&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    public E set(int index, E element) {
+        //检查是否越界
+        checkElementIndex(index);
+        //根据索引查找节点
+        Node&amp;lt;E&amp;gt; x = node(index);
+        //oldVal存放需要改变的内容
+        E oldVal = x.item;
+        x.item = element;
+        //返回改变前的值
+        return oldVal;
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;h5 id=&quot;查&quot;&gt;查&lt;/h5&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;查找首尾元素：&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;这个没什么好说的，直接上代码&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    public E getFirst() {
+        final Node&amp;lt;E&amp;gt; f = first;
+        if (f == null)
+            throw new NoSuchElementException();
+        return f.item;
+    }
+
+    public E getLast() {
+        final Node&amp;lt;E&amp;gt; l = last;
+        if (l == null)
+            throw new NoSuchElementException();
+        return l.item;
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;判断是否含有某个元素&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    public boolean contains(Object o) {
+        //indexOf()方法在下面讲述
+        return indexOf(o) != -1;
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;根据索引查找&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    public E get(int index) {
+        checkElementIndex(index);
+        //node()方法根据索引来找到节点，在用 .item 来返回节点内容
+        return node(index).item;
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;根据元素得出索引&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;得到特定元素第一次出现的位置：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    public int indexOf(Object o) {
+        int index = 0;
+        //如果对象为null，则也可以查找出内容为null的节点的位置
+        if (o == null) {
+            for (Node&amp;lt;E&amp;gt; x = first; x != null; x = x.next) {
+                if (x.item == null)
+                    return index;
+                index++;
+            }
+        } else {
+            //迭代寻找元素
+            for (Node&amp;lt;E&amp;gt; x = first; x != null; x = x.next) {
+                if (o.equals(x.item))
+                    return index;
+                index++;
+            }
+        }
+        return -1;
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;得到特定元素最后一次出现的位置，也就是把上面的反过来找：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    public int lastIndexOf(Object o) {
+        int index = size;
+        if (o == null) {
+            for (Node&amp;lt;E&amp;gt; x = last; x != null; x = x.prev) {
+                index--;
+                if (x.item == null)
+                    return index;
+            }
+        } else {
+            for (Node&amp;lt;E&amp;gt; x = last; x != null; x = x.prev) {
+                index--;
+                if (o.equals(x.item))
+                    return index;
+            }
+        }
+        return -1;
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;LinkedList基于列表的操作到这里就介绍完了，下一篇会是基于队列的操作&lt;/p&gt;
+</description>
+        <pubDate>Tue, 22 May 2018 00:00:00 -0700</pubDate>
+        <link>http://hxblog.site/2018/05/22/LinkedList%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E4%B8%80/</link>
+        <guid isPermaLink="true">http://hxblog.site/2018/05/22/LinkedList%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E4%B8%80/</guid>
+        
+        <category>Java源码解析</category>
+        
+        
+      </item>
     
       <item>
         <title>ArrayList源码分析（三）</title>
@@ -407,8 +1119,8 @@ public interface ListIterator&amp;lt;E&amp;gt; extends Iterator&amp;lt;E&amp;gt;
 &lt;p&gt;到此，ArrayList的基本用法的源码解读就告一段落了，接下来会是LinkedList的源码解析&lt;/p&gt;
 </description>
         <pubDate>Tue, 15 May 2018 00:00:00 -0700</pubDate>
-        <link>http://localhost:4000/2018/05/15/ArrayList%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E4%B8%89/</link>
-        <guid isPermaLink="true">http://localhost:4000/2018/05/15/ArrayList%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E4%B8%89/</guid>
+        <link>http://hxblog.site/2018/05/15/ArrayList%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E4%B8%89/</link>
+        <guid isPermaLink="true">http://hxblog.site/2018/05/15/ArrayList%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E4%B8%89/</guid>
         
         <category>Java源码解析</category>
         
@@ -676,8 +1388,8 @@ public interface ListIterator&amp;lt;E&amp;gt; extends Iterator&amp;lt;E&amp;gt;
 &lt;p&gt;这样子，ArrayList常用的方法就讲完了，下一篇就会是与ArrayList有关的迭代器的使用了&lt;/p&gt;
 </description>
         <pubDate>Wed, 09 May 2018 00:00:00 -0700</pubDate>
-        <link>http://localhost:4000/2018/05/09/ArrayList%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E4%BA%8C/</link>
-        <guid isPermaLink="true">http://localhost:4000/2018/05/09/ArrayList%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E4%BA%8C/</guid>
+        <link>http://hxblog.site/2018/05/09/ArrayList%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E4%BA%8C/</link>
+        <guid isPermaLink="true">http://hxblog.site/2018/05/09/ArrayList%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E4%BA%8C/</guid>
         
         <category>Java源码解析</category>
         
@@ -813,8 +1525,8 @@ public interface ListIterator&amp;lt;E&amp;gt; extends Iterator&amp;lt;E&amp;gt;
 &lt;p&gt;就这样，简单的验证码就做完了&lt;/p&gt;
 </description>
         <pubDate>Sun, 06 May 2018 00:00:00 -0700</pubDate>
-        <link>http://localhost:4000/2018/05/06/%E7%99%BB%E9%99%86%E7%95%8C%E9%9D%A2%E6%A8%A1%E5%9D%97%E8%A7%A3%E6%9E%90-%E7%94%9F%E6%88%90%E5%9B%BE%E7%89%87%E9%AA%8C%E8%AF%81%E7%A0%81/</link>
-        <guid isPermaLink="true">http://localhost:4000/2018/05/06/%E7%99%BB%E9%99%86%E7%95%8C%E9%9D%A2%E6%A8%A1%E5%9D%97%E8%A7%A3%E6%9E%90-%E7%94%9F%E6%88%90%E5%9B%BE%E7%89%87%E9%AA%8C%E8%AF%81%E7%A0%81/</guid>
+        <link>http://hxblog.site/2018/05/06/%E7%99%BB%E9%99%86%E7%95%8C%E9%9D%A2%E6%A8%A1%E5%9D%97%E8%A7%A3%E6%9E%90-%E7%94%9F%E6%88%90%E5%9B%BE%E7%89%87%E9%AA%8C%E8%AF%81%E7%A0%81/</link>
+        <guid isPermaLink="true">http://hxblog.site/2018/05/06/%E7%99%BB%E9%99%86%E7%95%8C%E9%9D%A2%E6%A8%A1%E5%9D%97%E8%A7%A3%E6%9E%90-%E7%94%9F%E6%88%90%E5%9B%BE%E7%89%87%E9%AA%8C%E8%AF%81%E7%A0%81/</guid>
         
         <category>项目模块</category>
         
@@ -1387,8 +2099,8 @@ public class Test {
 
 </description>
         <pubDate>Fri, 04 May 2018 00:00:00 -0700</pubDate>
-        <link>http://localhost:4000/2018/05/04/ArrayList%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E4%B8%80/</link>
-        <guid isPermaLink="true">http://localhost:4000/2018/05/04/ArrayList%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E4%B8%80/</guid>
+        <link>http://hxblog.site/2018/05/04/ArrayList%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E4%B8%80/</link>
+        <guid isPermaLink="true">http://hxblog.site/2018/05/04/ArrayList%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E4%B8%80/</guid>
         
         <category>Java源码解析</category>
         
@@ -1503,8 +2215,8 @@ public class Test {
 &lt;p&gt;如果需要有多个连接，使用连接池是不二之选，关于c3p0的讲解到此为止了，谢谢。&lt;/p&gt;
 </description>
         <pubDate>Tue, 01 May 2018 00:00:00 -0700</pubDate>
-        <link>http://localhost:4000/2018/05/01/c3p0%E8%BF%9E%E6%8E%A5%E6%B1%A0/</link>
-        <guid isPermaLink="true">http://localhost:4000/2018/05/01/c3p0%E8%BF%9E%E6%8E%A5%E6%B1%A0/</guid>
+        <link>http://hxblog.site/2018/05/01/c3p0%E8%BF%9E%E6%8E%A5%E6%B1%A0/</link>
+        <guid isPermaLink="true">http://hxblog.site/2018/05/01/c3p0%E8%BF%9E%E6%8E%A5%E6%B1%A0/</guid>
         
         <category>MySQL</category>
         
@@ -1709,8 +2421,8 @@ public class Test {
 &lt;p&gt;关于其他的继承自Throwable类的方法会专门写一篇源码解读&lt;/p&gt;
 </description>
         <pubDate>Wed, 25 Apr 2018 00:00:00 -0700</pubDate>
-        <link>http://localhost:4000/2018/04/25/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E5%9B%9B-%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86%E8%BF%9B%E9%98%B6/</link>
-        <guid isPermaLink="true">http://localhost:4000/2018/04/25/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E5%9B%9B-%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86%E8%BF%9B%E9%98%B6/</guid>
+        <link>http://hxblog.site/2018/04/25/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E5%9B%9B-%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86%E8%BF%9B%E9%98%B6/</link>
+        <guid isPermaLink="true">http://hxblog.site/2018/04/25/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E5%9B%9B-%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86%E8%BF%9B%E9%98%B6/</guid>
         
         <category>Java基础</category>
         
@@ -1874,8 +2586,8 @@ public class Test {
 
 </description>
         <pubDate>Tue, 24 Apr 2018 00:00:00 -0700</pubDate>
-        <link>http://localhost:4000/2018/04/24/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E4%B8%89-%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/</link>
-        <guid isPermaLink="true">http://localhost:4000/2018/04/24/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E4%B8%89-%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/</guid>
+        <link>http://hxblog.site/2018/04/24/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E4%B8%89-%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/</link>
+        <guid isPermaLink="true">http://hxblog.site/2018/04/24/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E4%B8%89-%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/</guid>
         
         <category>Java基础</category>
         
@@ -2217,8 +2929,8 @@ Integer.valueOf(String s)&lt;/p&gt;
 &lt;p&gt;关于字符串的基本知识就到这里啦！&lt;/p&gt;
 </description>
         <pubDate>Mon, 23 Apr 2018 00:00:00 -0700</pubDate>
-        <link>http://localhost:4000/2018/04/23/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E4%BA%8C-%E5%AD%97%E7%AC%A6%E4%B8%B2/</link>
-        <guid isPermaLink="true">http://localhost:4000/2018/04/23/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E4%BA%8C-%E5%AD%97%E7%AC%A6%E4%B8%B2/</guid>
+        <link>http://hxblog.site/2018/04/23/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E4%BA%8C-%E5%AD%97%E7%AC%A6%E4%B8%B2/</link>
+        <guid isPermaLink="true">http://hxblog.site/2018/04/23/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E4%BA%8C-%E5%AD%97%E7%AC%A6%E4%B8%B2/</guid>
         
         <category>Java基础</category>
         
@@ -2401,156 +3113,10 @@ Integer.valueOf(String s)&lt;/p&gt;
 
 </description>
         <pubDate>Sun, 22 Apr 2018 00:00:00 -0700</pubDate>
-        <link>http://localhost:4000/2018/04/22/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E4%B8%80/</link>
-        <guid isPermaLink="true">http://localhost:4000/2018/04/22/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E4%B8%80/</guid>
+        <link>http://hxblog.site/2018/04/22/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E4%B8%80/</link>
+        <guid isPermaLink="true">http://hxblog.site/2018/04/22/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E4%B8%80/</guid>
         
         <category>Java基础</category>
-        
-        
-      </item>
-    
-      <item>
-        <title>树莓派小车（三）Python控制小车</title>
-        <description>&lt;p&gt;这篇博客来自&lt;a href=&quot;https://www.jianshu.com/p/43baa2037dfc&quot;&gt;我的简书&lt;/a&gt;&lt;/p&gt;
-
-&lt;h3 id=&quot;正文之前&quot;&gt;正文之前&lt;/h3&gt;
-&lt;blockquote&gt;
-  &lt;p&gt;由于最近忙于复习赶考，所以暂时没有拿起树莓派小车，直到昨天，终于空出时间来把代码整理一下来和大家分享&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;h3 id=&quot;正文&quot;&gt;正文&lt;/h3&gt;
-&lt;p&gt;在&lt;a href=&quot;http://hxblog.site/2018/04/20/%E6%A0%91%E8%8E%93%E6%B4%BE%E5%B0%8F%E8%BD%A6-%E4%BA%8C-%E6%A0%91%E8%8E%93%E6%B4%BE-%E5%B0%8F%E8%BD%A6%E5%92%8C%E7%BA%A2%E5%A4%96%E7%BA%BF%E6%A8%A1%E5%9D%97%E8%BF%9E%E6%8E%A5/&quot;&gt;树莓派小车系列之二&lt;/a&gt;中，讲到了树莓派的引脚定义方式有两种：&lt;/p&gt;
-&lt;ul&gt;
-  &lt;li&gt;PHYSICAL NUMBERING&lt;/li&gt;
-  &lt;li&gt;GPIO NUMBERING&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;我采用的是第二种方式&lt;/p&gt;
-
-&lt;h4 id=&quot;开始写&quot;&gt;开始写&lt;/h4&gt;
-&lt;h5 id=&quot;1-导入库&quot;&gt;1. 导入库&lt;/h5&gt;
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;import RPi.GPIO as GPIO
-import time
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h5 id=&quot;2-定义接口方式以及接口位置&quot;&gt;2. 定义接口方式以及接口位置&lt;/h5&gt;
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;GPIO.setmode(GPIO.BCM)
-IN1 = 17
-IN2 = 18
-IN3 = 27
-IN4 = 22
-IN5 = 23
-IN6 = 24 
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-&lt;p&gt;IN1 - IN4为L298N接入，IN5和IN6为红外线模块接入&lt;/p&gt;
-&lt;h6 id=&quot;车轮驱动方式&quot;&gt;车轮驱动方式：&lt;/h6&gt;
-&lt;p&gt;IN1和IN2负责驱动车轮转动（前进）
-IN3和IN4负责驱动车轮转动（后退）&lt;/p&gt;
-
-&lt;h5 id=&quot;3-初始化&quot;&gt;3. 初始化&lt;/h5&gt;
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;def init():
-    GPIO.setup(IN1, GPIO.OUT)
-    GPIO.setup(IN2, GPIO.OUT)
-    GPIO.setup(IN3, GPIO.OUT)
-    GPIO.setup(IN4, GPIO.OUT)
-    GPIO.setup(IN5, GPIO.IN)
-    GPIO.setup(IN6, GPIO.IN)
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-&lt;p&gt;连接L298N的接口设为输出，因为需要输出的信号来驱动电机
-连接红外线模块的接口为输入，因为需要输入的信号来做出判断&lt;/p&gt;
-
-&lt;h5 id=&quot;4-基础方向行为&quot;&gt;4. 基础方向行为&lt;/h5&gt;
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;def up():
-    GPIO.output(IN1, GPIO.HIGH)          //右侧车轮前进
-    GPIO.output(IN2, GPIO.HIGH)          //左侧车轮前进
-    GPIO.output(IN3, GPIO.LOW)
-    GPIO.output(IN4, GPIO.LOW)
-
-
-def down():
-    GPIO.output(IN1, GPIO.LOW)
-    GPIO.output(IN2, GPIO.LOW)
-    GPIO.output(IN3, GPIO.HIGH)          //右侧车轮后退
-    GPIO.output(IN4, GPIO.HIGH)          //左侧车轮后退
-
-
-def turn_left():
-    GPIO.output(IN1, GPIO.HIGH)          //右侧车轮前进
-    GPIO.output(IN2, GPIO.LOW)
-    GPIO.output(IN3, GPIO.LOW)
-    GPIO.output(IN4, GPIO.LOW)
-
-
-def turn_right():
-    GPIO.output(IN1, GPIO.LOW)
-    GPIO.output(IN2, GPIO.HIGH)          //左侧车轮前进
-    GPIO.output(IN3, GPIO.LOW)
-    GPIO.output(IN4, GPIO.LOW)
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;需要说明的是：由于不含舵机，转弯的操作是单边车轮驱动，带动车身转动&lt;/p&gt;
-
-&lt;h5 id=&quot;5-红外控制&quot;&gt;5. 红外控制&lt;/h5&gt;
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;init()
-
-n = 5
-
-while (n &amp;gt; 0):                                  //总共转弯五次
-    in_left = GPIO.input(IN5)                   //左侧红外线接收器
-    in_right = GPIO.input(IN6)                  //右侧红外线接收器
-    up()                                        //未遇到障碍时直行
-    if (in_left == GPIO.LOW):
-        down()
-        time.sleep(1)
-        turn_right()
-        time.sleep(1)
-        n = n - 1
-        continue
-    
-    if (in_right == GPIO.LOW):
-        down()
-        time.sleep(1)
-        turn_left()
-        time.sleep(1)
-        n = n - 1
-        continue
-    
-    if (in_right == GPIO.LOW &amp;amp; in_left == GPIO.LOW):
-        down()
-        time.sleep(1)
-        turn_right()               //如果两侧都有障碍，就右转（个人喜好）
-        time.sleep(1)
-        n = n - 1
-        continue
-
-stop()                      
-GPIO.cleanup()                    //清空GPIO接口配置信息
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;如果前方遇到障碍，就后退一秒，然后转弯，最后继续直行，直到遇到下一个障碍&lt;/p&gt;
-
-&lt;p&gt;需要说明的是time.sleep()的用法：
-time.sleep(time) 表示的是经过 time 秒后执行下一步操作，就是休眠一段时间的意思
-如果不使用time.sleep()，将会一直执行第一步操作&lt;/p&gt;
-
-&lt;h4 id=&quot;关于运行&quot;&gt;关于运行：&lt;/h4&gt;
-&lt;ul&gt;
-  &lt;li&gt;由于红外传感器的有效距离偏短(5cm左右)，以及传感器的安装位置在车的底部，所以在车辆运动时，如果遇到凹凸不平的物体，有可能造成避障的延迟&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h4 id=&quot;运行视频&quot;&gt;运行视频&lt;/h4&gt;
-
-&lt;p&gt;&lt;a href=&quot;http://v.youku.com/v_show/id_XMzE2NzkzNjAwMA==.html?spm=a2h3j.8428770.3416059.1&quot;&gt;树莓派小车&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;遇到凹凸不平的物体有些许碰撞（环境简陋）&lt;/p&gt;
-
-&lt;p&gt;关于树莓派信息的内容就先告一段落&lt;/p&gt;
-</description>
-        <pubDate>Sat, 21 Apr 2018 00:00:00 -0700</pubDate>
-        <link>http://localhost:4000/2018/04/21/%E6%A0%91%E8%8E%93%E6%B4%BE%E5%B0%8F%E8%BD%A6-%E4%B8%89-Python%E6%8E%A7%E5%88%B6%E5%B0%8F%E8%BD%A6/</link>
-        <guid isPermaLink="true">http://localhost:4000/2018/04/21/%E6%A0%91%E8%8E%93%E6%B4%BE%E5%B0%8F%E8%BD%A6-%E4%B8%89-Python%E6%8E%A7%E5%88%B6%E5%B0%8F%E8%BD%A6/</guid>
-        
-        <category>树莓派</category>
         
         
       </item>

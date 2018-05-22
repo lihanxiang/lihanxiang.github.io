@@ -1,0 +1,1159 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- Global site tag (gtag.js) - Google Analytics -->
+	<script async src="https://www.googletagmanager.com/gtag/js?id=UA-117570649-1"></script>
+	<script>
+	  window.dataLayer = window.dataLayer || [];
+	  function gtag(){dataLayer.push(arguments);}
+	  gtag('js', new Date());
+
+	  gtag('config', 'UA-117570649-1');
+	</script>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="写写Java，一天就过去了">
+    <meta name="keyword"  content="Java">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>LinkedList源码分析（一） - 李汉祥的博客 | L Blog</title>
+
+    <link rel="canonical" href="http://hxblog.site/2018/05/22/LinkedList%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E4%B8%80/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/hux-blog.min.css">
+
+    <!-- Pygments Github CSS -->
+    <link rel="stylesheet" href="/css/syntax.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="http://cdn.staticfile.org/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+	<!-- Global site tag (gtag.js) - Google Analytics -->
+	<script async src="https://www.googletagmanager.com/gtag/js?id=UA-117570649-1"></script>
+	<script>
+	  window.dataLayer = window.dataLayer || [];
+	  function gtag(){dataLayer.push(arguments);}
+	  gtag('js', new Date());
+
+	  gtag('config', 'UA-117570649-1');
+	</script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">L Blog</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+                    
+                    <li>
+                        <a href="/about/">About</a>
+                    </li>
+                    
+                    <li>
+                        <a href="/tags/">Tags</a>
+                    </li>
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Image to hack wechat -->
+<!-- <img src="/img/post/2018-05/22.jpg" width="0" height="0"> -->
+
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        background-image: url('/img/post/2018-05/22.jpg')
+    }
+</style>
+<header class="intro-header" >
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                        <a class="tag" href="/tags/#Java源码解析" title="Java源码解析">Java源码解析</a>
+                        
+                    </div>
+                    <h1>LinkedList源码分析（一）</h1>
+                    
+                    
+                    <h2 class="subheading">读读源码</h2>
+                    
+                    <span class="meta">Posted by L on May 22, 2018</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+				<h3 id="正文之前">正文之前</h3>
+
+<blockquote>
+  <p>之前介绍过了<strong>ArrayList</strong>的源码了，在刚学Java的时候，书籍中就经常拿<strong>ArrayList</strong>和<strong>LinkedList</strong>来举例子，学完了<strong>ArrayList</strong>最常用部分的源码后，就打算把<strong>LinkedList</strong>也学完，源码中有两种操作，一种是列表操作，一种是队列操作，分两篇文章来讲，今天先讲列表操作</p>
+
+  <p>今天的内容有这些：</p>
+  <ol>
+    <li>LinkedList 概念介绍</li>
+    <li>结点</li>
+    <li>类的基本信息</li>
+    <li>构造</li>
+    <li>增删改查</li>
+  </ol>
+</blockquote>
+
+<h3 id="正文">正文</h3>
+
+<h4 id="1-概念介绍">1. 概念介绍</h4>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> * Doubly-linked list implementation of the {@code List} and {@code Deque}
+ * interfaces.  Implements all optional list operations, and permits all
+ * elements (including {@code null}).
+ *
+ * &lt;p&gt;All of the operations perform as could be expected for a doubly-linked
+ * list.  Operations that index into the list will traverse the list from
+ * the beginning or the end, whichever is closer to the specified index.
+</code></pre></div></div>
+
+<p>按照注释给出的，<strong>LinkedList</strong>叫做“双向链表”，实现了<strong>List</strong>（列表）接口和<strong>Deque</strong>（双向队列）接口，支持队列的操作</p>
+
+<p>对特定的元素的操作，可以从列表的首或者尾开始，哪边离得近就从哪边开始</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> * &lt;p&gt;&lt;strong&gt;Note that this implementation is not synchronized.&lt;/strong&gt;
+ * If multiple threads access a linked list concurrently, and at least
+ * one of the threads modifies the list structurally, it &lt;i&gt;must&lt;/i&gt; be
+ * synchronized externally.  (A structural modification is any operation
+ * that adds or deletes one or more elements; merely setting the value of
+ * an element is not a structural modification.)  This is typically
+ * accomplished by synchronizing on some object that naturally
+ * encapsulates the list.
+ *
+ * If no such object exists, the list should be "wrapped" using the
+ * {@link Collections#synchronizedList Collections.synchronizedList}
+ * method.  This is best done at creation time, to prevent accidental
+ * unsynchronized access to the list:&lt;pre&gt;
+ *   List list = Collections.synchronizedList(new LinkedList(...));&lt;/pre&gt;
+</code></pre></div></div>
+
+<p>和<strong>ArrayList</strong>一样，这个容器也是非线程安全的，如果要在多线程环境下使用，也要<strong>synchronizedList</strong>包装起来</p>
+
+<p>在源码中还有一些注释是关于迭代器的，等到以后的文章中再说明
+<br /></p>
+
+<h4 id="2-节点">2. 节点</h4>
+
+<ol>
+  <li>节点的表示</li>
+</ol>
+
+<p>需要先统一以下说法，Node叫做<strong>节点</strong>，Node.item叫做<strong>元素</strong></p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    //当前节点的类型是泛型
+    private static class Node&lt;E&gt; {
+        E item;
+        //前后节点都是Node类型，其中又包括了其当前节点和前后节点
+        Node&lt;E&gt; next;
+        Node&lt;E&gt; prev;
+
+        Node(Node&lt;E&gt; prev, E element, Node&lt;E&gt; next) {
+            this.item = element;
+            this.next = next;
+            this.prev = prev;
+        }
+    }
+</code></pre></div></div>
+
+<ol>
+  <li>根据索引寻找节点</li>
+</ol>
+
+<p>在查找的过程要一个一个节点的迭代，所以<strong>LinkedList</strong>随机读取的开销要比<strong>ArrayList</strong>大</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    /**
+     * Returns the (non-null) Node at the specified element index.
+     */
+    Node&lt;E&gt; node(int index) {
+        // assert isElementIndex(index);
+        //if-else来判断从头部还是尾部开始查找
+        if (index &lt; (size &gt;&gt; 1)) {
+            Node&lt;E&gt; x = first;
+            //一直迭代然后得到特定节点
+            for (int i = 0; i &lt; index; i++)
+                x = x.next;
+            return x;
+        } else {
+            Node&lt;E&gt; x = last;
+            for (int i = size - 1; i &gt; index; i--)
+                x = x.prev;
+            return x;
+        }
+    }
+</code></pre></div></div>
+<p><br /></p>
+
+<h4 id="3-类的基本信息">3. 类的基本信息</h4>
+
+<p>先来看看这个类继承了什么类，实现了什么接口</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public class LinkedList&lt;E&gt;
+    extends AbstractSequentialList&lt;E&gt;
+    implements List&lt;E&gt;, Deque&lt;E&gt;, Cloneable, java.io.Serializable{
+}
+</code></pre></div></div>
+
+<p>继承了**AbstractSequentialList<E>**（AbstractList<E>的子类），多实现了一个**Deque<E>**接口，其他的和**ArrayList**是一样的</E></E></E></p>
+
+<p>变量：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    //大小
+    transient int size = 0;
+
+    /**
+     * Pointer to first node.
+     * Invariant: (first == null &amp;&amp; last == null) ||
+     *            (first.prev == null &amp;&amp; first.item != null)
+     */ 
+    //第一个节点，满足上面这两个条件之一
+    transient Node&lt;E&gt; first;
+
+    /**
+     * Pointer to last node.
+     * Invariant: (first == null &amp;&amp; last == null) ||
+     *            (last.next == null &amp;&amp; last.item != null)
+     */
+    //最后一个节点，满足上面这两个条件之一
+    transient Node&lt;E&gt; last;
+</code></pre></div></div>
+<p><br /></p>
+
+<h4 id="4-构造">4. 构造</h4>
+
+<ol>
+  <li>空链表</li>
+</ol>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    /**
+     * Constructs an empty list.
+     */
+    public LinkedList() {
+    }
+</code></pre></div></div>
+
+<ol>
+  <li>带有其他容器元素的链表</li>
+</ol>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    /**
+     * Constructs a list containing the elements of the specified
+     * collection, in the order they are returned by the collection's
+     * iterator.
+     *
+     * @param  c the collection whose elements are to be placed into this list
+     * @throws NullPointerException if the specified collection is null
+     */
+    public LinkedList(Collection&lt;? extends E&gt; c) {
+        //先构造一个空链表
+        this();
+        //添加指定容器的元素的方法，下文讲述
+        addAll(c);
+    }
+</code></pre></div></div>
+<p><br /></p>
+
+<h4 id="5-增删改查">5. 增删改查</h4>
+
+<h5 id="增">增</h5>
+
+<p>因为链表是双向的，所以在增加元素的时候，要设置节点两边的指向，接下来说明指向的时候，会说明是<strong>向前指向</strong>还是<strong>向后指向</strong>，下文说的删除指向，就是把指向设为null</p>
+
+<h6 id="主要内容">主要内容</h6>
+
+<blockquote>
+  <ul>
+    <li>addFirst()
+      <ul>
+        <li>linkFirst()</li>
+      </ul>
+    </li>
+    <li>addLast()
+      <ul>
+        <li>linkLast()</li>
+      </ul>
+    </li>
+    <li>add()
+      <ul>
+        <li>linkLast()</li>
+        <li>linkBefore()</li>
+      </ul>
+    </li>
+    <li>addAll()</li>
+  </ul>
+</blockquote>
+
+<p>从内往外，先将内部方法，再讲公用方法：</p>
+
+<h6 id="增加至表头">增加至表头</h6>
+
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-328d501b8db4f6ce.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    /**
+     * Links e as first element.
+     */
+    //将元素添加至链表头
+    private void linkFirst(E e) {
+        //先定义一个节点
+        final Node&lt;E&gt; f = first;
+        //newNode向后指向f
+        final Node&lt;E&gt; newNode = new Node&lt;&gt;(null, e, f);
+        //新的节点作为第一个节点
+        first = newNode;
+        //如果f为null，表示链表里只有一个元素，这时候第一个和最后一个都是newNode
+        if (f == null)
+            last = newNode;
+        else
+            //f向前指向newNode
+            f.prev = newNode;
+        //大小加1
+        size++;
+        modCount++;
+    }
+</code></pre></div></div>
+
+<h6 id="增加至表尾">增加至表尾</h6>
+
+<p>原理是一样的，就不画图了</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    /**
+     * Links e as last element.
+     */
+    //基本套路是一样的
+    void linkLast(E e) {
+        final Node&lt;E&gt; l = last;
+        //newNode向前指向l
+        final Node&lt;E&gt; newNode = new Node&lt;&gt;(l, e, null);
+        last = newNode;
+        if (l == null)
+            first = newNode;
+        else
+            //l向后指向newNode
+            l.next = newNode;
+        size++;
+        modCount++;
+    }
+</code></pre></div></div>
+
+<h6 id="增加至指定位置">增加至指定位置</h6>
+
+<p>插入到指定位置，涉及三个元素，两两之间有关联，所有需要有四条指向</p>
+
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-1fa23914082ab911.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    /**
+     * Inserts element e before non-null Node succ.
+     */
+    void linkBefore(E e, Node&lt;E&gt; succ) {
+        // assert succ != null;
+        //把指定位置的前一个节点拿出来
+        final Node&lt;E&gt; pred = succ.prev;
+        //在创建节点的时候就有两条指向了
+        final Node&lt;E&gt; newNode = new Node&lt;&gt;(pred, e, succ);
+        //succ向前指向newNode
+        succ.prev = newNode;
+        if (pred == null)
+            //如果插入的位置前面没有节点，则插入的节点作为第一个
+            first = newNode;
+        else
+            //刚才创建的pred节点，向后指向newNode
+            pred.next = newNode;
+        size++;
+        modCount++;
+    }
+</code></pre></div></div>
+<p><br /></p>
+
+<h6 id="刚才上面的三个方法都是为下面这些方法服务的">刚才上面的三个方法都是为下面这些方法服务的：</h6>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    //添加至头部
+    public void addFirst(E e) {
+        linkFirst(e);
+    }
+  
+  //添加至尾部
+  public void addLast(E e) {
+        linkLast(e);
+    }
+
+    //和上面加至队尾是等价的，除了有返回值
+    public boolean add(E e) {
+        linkLast(e);
+        return true;
+    }
+
+    //在指定位置添加节点
+    public void add(int index, E element) {
+            //检查元素是否越界
+            checkPositionIndex(index);
+
+            /**
+             *  private void checkPositionIndex(int index) {
+             *      if (!isPositionIndex(index))
+             *          throw new IndexOutOfBoundsException(outOfBoundsMsg(index));
+             *  }
+             */
+            //如果索引在最后，直接加至队尾
+            if (index == size)
+                linkLast(element);
+            else
+                //调用node()方法寻找节点
+                linkBefore(element, node(index));
+    }
+</code></pre></div></div>
+<p><br /></p>
+
+<h6 id="还有直接添加另一个容器的元素至链表的方法">还有直接添加另一个容器的元素至链表的方法：</h6>
+
+<ol>
+  <li>将指定容器的元素添加至指定位置，插入的位置在index元素之前（若index = 1，表示第2个元素，则插入第1个和第2个元素之间）</li>
+</ol>
+
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-e2ee83cac0cb9011.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    public boolean addAll(int index, Collection&lt;? extends E&gt; c) {
+        //检查是否越界
+        checkPositionIndex(index);
+        //先用数组存放
+        Object[] a = c.toArray();
+        int numNew = a.length;
+        if (numNew == 0)
+            return false;
+
+        //前一个节点和当前节点
+        Node&lt;E&gt; pred, succ;
+        if (index == size) {
+            succ = null;
+            //将容器内元素元素添加到表尾
+            pred = last;
+        } else {
+            //查找指定添加位置
+            succ = node(index);
+            pred = succ.prev;
+        }
+
+        for (Object o : a) {
+            @SuppressWarnings("unchecked") E e = (E) o;
+            Node&lt;E&gt; newNode = new Node&lt;&gt;(pred, e, null);
+            //如果是第一个节点
+            if (pred == null)
+                first = newNode;
+            else
+                //把前一个节点向后指向newNode
+                pred.next = newNode;
+            //这个在if-else之外，如果没有这语句，pred节点就固定是那一个节点，所以需要在每一次循环内更换节点
+            pred = newNode;
+        }
+        //如果是最后节点
+        if (succ == null) {
+            last = pred;
+        } else {
+            //两个节点之间进行连接
+            pred.next = succ;
+            succ.prev = pred;
+        }
+
+        size += numNew;
+        modCount++;
+        return true;
+    }
+</code></pre></div></div>
+
+<ol>
+  <li>将指定容器的元素添加至链表尾：</li>
+</ol>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    public boolean addAll(Collection&lt;? extends E&gt; c) {
+        return addAll(size, c);
+    }
+</code></pre></div></div>
+<p><br /></p>
+
+<h5 id="删">删</h5>
+
+<p>删除节点的方式，就是把节点的元素和两边的指向设为null，让GC来收集</p>
+
+<h6 id="主要内容-1">主要内容</h6>
+
+<blockquote>
+  <ul>
+    <li>removeFirst()
+      <ul>
+        <li>unlinkFirst()</li>
+      </ul>
+    </li>
+    <li>removeLast()
+      <ul>
+        <li>unlinkLast()</li>
+      </ul>
+    </li>
+    <li>remove()
+      <ul>
+        <li>unlink()</li>
+      </ul>
+    </li>
+    <li>clear()</li>
+  </ul>
+</blockquote>
+
+<p>还是按照相同的顺序来：</p>
+
+<h6 id="删除第一个节点">删除第一个节点</h6>
+
+<p>删除节点内容，删除指向</p>
+
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-c209c8234b344f59.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    private E unlinkFirst(Node&lt;E&gt; f) {
+        // assert f == first &amp;&amp; f != null;
+        //把指定节点的内容拿出来，最后返回
+        final E element = f.item;
+        final Node&lt;E&gt; next = f.next;
+        //节点内容设为空
+        f.item = null;
+        //清空节点的向后指向
+        f.next = null; // help GC
+        //指定节点的下一个节点作为第一个节点
+        first = next;
+        //如果没有下一个节点
+        if (next == null)
+            last = null;
+        else
+            //删除指向
+            next.prev = null;
+        //改变大小
+        size--;
+        modCount++;
+        return element;
+    }
+</code></pre></div></div>
+
+<h6 id="删除最后一个节点">删除最后一个节点</h6>
+
+<p>步骤是类似的，就画个图，代码就不解释了</p>
+
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-349e0ee65d5e9831.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    /**
+     * Unlinks non-null last node l.
+     */
+    private E unlinkLast(Node&lt;E&gt; l) {
+        // assert l == last &amp;&amp; l != null;
+        final E element = l.item;
+        final Node&lt;E&gt; prev = l.prev;
+        l.item = null;
+        l.prev = null; // help GC
+        last = prev;
+        if (prev == null)
+            first = null;
+        else
+            prev.next = null;
+        size--;
+        modCount++;
+        return element;
+    }
+</code></pre></div></div>
+
+<h6 id="删除指定节点">删除指定节点</h6>
+
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-b22bded49c313f03.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    /**
+     * Unlinks non-null node x.
+     */
+    E unlink(Node&lt;E&gt; x) {
+        // assert x != null;
+        final E element = x.item;
+        final Node&lt;E&gt; next = x.next;
+        final Node&lt;E&gt; prev = x.prev;
+        
+        // 如果x是第一个节点，则设置下一个节点为第一节点
+        if (prev == null) {
+            first = next;
+        } else {
+            //x的前一个节点直接向后指向后一个节点
+            prev.next = next;
+            //删除x的前指向
+            x.prev = null;
+        }
+        
+        //如果x是最后一个节点
+        if (next == null) {
+            //向前指向last节点
+            last = prev;
+        } else {
+            //把后一个节点直接向前指向前一个节点，打个比方，就是1和3节点相连，跳过节点2
+            next.prev = prev;
+            //删除指向
+            x.next = null;
+        }
+        //删除节点内容
+        x.item = null;
+        //改变大小
+        size--;
+        modCount++;
+        return element;
+    }
+</code></pre></div></div>
+<p><br /></p>
+
+<h6 id="这三个删除的方法写来是被以下这些方法调用的">这三个删除的方法写来是被以下这些方法调用的：</h6>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    //移除第一个节点
+    public E removeFirst() {
+        final Node&lt;E&gt; f = first;
+        if (f == null)
+            throw new NoSuchElementException();
+        return unlinkFirst(f);
+    }
+    
+    //移除最后节点
+    public E removeLast() {
+        final Node&lt;E&gt; l = last;
+        if (l == null)
+            throw new NoSuchElementException();
+        return unlinkLast(l);
+    }
+
+    //删除特定元素
+    public boolean remove(Object o) {
+        if (o == null) {
+            for (Node&lt;E&gt; x = first; x != null; x = x.next) {
+                if (x.item == null) {
+                    unlink(x);
+                    return true;
+                }
+            }
+        } else {
+            //遍历链表，删去拥有和指定元素相同的内容的节点
+            for (Node&lt;E&gt; x = first; x != null; x = x.next) {
+                if (o.equals(x.item)) {
+                    unlink(x);
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    //删除指定位置元素
+    public E remove(int index) {
+        checkElementIndex(index);
+        return unlink(node(index));
+    }
+</code></pre></div></div>
+<p><br /></p>
+
+<h6 id="清空链表">清空链表</h6>
+
+<p>没有用到上面的方法，直接将所有的设为null</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  public void clear() {
+        // Clearing all of the links between nodes is "unnecessary", but:
+        // - helps a generational GC if the discarded nodes inhabit
+        //   more than one generation
+        // - is sure to free memory even if there is a reachable Iterator
+        //不断迭代，把节点的三个属性设为null
+        for (Node&lt;E&gt; x = first; x != null; ) {
+            Node&lt;E&gt; next = x.next;
+            x.item = null;
+            x.next = null;
+            x.prev = null;
+            x = next;
+        }
+        //把首尾设为null，改变大小
+        first = last = null;
+        size = 0;
+        modCount++;
+    }
+</code></pre></div></div>
+<p><br /></p>
+
+<h5 id="改">改</h5>
+
+<p>链表中改变节点的方式就一个：set()方法</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    public E set(int index, E element) {
+        //检查是否越界
+        checkElementIndex(index);
+        //根据索引查找节点
+        Node&lt;E&gt; x = node(index);
+        //oldVal存放需要改变的内容
+        E oldVal = x.item;
+        x.item = element;
+        //返回改变前的值
+        return oldVal;
+    }
+</code></pre></div></div>
+<p><br /></p>
+
+<h5 id="查">查</h5>
+
+<ol>
+  <li>查找首尾元素：</li>
+</ol>
+
+<p>这个没什么好说的，直接上代码</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    public E getFirst() {
+        final Node&lt;E&gt; f = first;
+        if (f == null)
+            throw new NoSuchElementException();
+        return f.item;
+    }
+
+    public E getLast() {
+        final Node&lt;E&gt; l = last;
+        if (l == null)
+            throw new NoSuchElementException();
+        return l.item;
+    }
+</code></pre></div></div>
+
+<ol>
+  <li>判断是否含有某个元素</li>
+</ol>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    public boolean contains(Object o) {
+        //indexOf()方法在下面讲述
+        return indexOf(o) != -1;
+    }
+</code></pre></div></div>
+
+<ol>
+  <li>根据索引查找</li>
+</ol>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    public E get(int index) {
+        checkElementIndex(index);
+        //node()方法根据索引来找到节点，在用 .item 来返回节点内容
+        return node(index).item;
+    }
+</code></pre></div></div>
+
+<ol>
+  <li>根据元素得出索引</li>
+</ol>
+
+<p>得到特定元素第一次出现的位置：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    public int indexOf(Object o) {
+        int index = 0;
+        //如果对象为null，则也可以查找出内容为null的节点的位置
+        if (o == null) {
+            for (Node&lt;E&gt; x = first; x != null; x = x.next) {
+                if (x.item == null)
+                    return index;
+                index++;
+            }
+        } else {
+            //迭代寻找元素
+            for (Node&lt;E&gt; x = first; x != null; x = x.next) {
+                if (o.equals(x.item))
+                    return index;
+                index++;
+            }
+        }
+        return -1;
+    }
+</code></pre></div></div>
+
+<p>得到特定元素最后一次出现的位置，也就是把上面的反过来找：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    public int lastIndexOf(Object o) {
+        int index = size;
+        if (o == null) {
+            for (Node&lt;E&gt; x = last; x != null; x = x.prev) {
+                index--;
+                if (x.item == null)
+                    return index;
+            }
+        } else {
+            for (Node&lt;E&gt; x = last; x != null; x = x.prev) {
+                index--;
+                if (o.equals(x.item))
+                    return index;
+            }
+        }
+        return -1;
+    }
+</code></pre></div></div>
+
+<p>LinkedList基于列表的操作到这里就介绍完了，下一篇会是基于队列的操作</p>
+
+
+                <hr>
+
+               
+
+
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/2018/05/15/ArrayList%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E4%B8%89/" data-toggle="tooltip" data-placement="top" title="ArrayList源码分析（三）">&larr; Previous Post</a>
+                    </li>
+                    
+                    
+                </ul>
+
+		
+                <!-- disqus 评论框 start -->
+                <div class="comment">
+                    <div id="disqus_thread" class="disqus-thread"></div>
+                </div>
+                <!-- disqus 评论框 end -->
+                
+
+
+
+            </div>
+
+    <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <hr class="hidden-sm hidden-xs">
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+        				
+                            
+                				<a href="/tags/#Java Web" title="Java Web" rel="3">
+                                    Java Web
+                                </a>
+                            
+        				
+                            
+                				<a href="/tags/#IntelliJ IDEA" title="IntelliJ IDEA" rel="1">
+                                    IntelliJ IDEA
+                                </a>
+                            
+        				
+                            
+                				<a href="/tags/#Spring MVC" title="Spring MVC" rel="1">
+                                    Spring MVC
+                                </a>
+                            
+        				
+                            
+                				<a href="/tags/#随笔" title="随笔" rel="1">
+                                    随笔
+                                </a>
+                            
+        				
+                            
+                				<a href="/tags/#树莓派" title="树莓派" rel="3">
+                                    树莓派
+                                </a>
+                            
+        				
+                            
+                				<a href="/tags/#Java基础" title="Java基础" rel="4">
+                                    Java基础
+                                </a>
+                            
+        				
+                            
+                				<a href="/tags/#MySQL" title="MySQL" rel="1">
+                                    MySQL
+                                </a>
+                            
+        				
+                            
+                				<a href="/tags/#项目模块" title="项目模块" rel="2">
+                                    项目模块
+                                </a>
+                            
+        				
+                            
+                				<a href="/tags/#Java源码解析" title="Java源码解析" rel="4">
+                                    Java源码解析
+                                </a>
+                            
+        				
+        			</div>
+                </section>
+                
+
+                <!-- Something else -->
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+<!-- disqus 公共JS代码 end -->
+
+<!-- disqus 公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = "http-hxblog-site";
+    var disqus_identifier = "/2018/05/22/LinkedList源码分析（一）";
+    var disqus_url = "http://hxblog.site/2018/05/22/LinkedList%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E4%B8%80/";
+
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<!-- disqus 公共JS代码 end -->
+
+
+
+
+
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                    
+                  
+		    
+                            <li>
+                                <a target="_blank" href="https://www.jianshu.com/u/fbc9284d5523">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fa fa-circle fa-stack-2x"></i>
+                                        <i class="fa fa-stack-1x fa-inverse">简</i>
+                                    </span>
+                                </a>
+                            </li>
+                            
+                   
+                    
+                    <li>
+                        <a target="_blank" href="https://www.zhihu.com/people/li-han-xiang-54-15">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-stack-1x fa-inverse">知</i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+
+
+                    
+                    
+                    <li>
+                        <a target="_blank" href="https://github.com/lihanxiang">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; L Blog 2018
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("http://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+<script>
+    // dynamic User by Hux
+    var _gaId = 'UA-117570649-1';
+    var _gaDomain = 'http://hxblog.site/';
+
+    // Originial
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', _gaId, _gaDomain);
+    ga('send', 'pageview');
+</script>
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+
+<!-- Image to hack wechat -->
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>
