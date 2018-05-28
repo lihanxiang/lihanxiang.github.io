@@ -19,9 +19,9 @@
     <meta name="keyword"  content="Java">
     <link rel="shortcut icon" href="/img/favicon.ico">
 
-    <title>树莓派小车（二）树莓派、小车和红外线模块连接 - 李汉祥的博客 | L Blog</title>
+    <title>LinkedList源码分析（二） - 李汉祥的博客 | L Blog</title>
 
-    <link rel="canonical" href="http://localhost:4000/2018/04/20/%E6%A0%91%E8%8E%93%E6%B4%BE%E5%B0%8F%E8%BD%A6-%E4%BA%8C-%E6%A0%91%E8%8E%93%E6%B4%BE-%E5%B0%8F%E8%BD%A6%E5%92%8C%E7%BA%A2%E5%A4%96%E7%BA%BF%E6%A8%A1%E5%9D%97%E8%BF%9E%E6%8E%A5/">
+    <link rel="canonical" href="http://localhost:4000/2018/05/28/LinkedList%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E4%BA%8C/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -142,12 +142,12 @@
 
 
     <!-- Image to hack wechat -->
-<!-- <img src="/img/post/2018-04/20.jpg" width="0" height="0"> -->
+<!-- <img src="/img/post/2018-05/28.jpg" width="0" height="0"> -->
 
 <!-- Post Header -->
 <style type="text/css">
     header.intro-header{
-        background-image: url('/img/post/2018-04/20.jpg')
+        background-image: url('/img/post/2018-05/28.jpg')
     }
 </style>
 <header class="intro-header" >
@@ -157,15 +157,15 @@
                 <div class="post-heading">
                     <div class="tags">
                         
-                        <a class="tag" href="/tags/#树莓派" title="树莓派">树莓派</a>
+                        <a class="tag" href="/tags/#Java源码解析" title="Java源码解析">Java源码解析</a>
                         
                     </div>
-                    <h1>树莓派小车（二）树莓派、小车和红外线模块连接</h1>
+                    <h1>LinkedList源码分析（二）</h1>
                     
                     
-                    <h2 class="subheading">随便玩玩</h2>
+                    <h2 class="subheading">读读源码</h2>
                     
-                    <span class="meta">Posted by L on April 20, 2018</span>
+                    <span class="meta">Posted by L on May 28, 2018</span>
                 </div>
             </div>
         </div>
@@ -183,71 +183,315 @@
                 col-md-10 col-md-offset-1
                 post-container">
 
-				<p>这篇文章转载自<a href="https://www.jianshu.com/p/27b256f1afa8">我的简书</a></p>
+				<h3 id="正文之前">正文之前</h3>
 
-<p>上一篇文章介绍了小车底盘以及驱动板的安装，这一次来讲一讲树莓派与驱动板以及红外线模块的安装</p>
+<blockquote>
+  <p>在上一篇文章中已经讲述了<a href="http://hxblog.site/2018/05/22/LinkedList%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E4%B8%80/">链表基于列表的基本用法</a>，所以，这一篇文章要讲述链表基于队列的基本用法</p>
+</blockquote>
 
-<h3 id="树莓派的gpio引脚定义">树莓派的GPIO引脚定义：</h3>
+<p>主要内容</p>
 
-<p>树莓派的GPIO引脚共分为两种类型，一种是<strong>PHYSICAL NUMBERING</strong></p>
+<blockquote>
+  <ol>
+    <li>基本概念</li>
+    <li>基于单向队列的操作</li>
+    <li>基于双向队列的操作</li>
+  </ol>
+</blockquote>
 
-<p><img src="https://upload-images.jianshu.io/upload_images/3426615-787c3854e8eeb8d2.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
+<h3 id="正文">正文</h3>
 
-<p>单纯地用从上至下，从左至右的顺序来定义引脚</p>
+<h4 id="1-基本概念">1. 基本概念</h4>
 
-<p>在我们的小车中：</p>
+<p>既然是基于队列的操作，就要介绍一下队列的概念：</p>
 
-<p>黄色的GPIO接口连接L298N驱动板以及其他模块如红外线模块等等</p>
+<p>单向队列(Queue)是先进先出(First-In-First-Out)的线性结构，就好比我们生活中的排队，先来排队的人先办理事务，队列只支持在队尾添加元素，在队首删除元素</p>
 
-<p>黑色的Ground接口连接红外线模块上的GND接口</p>
+<p>双向队列(Deque，double-ended queue)，也叫做双端队列，是基于队列和栈的结构，可以在队列两边进行添加和删除操作</p>
 
-<p>红色的5V供电接口连接L298N驱动板上的+5V接口<br /></p>
+<p>在链表中使用基于队列的方法时，其实是调用上一篇文章中定义的方法，只不过在不同的位置使用来达到模拟的效果
+<br /></p>
 
-<p><img src="https://upload-images.jianshu.io/upload_images/3426615-05c31686331df76c.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
+<h4 id="2-基于单向队列的操作">2. 基于单向队列的操作</h4>
 
-<p>采用特殊（未知）的方式来标记GPIO接口</p>
+<p>主要内容：</p>
 
-<p>黄色的GPIO接口连接L298N驱动板以及其他模块如红外线模块等等</p>
+<blockquote>
+  <ul>
+    <li>添加节点
+      <ul>
+        <li>offer()</li>
+      </ul>
+    </li>
+    <li>删除节点
+      <ul>
+        <li>poll()</li>
+        <li>remove()</li>
+      </ul>
+    </li>
+    <li>查找元素
+      <ul>
+        <li>peek()</li>
+        <li>element()</li>
+      </ul>
+    </li>
+  </ul>
+</blockquote>
 
-<p>黑色的Ground接口连接红外线模块上的GND接口</p>
+<p>在这几个基本的操作中，添加和删除是针对节点而言，而查找虽然是针对节点，但是查询的结果是返回节点中的元素的</p>
 
-<p>红色的5V供电接口连接L298N驱动板上的+5V接口<br /></p>
+<h5 id="1-添加节点">1. 添加节点</h5>
 
-<p>我采用的是第二种，关于如何设置哪一种类型以及编写代码驱动小车，将会在树莓派小车系列之三中介绍</p>
+<p>使用add()，在add()中又有linkLast()，结果就是在末尾添加节点：</p>
 
-<h3 id="连接驱动板和树莓派">连接驱动板和树莓派：</h3>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    /**
+     * Adds the specified element as the tail (last element) of this list.
+     *
+     * @param e the element to add
+     * @return {@code true} (as specified by {@link Queue#offer})
+     * @since 1.5
+     */
+    public boolean offer(E e) {
+        return add(e);
+    }
+</code></pre></div></div>
 
-<p><img src="http://upload-images.jianshu.io/upload_images/3426615-a268ffc4720ec730?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
+<h5 id="2-删除节点">2. 删除节点</h5>
 
-<h3 id="连接红外线模块和树莓派">连接红外线模块和树莓派：</h3>
+<p>删除元素有两种方法，区别就是，一个先判断元素是否为null，而另一个不进行判断：</p>
 
-<p>我购买的是四路探测红外线模块，先拿其中两个红外线接发器来做前方探测</p>
+<ul>
+  <li>poll()</li>
+</ul>
 
-<p>在模块电路板中，每个与红外线探测器相连的接口共有三种口，分别是：VCC，GND，IN（1，2，3，4）</p>
+<p>先判断元素是否存在，然后调用unlinkFirst()，删除第一个节点：</p>
 
-<p>在模块电路板与树莓派的接口中，也有三种口：VCC，GND，OUT（1，2，3，4）<br /></p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    /**
+     * Retrieves and removes the head (first element) of this list.
+     *
+     * @return the head of this list, or {@code null} if this list is empty
+     * @since 1.5
+     */
+    public E poll() {
+        final Node&lt;E&gt; f = first;
+        return (f == null) ? null : unlinkFirst(f);
+    }
+</code></pre></div></div>
 
-<p>在电路板与红外探测器之间连接时，按照对应接口：</p>
+<ul>
+  <li>remove()</li>
+</ul>
 
-<p>VCC - VCC        GND - GND         IN - OUT</p>
+<p>调用removeFirst()，最终也是调用unlinkFirst()，删除第一个节点：</p>
 
-<p><img src="http://upload-images.jianshu.io/upload_images/3426615-53434834eb9bd53a?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    /**
+     * Retrieves and removes the head (first element) of this list.
+     *
+     * @return the head of this list
+     * @throws NoSuchElementException if this list is empty
+     * @since 1.5
+     */
+    public E remove() {
+        return removeFirst();
+    }
+</code></pre></div></div>
 
-<p>在电路板与树莓派之间连接时，按照对应接口：</p>
+<h5 id="3-修改元素">3. 修改元素</h5>
 
-<p>VCC - 3.3V         GND - GND         OUT - GPIO</p>
+<p>在基于队列的操作中是没有修改元素的方法的，不管是单向还是双向队列：</p>
 
-<p>将OUT1和OUT4接在GPIO22 和 GPIO24（读者随意，只要是GPIO口就行）</p>
+<h5 id="4-查找元素">4. 查找元素</h5>
 
-<p>然后将红外线模块固定在车底部</p>
+<ul>
+  <li>peek()</li>
+</ul>
 
-<p><img src="http://upload-images.jianshu.io/upload_images/3426615-deb5b0b27d74a22d?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
+<p>先检查节点是否为空，若不为空就返回第一个节点的元素：</p>
 
-<p>最后，在小车的第二层放上树莓派和充电宝，小车就全部组装完毕了</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    /**
+     * Retrieves, but does not remove, the head (first element) of this list.
+     *
+     * @return the head of this list, or {@code null} if this list is empty
+     * @since 1.5
+     */
+    public E peek() {
+        final Node&lt;E&gt; f = first;
+        return (f == null) ? null : f.item;
+    }
+</code></pre></div></div>
 
-<p><img src="http://upload-images.jianshu.io/upload_images/3426615-ca0153b77eb2b571?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
+<ul>
+  <li>element()</li>
+</ul>
 
-<p>关于小车的组装就完成了，在下一篇文章中将会给出驱动小车的Python代码</p>
+<p>直接返回第一个节点的元素，可能会抛出异常：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    /**
+     * Retrieves, but does not remove, the head (first element) of this list.
+     *
+     * @return the head of this list
+     * @throws NoSuchElementException if this list is empty
+     * @since 1.5
+     */
+    public E element() {
+        return getFirst();
+    }
+</code></pre></div></div>
+
+<p><br /></p>
+
+<h4 id="3-基于双向队列的操作">3. 基于双向队列的操作</h4>
+
+<p>主要内容：</p>
+
+<blockquote>
+  <ul>
+    <li>添加节点
+      <ul>
+        <li>offerFirst()</li>
+        <li>offerLast()</li>
+        <li>push()</li>
+      </ul>
+    </li>
+    <li>删除节点
+      <ul>
+        <li>pollFirst()</li>
+        <li>pollLast()</li>
+        <li>pop()</li>
+        <li>removeFirstOccurrence()</li>
+        <li>removeLastOccurrence()</li>
+      </ul>
+    </li>
+    <li>查找元素
+      <ul>
+        <li>peekFirst()</li>
+        <li>peekLast()</li>
+      </ul>
+    </li>
+  </ul>
+</blockquote>
+
+<h5 id="1-添加节点-1">1. 添加节点</h5>
+
+<ul>
+  <li>添加节点至队首</li>
+</ul>
+
+<p>调用addFirst()，然后是linkFirst()，添加节点至队首：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    public boolean offerFirst(E e) {
+        addFirst(e);
+        return true;
+    }
+</code></pre></div></div>
+
+<ul>
+  <li>添加节点至队尾</li>
+</ul>
+
+<p>和上述一样，都是连着再次调用其他方法来达到效果：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    public boolean offerLast(E e) {
+        addLast(e);
+        return true;
+    }
+</code></pre></div></div>
+
+<ul>
+  <li>模拟栈操作的添加一个节点至队首，最终还是调用linkFirst()：</li>
+</ul>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    public void push(E e) {
+        addFirst(e);
+    }
+</code></pre></div></div>
+
+<h5 id="2-删除节点-1">2. 删除节点</h5>
+
+<ul>
+  <li>删除第一个节点，调用unlinkFirst()：</li>
+</ul>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    public E pollFirst() {
+        final Node&lt;E&gt; f = first;
+        return (f == null) ? null : unlinkFirst(f);
+    }
+</code></pre></div></div>
+
+<ul>
+  <li>删除最后一个节点， 调用unlinkLast()：</li>
+</ul>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    public E pollLast() {
+        final Node&lt;E&gt; l = last;
+        return (l == null) ? null : unlinkLast(l);
+    }
+</code></pre></div></div>
+
+<ul>
+  <li>模拟栈操作的删除第一个节点，最终还是调用unlinkFirst()：</li>
+</ul>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    public E pop() {
+        return removeFirst();
+    }
+</code></pre></div></div>
+
+<ul>
+  <li>删除某个节点的元素，在它第一次出现的位置</li>
+</ul>
+
+<p>remove()方法是从队首还是进行遍历，如果找到与指定元素相同的节点元素，就返回，所以是在元素第一次出现的位置将其删除：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   public boolean removeFirstOccurrence(Object o) {
+        return remove(o);
+    }
+</code></pre></div></div>
+
+<ul>
+  <li>删除某个节点的元素，在它最后一次出现的位置</li>
+</ul>
+
+<p>其实这个方法的写法和remove()是类似的，只不过是从队尾开始遍历：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    public boolean removeLastOccurrence(Object o) {
+        if (o == null) {
+            for (Node&lt;E&gt; x = last; x != null; x = x.prev) {
+                if (x.item == null) {
+                    unlink(x);
+                    return true;
+                }
+            }
+        } else {
+            for (Node&lt;E&gt; x = last; x != null; x = x.prev) {
+                if (o.equals(x.item)) {
+                    unlink(x);
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+</code></pre></div></div>
+
+<h5 id="3-查找元素">3. 查找元素</h5>
+
+<ul>
+  <li>得到队首、队尾的节点的元素</li>
+</ul>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    public E peekFirst() {
+        final Node&lt;E&gt; f = first;
+        return (f == null) ? null : f.item;
+    }
+
+    public E peekLast() {
+        final Node&lt;E&gt; l = last;
+        return (l == null) ? null : l.item;
+    }
+</code></pre></div></div>
+
+<p>这一篇文章就结束了，接下来会是迭代器的分析，作为链表系列文章的最后一篇，然后会有一个关于<strong>ArrayList</strong>和<strong>LinkedList</strong>的对比分析</p>
 
 
                 <hr>
@@ -258,13 +502,9 @@
                 <ul class="pager">
                     
                     <li class="previous">
-                        <a href="/2018/04/19/%E6%A0%91%E8%8E%93%E6%B4%BE%E5%B0%8F%E8%BD%A6-%E4%B8%80-%E5%B0%8F%E8%BD%A6%E9%85%8D%E4%BB%B6%E9%80%89%E8%B4%AD%E5%8F%8A%E5%AE%89%E8%A3%85/" data-toggle="tooltip" data-placement="top" title="树莓派小车（一）小车配件选购及安装">&larr; Previous Post</a>
+                        <a href="/2018/05/22/LinkedList%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E4%B8%80/" data-toggle="tooltip" data-placement="top" title="LinkedList源码分析（一）">&larr; Previous Post</a>
                     </li>
                     
-                    
-                    <li class="next">
-                        <a href="/2018/04/21/%E6%A0%91%E8%8E%93%E6%B4%BE%E5%B0%8F%E8%BD%A6-%E4%B8%89-Python%E6%8E%A7%E5%88%B6%E5%B0%8F%E8%BD%A6/" data-toggle="tooltip" data-placement="top" title="树莓派小车（三）Python控制小车">Next Post &rarr;</a>
-                    </li>
                     
                 </ul>
 
@@ -364,8 +604,8 @@
 <script type="text/javascript">
     /* * * CONFIGURATION VARIABLES * * */
     var disqus_shortname = "http-hxblog-site";
-    var disqus_identifier = "/2018/04/20/树莓派小车（二）树莓派、小车和红外线模块连接";
-    var disqus_url = "http://localhost:4000/2018/04/20/%E6%A0%91%E8%8E%93%E6%B4%BE%E5%B0%8F%E8%BD%A6-%E4%BA%8C-%E6%A0%91%E8%8E%93%E6%B4%BE-%E5%B0%8F%E8%BD%A6%E5%92%8C%E7%BA%A2%E5%A4%96%E7%BA%BF%E6%A8%A1%E5%9D%97%E8%BF%9E%E6%8E%A5/";
+    var disqus_identifier = "/2018/05/28/LinkedList源码分析（二）";
+    var disqus_url = "http://localhost:4000/2018/05/28/LinkedList%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E4%BA%8C/";
 
     (function() {
         var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;

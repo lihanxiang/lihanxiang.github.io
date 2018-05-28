@@ -5,9 +5,330 @@
     <description>写写Java，一天就过去了</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Tue, 22 May 2018 03:36:05 -0700</pubDate>
-    <lastBuildDate>Tue, 22 May 2018 03:36:05 -0700</lastBuildDate>
+    <pubDate>Mon, 28 May 2018 03:19:51 -0700</pubDate>
+    <lastBuildDate>Mon, 28 May 2018 03:19:51 -0700</lastBuildDate>
     <generator>Jekyll v3.8.0</generator>
+    
+      <item>
+        <title>LinkedList源码分析（二）</title>
+        <description>&lt;h3 id=&quot;正文之前&quot;&gt;正文之前&lt;/h3&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;在上一篇文章中已经讲述了&lt;a href=&quot;http://hxblog.site/2018/05/22/LinkedList%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E4%B8%80/&quot;&gt;链表基于列表的基本用法&lt;/a&gt;，所以，这一篇文章要讲述链表基于队列的基本用法&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;主要内容&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;ol&gt;
+    &lt;li&gt;基本概念&lt;/li&gt;
+    &lt;li&gt;基于单向队列的操作&lt;/li&gt;
+    &lt;li&gt;基于双向队列的操作&lt;/li&gt;
+  &lt;/ol&gt;
+&lt;/blockquote&gt;
+
+&lt;h3 id=&quot;正文&quot;&gt;正文&lt;/h3&gt;
+
+&lt;h4 id=&quot;1-基本概念&quot;&gt;1. 基本概念&lt;/h4&gt;
+
+&lt;p&gt;既然是基于队列的操作，就要介绍一下队列的概念：&lt;/p&gt;
+
+&lt;p&gt;单向队列(Queue)是先进先出(First-In-First-Out)的线性结构，就好比我们生活中的排队，先来排队的人先办理事务，队列只支持在队尾添加元素，在队首删除元素&lt;/p&gt;
+
+&lt;p&gt;双向队列(Deque，double-ended queue)，也叫做双端队列，是基于队列和栈的结构，可以在队列两边进行添加和删除操作&lt;/p&gt;
+
+&lt;p&gt;在链表中使用基于队列的方法时，其实是调用上一篇文章中定义的方法，只不过在不同的位置使用来达到模拟的效果
+&lt;br /&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;2-基于单向队列的操作&quot;&gt;2. 基于单向队列的操作&lt;/h4&gt;
+
+&lt;p&gt;主要内容：&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;ul&gt;
+    &lt;li&gt;添加节点
+      &lt;ul&gt;
+        &lt;li&gt;offer()&lt;/li&gt;
+      &lt;/ul&gt;
+    &lt;/li&gt;
+    &lt;li&gt;删除节点
+      &lt;ul&gt;
+        &lt;li&gt;poll()&lt;/li&gt;
+        &lt;li&gt;remove()&lt;/li&gt;
+      &lt;/ul&gt;
+    &lt;/li&gt;
+    &lt;li&gt;查找元素
+      &lt;ul&gt;
+        &lt;li&gt;peek()&lt;/li&gt;
+        &lt;li&gt;element()&lt;/li&gt;
+      &lt;/ul&gt;
+    &lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;在这几个基本的操作中，添加和删除是针对节点而言，而查找虽然是针对节点，但是查询的结果是返回节点中的元素的&lt;/p&gt;
+
+&lt;h5 id=&quot;1-添加节点&quot;&gt;1. 添加节点&lt;/h5&gt;
+
+&lt;p&gt;使用add()，在add()中又有linkLast()，结果就是在末尾添加节点：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    /**
+     * Adds the specified element as the tail (last element) of this list.
+     *
+     * @param e the element to add
+     * @return {@code true} (as specified by {@link Queue#offer})
+     * @since 1.5
+     */
+    public boolean offer(E e) {
+        return add(e);
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h5 id=&quot;2-删除节点&quot;&gt;2. 删除节点&lt;/h5&gt;
+
+&lt;p&gt;删除元素有两种方法，区别就是，一个先判断元素是否为null，而另一个不进行判断：&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;poll()&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;先判断元素是否存在，然后调用unlinkFirst()，删除第一个节点：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    /**
+     * Retrieves and removes the head (first element) of this list.
+     *
+     * @return the head of this list, or {@code null} if this list is empty
+     * @since 1.5
+     */
+    public E poll() {
+        final Node&amp;lt;E&amp;gt; f = first;
+        return (f == null) ? null : unlinkFirst(f);
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;remove()&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;调用removeFirst()，最终也是调用unlinkFirst()，删除第一个节点：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    /**
+     * Retrieves and removes the head (first element) of this list.
+     *
+     * @return the head of this list
+     * @throws NoSuchElementException if this list is empty
+     * @since 1.5
+     */
+    public E remove() {
+        return removeFirst();
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h5 id=&quot;3-修改元素&quot;&gt;3. 修改元素&lt;/h5&gt;
+
+&lt;p&gt;在基于队列的操作中是没有修改元素的方法的，不管是单向还是双向队列：&lt;/p&gt;
+
+&lt;h5 id=&quot;4-查找元素&quot;&gt;4. 查找元素&lt;/h5&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;peek()&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;先检查节点是否为空，若不为空就返回第一个节点的元素：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    /**
+     * Retrieves, but does not remove, the head (first element) of this list.
+     *
+     * @return the head of this list, or {@code null} if this list is empty
+     * @since 1.5
+     */
+    public E peek() {
+        final Node&amp;lt;E&amp;gt; f = first;
+        return (f == null) ? null : f.item;
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;element()&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;直接返回第一个节点的元素，可能会抛出异常：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    /**
+     * Retrieves, but does not remove, the head (first element) of this list.
+     *
+     * @return the head of this list
+     * @throws NoSuchElementException if this list is empty
+     * @since 1.5
+     */
+    public E element() {
+        return getFirst();
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;3-基于双向队列的操作&quot;&gt;3. 基于双向队列的操作&lt;/h4&gt;
+
+&lt;p&gt;主要内容：&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;ul&gt;
+    &lt;li&gt;添加节点
+      &lt;ul&gt;
+        &lt;li&gt;offerFirst()&lt;/li&gt;
+        &lt;li&gt;offerLast()&lt;/li&gt;
+        &lt;li&gt;push()&lt;/li&gt;
+      &lt;/ul&gt;
+    &lt;/li&gt;
+    &lt;li&gt;删除节点
+      &lt;ul&gt;
+        &lt;li&gt;pollFirst()&lt;/li&gt;
+        &lt;li&gt;pollLast()&lt;/li&gt;
+        &lt;li&gt;pop()&lt;/li&gt;
+        &lt;li&gt;removeFirstOccurrence()&lt;/li&gt;
+        &lt;li&gt;removeLastOccurrence()&lt;/li&gt;
+      &lt;/ul&gt;
+    &lt;/li&gt;
+    &lt;li&gt;查找元素
+      &lt;ul&gt;
+        &lt;li&gt;peekFirst()&lt;/li&gt;
+        &lt;li&gt;peekLast()&lt;/li&gt;
+      &lt;/ul&gt;
+    &lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/blockquote&gt;
+
+&lt;h5 id=&quot;1-添加节点-1&quot;&gt;1. 添加节点&lt;/h5&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;添加节点至队首&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;调用addFirst()，然后是linkFirst()，添加节点至队首：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    public boolean offerFirst(E e) {
+        addFirst(e);
+        return true;
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;添加节点至队尾&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;和上述一样，都是连着再次调用其他方法来达到效果：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    public boolean offerLast(E e) {
+        addLast(e);
+        return true;
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;模拟栈操作的添加一个节点至队首，最终还是调用linkFirst()：&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    public void push(E e) {
+        addFirst(e);
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h5 id=&quot;2-删除节点-1&quot;&gt;2. 删除节点&lt;/h5&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;删除第一个节点，调用unlinkFirst()：&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    public E pollFirst() {
+        final Node&amp;lt;E&amp;gt; f = first;
+        return (f == null) ? null : unlinkFirst(f);
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;删除最后一个节点， 调用unlinkLast()：&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    public E pollLast() {
+        final Node&amp;lt;E&amp;gt; l = last;
+        return (l == null) ? null : unlinkLast(l);
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;模拟栈操作的删除第一个节点，最终还是调用unlinkFirst()：&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    public E pop() {
+        return removeFirst();
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;删除某个节点的元素，在它第一次出现的位置&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;remove()方法是从队首还是进行遍历，如果找到与指定元素相同的节点元素，就返回，所以是在元素第一次出现的位置将其删除：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;   public boolean removeFirstOccurrence(Object o) {
+        return remove(o);
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;删除某个节点的元素，在它最后一次出现的位置&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;其实这个方法的写法和remove()是类似的，只不过是从队尾开始遍历：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    public boolean removeLastOccurrence(Object o) {
+        if (o == null) {
+            for (Node&amp;lt;E&amp;gt; x = last; x != null; x = x.prev) {
+                if (x.item == null) {
+                    unlink(x);
+                    return true;
+                }
+            }
+        } else {
+            for (Node&amp;lt;E&amp;gt; x = last; x != null; x = x.prev) {
+                if (o.equals(x.item)) {
+                    unlink(x);
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h5 id=&quot;3-查找元素&quot;&gt;3. 查找元素&lt;/h5&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;得到队首、队尾的节点的元素&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    public E peekFirst() {
+        final Node&amp;lt;E&amp;gt; f = first;
+        return (f == null) ? null : f.item;
+    }
+
+    public E peekLast() {
+        final Node&amp;lt;E&amp;gt; l = last;
+        return (l == null) ? null : l.item;
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;这一篇文章就结束了，接下来会是迭代器的分析，作为链表系列文章的最后一篇，然后会有一个关于&lt;strong&gt;ArrayList&lt;/strong&gt;和&lt;strong&gt;LinkedList&lt;/strong&gt;的对比分析&lt;/p&gt;
+</description>
+        <pubDate>Mon, 28 May 2018 00:00:00 -0700</pubDate>
+        <link>http://localhost:4000/2018/05/28/LinkedList%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E4%BA%8C/</link>
+        <guid isPermaLink="true">http://localhost:4000/2018/05/28/LinkedList%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E4%BA%8C/</guid>
+        
+        <category>Java源码解析</category>
+        
+        
+      </item>
     
       <item>
         <title>LinkedList源码分析（一）</title>
@@ -2911,190 +3232,6 @@ Integer.valueOf(String s)&lt;/p&gt;
         <pubDate>Mon, 23 Apr 2018 00:00:00 -0700</pubDate>
         <link>http://localhost:4000/2018/04/23/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E4%BA%8C-%E5%AD%97%E7%AC%A6%E4%B8%B2/</link>
         <guid isPermaLink="true">http://localhost:4000/2018/04/23/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E4%BA%8C-%E5%AD%97%E7%AC%A6%E4%B8%B2/</guid>
-        
-        <category>Java基础</category>
-        
-        
-      </item>
-    
-      <item>
-        <title>Java基础知识梳理（一）</title>
-        <description>&lt;h3 id=&quot;正文之前&quot;&gt;正文之前&lt;/h3&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;在刚开始学Java的时候，相信大多数的同学都有遇到过一些容易直接跳过的知识，比如：&lt;/p&gt;
-  &lt;ol&gt;
-    &lt;li&gt;main 函数的参数&lt;strong&gt;String[] args&lt;/strong&gt;&lt;br /&gt;&lt;/li&gt;
-    &lt;li&gt;static 究竟是什么意思&lt;br /&gt;&lt;/li&gt;
-    &lt;li&gt;Error 和 Exception的区别&lt;br /&gt;&lt;/li&gt;
-  &lt;/ol&gt;
-&lt;/blockquote&gt;
-
-&lt;h3 id=&quot;正文&quot;&gt;正文&lt;/h3&gt;
-
-&lt;h4 id=&quot;1-string-args&quot;&gt;1. String args[]&lt;/h4&gt;
-
-&lt;p&gt;在我刚开始学Java的时候，也直接忽略了这个参数，只知道它是运行Java必要的，后来想起来还是要去弄明白，就去查了查资料学了一下&lt;/p&gt;
-
-&lt;p&gt;其实，这个参数是从命令行运行时需要的参数，用数组来存放参数&lt;/p&gt;
-
-&lt;p&gt;我们来做个小实验：&lt;/p&gt;
-
-&lt;p&gt;首先，我在桌面建立一个 Test.java 文件&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-b0b9402871367baf.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;
-&lt;br /&gt;&lt;/p&gt;
-
-&lt;p&gt;然后打开命令行，进入到桌面，先编译java文件&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-1fa0de5abb9057b9.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;
-&lt;br /&gt;&lt;/p&gt;
-
-&lt;p&gt;然后得到编译完成的 .class 文件&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-66dd73a74e7f20cc.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;
-&lt;br /&gt;&lt;/p&gt;
-
-&lt;p&gt;最后运行 .class 文件，自定义几个参数就行：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-85f3cee028014e85.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;得到了我们想要的结果&lt;/p&gt;
-
-&lt;p&gt;在平常写小程序的时候用 IDEA 都意识不到这个参数的作用，用命令行运行时才需要用到这个知识点&lt;/p&gt;
-
-&lt;h4 id=&quot;2-static关键字&quot;&gt;2. static关键字&lt;/h4&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;当声明一个事物是&lt;strong&gt;static&lt;/strong&gt;时，就意味着这个域或方法不会与包含它的那个类的任何对象实例关联在一起       ——《Java编程思想》&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;直接翻译 static 就是 “静态的”，这次说一说 static方法，static变量 和 static代码块的概念：&lt;/p&gt;
-
-&lt;h5 id=&quot;static-方法静态方法&quot;&gt;static 方法（静态方法）&lt;/h5&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;能够在不创建对象的条件下使用某些方法&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;如果要使用某个类中的方法，则要先实例化，否则无法使用特定方法：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-f44b3826c4d4aef4.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;
-&lt;br /&gt;&lt;/p&gt;
-
-&lt;p&gt;如果在不创建任何对象的前提下，使用 &lt;strong&gt;static&lt;/strong&gt; 关键字就可以做到：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-2b4b5312f68f2ff4.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;
-&lt;br /&gt;&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;调用方法&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;静态方法能够通过类名直接来调用，也可以通过实例来引用&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-c4442170c17ccd13.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;
-&lt;br /&gt;&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;静态方法和非静态方法之间的调用&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;接下来，静态方法 play2() 方法尝试调用一个非静态方法，失败了，
-非静态方法 sit2() 方法尝试调用一个静态方法，成功了&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-bf9e19f2eeffb45c.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;
-&lt;br /&gt;&lt;/p&gt;
-
-&lt;p&gt;把这个概念拆分成两方面讲：&lt;/p&gt;
-
-&lt;ol&gt;
-  &lt;li&gt;对于调用，静态方法只能调用的静态方法或静态变量
-在此基础上，如果不是同一个类的话，就只能通过实例来调用，看个例子：&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;p&gt;静态方法调用静态方法和静态变量：&lt;/p&gt;
-
-&lt;p&gt;在Test类中，字符串str是静态的，所以play()方法能调用它，在另一个类的test()方法中，又能够调用静态的play()方法&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-7148d8b20f2ce29d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;
-&lt;br /&gt;&lt;/p&gt;
-
-&lt;p&gt;静态方法调用非静态方法或非静态变量（都报错了）：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-760fa8262591ea2d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;
-&lt;br /&gt;&lt;/p&gt;
-
-&lt;ol&gt;
-  &lt;li&gt;对于被调用，静态方法能够被非静态的方法调用，静态变量能够被非静态变量访问，不在同一个类也是可以的，举个例子：&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;p&gt;我把Test2中的test()方法改为非静态方法，结果没有变化：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-52fc08da72de3c62.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;关于调用的规则，通俗来说，静态变量只能调用静态方法和静态变量，当时却能够&lt;strong&gt;被&lt;/strong&gt;非静态方法或非静态变量调用（当然也可以被静态方法和静态变量调用）&lt;/p&gt;
-
-&lt;h5 id=&quot;static-变量静态变量&quot;&gt;static 变量（静态变量）&lt;/h5&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;静态变量与实例变量的区别&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;在运行程序时，JVM需要给各个变量分配内存&lt;/p&gt;
-
-&lt;p&gt;对于静态变量，在程序运行时只分配一次内存，而对于实例变量，每当对象实例化时，就分配一次内存&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;调用方法&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;可以直接用&lt;strong&gt;类名.变量名&lt;/strong&gt;调用，也可以通过对象实例来调用：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-6d078727aea33069.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;
-&lt;br /&gt;&lt;/p&gt;
-
-&lt;h5 id=&quot;static-代码块静态代码块&quot;&gt;static 代码块（静态代码块）&lt;/h5&gt;
-
-&lt;p&gt;static 代码块是独立的一块代码，在类中，相对于其他成员是独立的，在JVM加载类时，按照顺序加载，我们来做个实验：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-0106202ea6eff38d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;按照顺序打印出了信息&lt;/p&gt;
-
-&lt;h5 id=&quot;总结&quot;&gt;总结&lt;/h5&gt;
-
-&lt;p&gt;static 翻译为“静态的”，有些人认为可以讲static 形容为“全局的”，其实这么说也没错，static变量为“全局变量”，实例变量为“局部变量”：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-339d40d90b1c3828.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;静态成员能够被静态成员或非静态成员调用，就相当于“全局”，而实例变量只能通过实例调用，就相当于“局部”&lt;/p&gt;
-
-&lt;h4 id=&quot;error错误-和-exception异常的区别&quot;&gt;Error（错误） 和 Exception（异常）的区别&lt;/h4&gt;
-
-&lt;p&gt;直接翻译这两个词，第一个是“错误”，第二个是“例外”，顾名思义，二者的区别就显现了&lt;/p&gt;
-
-&lt;p&gt;Error 是程序运行时出现的错误，不可预见的，比如内存不足啊，虚拟机出错之类的&lt;/p&gt;
-
-&lt;p&gt;而 Exception 是运行时可能产生的意外状况，能够人为的考虑到，并且采取适当的方式处理&lt;/p&gt;
-
-&lt;p&gt;举个 处理 Exception 的例子：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-582c4580620f7f90.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;
-&lt;br /&gt;&lt;/p&gt;
-
-&lt;p&gt;提示可能会产生异常，所以我们用 catch 语句捕获异常：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-0fc489d308f8042f.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;由于在这个Test类的所属文件夹内没有 “test.txt” 文件，所以在捕获异常之后打印出了语句 “未找到文件”&lt;/p&gt;
-
-&lt;p&gt;那么这一次的Java基础梳理就到这了，接下来还有后续&lt;/p&gt;
-
-</description>
-        <pubDate>Sun, 22 Apr 2018 00:00:00 -0700</pubDate>
-        <link>http://localhost:4000/2018/04/22/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E4%B8%80/</link>
-        <guid isPermaLink="true">http://localhost:4000/2018/04/22/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E4%B8%80/</guid>
         
         <category>Java基础</category>
         
