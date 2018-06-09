@@ -5,9 +5,238 @@
     <description>写写Java，一天就过去了</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Fri, 08 Jun 2018 00:17:53 -0700</pubDate>
-    <lastBuildDate>Fri, 08 Jun 2018 00:17:53 -0700</lastBuildDate>
+    <pubDate>Sat, 09 Jun 2018 00:34:41 -0700</pubDate>
+    <lastBuildDate>Sat, 09 Jun 2018 00:34:41 -0700</lastBuildDate>
     <generator>Jekyll v3.8.0</generator>
+    
+      <item>
+        <title>Bean的装配（一）</title>
+        <description>&lt;h3 id=&quot;正文之前&quot;&gt;正文之前&lt;/h3&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;终于开始学 Spring 了，接触到的第一个内容就是 Bean，所以想要用两篇文章来总结一下自己所学的&lt;/p&gt;
+
+  &lt;p&gt;第一篇有两个内容：&lt;/p&gt;
+  &lt;ol&gt;
+    &lt;li&gt;JavaBean 的概念&lt;/li&gt;
+    &lt;li&gt;Spring 装配 Bean&lt;/li&gt;
+  &lt;/ol&gt;
+&lt;/blockquote&gt;
+
+&lt;h3 id=&quot;正文&quot;&gt;正文&lt;/h3&gt;
+
+&lt;h4 id=&quot;1-javabean-的概念&quot;&gt;1. JavaBean 的概念&lt;/h4&gt;
+
+&lt;h5 id=&quot;javabean-是什么&quot;&gt;JavaBean 是什么&lt;/h5&gt;
+
+&lt;p&gt;这里的 Bean 当然不是直译过来的意思，关于Bean的定义，维基百科解释的很清楚了：&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;&lt;strong&gt;JavaBeans&lt;/strong&gt; 是 Java 中一种特殊的类，可以将多个对象封装到一个对象（bean）中，特点是可序列化，提供无参构造器，提供 getter 方法和 setter 方法访问对象的属性。名称中的 “Bean” 是用于Java的可重用软件组件的惯用叫法&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h5 id=&quot;bean的例子&quot;&gt;Bean的例子&lt;/h5&gt;
+
+&lt;h6 id=&quot;1-创建bean类&quot;&gt;1. 创建Bean类&lt;/h6&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;import java.io.Serializable;
+
+public class UserBean implements Serializable {
+    //变量声明为私有
+    private String play;
+    private Boolean isUser;
+
+    //无参构造器
+    public UserBean(){}
+
+    //常规 set、get操作
+    public void setPlay(String play) { this.play = play; }
+    
+    public String getPlay() { return play; }
+    
+    public void setUser(Boolean user) { isUser = user; }
+
+    //布尔类型的 getter 采用了不同的名称，用 is 更加能表示类型
+    public Boolean isUser() { return isUser; }
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;h6 id=&quot;2-使用bean类&quot;&gt;2. 使用Bean类&lt;/h6&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public class UserBeanTest {
+    public static void main(String[] args){
+        //实例化
+        UserBean userBean = new UserBean();
+        userBean.setPlay(&quot;I want to play&quot;);
+        userBean.setUser(true);
+
+        //如果是用户，就打印语句
+        if(userBean.isUser()){
+            System.out.println(userBean.getPlay());
+        }
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;引用《Spring实战》(Spring in action) 中的一句话：&lt;/p&gt;
+&lt;blockquote&gt;
+  &lt;p&gt;在传统的Java应用中，bean的生命周期很简单。使用Java关键字&lt;strong&gt;new&lt;/strong&gt;进行bean实例化，然后该bean就可以使用了。一旦该bean不再被使用，则由Java自动进行垃圾回收&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h4 id=&quot;2-spring-中的-bean&quot;&gt;2. Spring 中的 Bean&lt;/h4&gt;
+
+&lt;p&gt;在 Spring 中，我们对 Bean 进行配置并加以使用，来得到我们需要的结果&lt;/p&gt;
+
+&lt;p&gt;在上述的例子中，如果我们要创建一个 Bean，我们就要使用关键字 &lt;strong&gt;New&lt;/strong&gt;，但是，在 Spring 中，Bean 的创建是由 Spring 容器进行的，也就是说，在 Spring 中使用 Bean 的时候，不是由关键字 &lt;strong&gt;New&lt;/strong&gt; 来创建实例了&lt;/p&gt;
+
+&lt;p&gt;今天主要说说 Spring 中单个 Bean 的装配，只有一个 Bean，下一篇文章会讲述 DI（依赖注入）：&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;ol&gt;
+    &lt;li&gt;自动装配&lt;/li&gt;
+    &lt;li&gt;使用 XML 装配&lt;/li&gt;
+    &lt;li&gt;使用 Java 装配&lt;/li&gt;
+  &lt;/ol&gt;
+&lt;/blockquote&gt;
+
+&lt;h5 id=&quot;1-自动装配&quot;&gt;1. 自动装配&lt;/h5&gt;
+
+&lt;p&gt;引用《Spring实战》中的一句话：尽管你会发现这些显示装配技术非常有用，但是在便利性方面，最强大的还是 Spring 的自动化配置&lt;/p&gt;
+
+&lt;p&gt;我们用一个 Demo 来做解释，首先创建两个类：Student 类和 StudentTest 类，以及一个配置文件 spring-config.xml：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-a510b6f5400b6618.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;我们要先编写配置文件，使其启用组件扫描，来发现带有注解 &lt;strong&gt;@Component&lt;/strong&gt; 注解的类，因为我之前由写过关于 Spring MVC 的 demo，所以有关 &lt;strong&gt;@Component&lt;/strong&gt;、 &lt;strong&gt;@Service&lt;/strong&gt; 和 &lt;strong&gt;@Controller&lt;/strong&gt; 的区别做一个小小的解释（个人理解）：&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;&lt;strong&gt;@Component&lt;/strong&gt; 泛指组件类，就是在自身定位不明确的时候使用，比如我们这个Demo&lt;/p&gt;
+
+  &lt;p&gt;&lt;strong&gt;@Service&lt;/strong&gt; 表明这是业务层的组件&lt;/p&gt;
+
+  &lt;p&gt;&lt;strong&gt;@Controller&lt;/strong&gt; 表明这是控制层的组件&lt;/p&gt;
+
+  &lt;p&gt;在业务层和控制层也可以用 &lt;strong&gt;@Component&lt;/strong&gt;，但是这会导致代码不易读&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;回到配置文件：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-785d6d7fd2d032ec.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;这一行：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&amp;lt;context:component-scan base-package=&quot;bean&quot;/&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;指示了 Spring 要扫描的组件所处于的位置（包名），如果不设定 &lt;strong&gt;base-package&lt;/strong&gt;，则扫描配置文件所处于的包&lt;/p&gt;
+
+&lt;p&gt;然后我们看一下 Student 类：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-d65893fbf23d73e0.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;这里只是为了测试，所以极大程度地简化，只需要一句控制台输出语句&lt;/p&gt;
+
+&lt;p&gt;由于我们之前配置了组件扫描，所以点击旁边的标志，就能够跳转到我们添加了 &lt;strong&gt;@Component&lt;/strong&gt; 注解的 Student 类&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-69df73dad08b0060.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;万事俱备，就差测试了，我们使用 Junit 来进行测试，需要导入两个 JAR：&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;junit-4.12.jar
+hamcrest-all-1.3.jar&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-12aa08846635c62d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;针对测试文件中的内容一步一步来：&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;@RunWith：这个单元测试指定的执行类（目前还不是很了解）&lt;/li&gt;
+  &lt;li&gt;@ContextConfiguration：配置文件的位置，因为我是用 XML 文件进行配置，所以填写配置文件位置&lt;/li&gt;
+  &lt;li&gt;@Autowired：自动装配 Bean，在这里可以看到没有使用 &lt;strong&gt;New&lt;/strong&gt; 关键字，但是能够在运行时得到这个 Bean&lt;/li&gt;
+  &lt;li&gt;@Test：运行测试的方法&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-1398f73cb2c3c356.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;能够看到控制台输出了 Student 类中的语句，证明装配成功&lt;/p&gt;
+
+&lt;h5 id=&quot;2-使用-xml-装配&quot;&gt;2. 使用 XML 装配&lt;/h5&gt;
+
+&lt;p&gt;这一篇文章讲述的只是简单的装配，所以有很多有关依赖注入的方式都将跳过，由下一篇文章来讲&lt;/p&gt;
+
+&lt;p&gt;所以这里只演示在 XML 文件中创建一个 Bean 并进行装配&lt;/p&gt;
+
+&lt;p&gt;首先我们新建一个配置文件 spring-bean.xml：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-2fe53a83147c8242.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;在其中创建用&lt;bean&gt;&lt;/bean&gt;元素创建一个叫做“student”的 Bean，class属性用来指定 Bean 的类型&lt;/p&gt;
+
+&lt;p&gt;然后我们修改测试文件中的上下文的配置信息：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-135e2c256ea91a16.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;我们将 &lt;strong&gt;@ContextConfiguration&lt;/strong&gt; 注解的值改为了配置 Bean 的文件&lt;/p&gt;
+
+&lt;p&gt;输出结果：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-2f4a5c87dfdcd9d5.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;证明装配成功&lt;/p&gt;
+
+&lt;h5 id=&quot;3-使用-java-装配&quot;&gt;3. 使用 Java 装配&lt;/h5&gt;
+
+&lt;p&gt;在《Spring实战》中大力推崇使用 Java 作为装配，可能是我不太习惯，之前都是把配置信息写在 XML 文件里，不过这里还是要说一下：&lt;/p&gt;
+
+&lt;p&gt;我们将创建一个类，作为存放配置信息的类，先加上 &lt;strong&gt;@Configuration&lt;/strong&gt;，说明这是一个配置类：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-69ecedd238de31bd.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;接下来，我们要在配置类中使用一个注解：&lt;strong&gt;@Bean&lt;/strong&gt;：&lt;/p&gt;
+
+&lt;p&gt;我们在配置类中写一个方法，这个方法能够创建所需要的实例并将其返回，并将 &lt;strong&gt;@Bean&lt;/strong&gt; 添加至这个方法，这个方法的名称是作为 Bean 默认的名称：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-31366ffea22d2f41.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;然后我们要修改测试类，将配置上下文的文件改为 &lt;strong&gt;StudentConfig.class&lt;/strong&gt;，表明 Java 配置类的位置：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-8ae488de5b737778.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;然后得出测试结果，证明装配成功：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-0472d86c3dc8834d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;关于刚才说到的方法的名称是作为 Bean 默认的名称，这里做个测试：&lt;/p&gt;
+
+&lt;p&gt;先修改配置类中的方法名，加一个字符“s”：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-5d37c2fc83545c29.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;然后修改测试类，在这个测试中，我们没有创建实例，只是测试一下看看能不能在上下文中发现这个 Bean ：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-471bd032ab5bff3c.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;测试后，抛出 &lt;strong&gt;NoSuchBeanDefinitionException&lt;/strong&gt;，表示没有发现名叫“student”的 Bean&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-dcfee07ae1f90c74.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;如果我把刚才修改的方法名改回来，就会通过测试：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-270e1384ae570932.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;关于最基础的 Bean 的装配就说到这里了，下一篇文章中将会详细讲述这三种方式的细节&lt;/p&gt;
+</description>
+        <pubDate>Sat, 09 Jun 2018 00:00:00 -0700</pubDate>
+        <link>http://localhost:4000/2018/06/09/Bean%E7%9A%84%E8%A3%85%E9%85%8D-%E4%B8%80/</link>
+        <guid isPermaLink="true">http://localhost:4000/2018/06/09/Bean%E7%9A%84%E8%A3%85%E9%85%8D-%E4%B8%80/</guid>
+        
+        <category>Spring</category>
+        
+        
+      </item>
     
       <item>
         <title>LinkedList源码分析（三）</title>
@@ -2909,210 +3138,6 @@ public class Test {
         <category>MySQL</category>
         
         <category>项目模块</category>
-        
-        
-      </item>
-    
-      <item>
-        <title>Java基础知识梳理（四）异常处理进阶</title>
-        <description>&lt;h3 id=&quot;正文之前&quot;&gt;正文之前&lt;/h3&gt;
-
-&lt;p&gt;上一篇文章已经介绍了异常的基本信息，这次来说一点不一样的：&lt;/p&gt;
-
-&lt;blockquote&gt;
-  &lt;ol&gt;
-    &lt;li&gt;try-catch-finally语句（其实是上次忘了说）&lt;/li&gt;
-    &lt;li&gt;自定义异常&lt;/li&gt;
-    &lt;li&gt;查看异常信息&lt;/li&gt;
-  &lt;/ol&gt;
-&lt;/blockquote&gt;
-
-&lt;h3 id=&quot;正文&quot;&gt;正文&lt;/h3&gt;
-
-&lt;h4 id=&quot;1-try-catch-finally语句&quot;&gt;1. try-catch-finally语句&lt;/h4&gt;
-
-&lt;p&gt;上一篇文章讲到了try-catch语句捕获异常，在这个语句上有一个延伸，就是finally关键字的使用&lt;/p&gt;
-
-&lt;p&gt;finally翻译过来的意思就是”最后”，故名思意，finally语句块中的内容最后都会被执行，我们来试一试：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-
-public class Test {
-    public static void main(String[] args){
-        try{
-            FileInputStream in = new FileInputStream(&quot;test.txt&quot;);
-        }catch (FileNotFoundException e){
-            System.out.println(e.getMessage());
-        }finally {
-            System.out.println(&quot;无论如何我还是会执行的&quot;);
-            in.close();
-        }
-    }
-}
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-87e46a1d76c18c92.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;最后成功打印出了finally语句块中的内容&lt;/p&gt;
-
-&lt;h4 id=&quot;2-自定义异常&quot;&gt;2. 自定义异常&lt;/h4&gt;
-
-&lt;p&gt;在我们自定义异常之前，先来看看官方给出的异常类型（JDK 8）：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-768bfa13619c7a96.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;大部分都是没见过的，不要紧，我们可以自己来定义属于自己的异常：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-7ccca6c46490423c.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;具体的异常都是继承自&lt;strong&gt;Exception&lt;/strong&gt;类，所以我们要自定义的异常也需要继承这个基类：&lt;/p&gt;
-
-&lt;p&gt;我们自定义异常，命名MyException，需要继承基类Exception，然后我们调用基类的构造方法，带一个参数：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-a10501bcc885fcb8.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public class MyException extends Exception {
-    public MyException(String message){
-        super(message);
-    }
-}
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
-
-&lt;p&gt;然后我们测试这个异常，因为是测试，所以直接抛出定义的异常：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public class Test {
-    public static void main(String[] args)throws MyException{
-        try{
-            throw new MyException(&quot;自定义异常&quot;);
-        }catch (MyException e){
-            System.out.println(e.getMessage());
-        }
-    }
-}
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;然后得出结果：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-c239db209f241fa4.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;现在项目做的很少，所以自定义异常并没有用过几次，可以参考一下&lt;a href=&quot;https://github.com/lihanxiang/Register_login_interface&quot;&gt;这个项目&lt;/a&gt;中定义的用户异常&lt;/p&gt;
-
-&lt;h4 id=&quot;3-查看异常信息&quot;&gt;3. 查看异常信息&lt;/h4&gt;
-
-&lt;p&gt;有时候我们会需要查看异常信息来进行调试，JDK中给出了13种继承自&lt;strong&gt;Throwable&lt;/strong&gt;基类的方法：&lt;/p&gt;
-
-&lt;p&gt;先说说 &lt;strong&gt;getMessage()&lt;/strong&gt; :&lt;/p&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;the detail message string of this Throwable instance (which may be null)&lt;/p&gt;
-
-  &lt;p&gt;将Throwable实例（通常所说的异常）的具体信息以String类型给出（可能不存在）&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;接下来解释另外一个和查看异常信息有关的方法：&lt;/p&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;printStackTrace()&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;ol&gt;
-  &lt;li&gt;前提：&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;p&gt;在说着三种之前，需要先提及&lt;strong&gt;toString()方法&lt;/strong&gt;，Throwable类中覆盖了toString()方法：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-4ce46206c08ae114.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;这里面的意思是：&lt;/p&gt;
-
-&lt;p&gt;toString()方法返回一个字符串，代表了Throwable实例（异常）的信息，具体格式为：对象名字: 本地化的信息&lt;/p&gt;
-
-&lt;p&gt;我拿上一篇文章中的例子来看：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-9a256a9efecb6923.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;运行出来的结果第二行：&lt;/p&gt;
-
-&lt;p&gt;java.io.FileNotFoundException: test.txt（系统找不到指定的文件。）
-at …&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;java.io.FileNotFoundException&lt;/strong&gt;就是Throwable的实例，text.txt…后面的信息就是本地化的信息了，针对不同的位置给出具体的信息，用来调试就能很快进行定位&lt;/p&gt;
-
-&lt;h6 id=&quot;exception类中的方法感觉一环扣一环的接下来会专门写一篇exception类源码解析&quot;&gt;Exception类中的方法感觉一环扣一环的，接下来会专门写一篇Exception类源码解析&lt;/h6&gt;
-
-&lt;ol&gt;
-  &lt;li&gt;printStackTrace()&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;p&gt;这个方法有三种类型：无参，带参数&lt;strong&gt;PrintStream&lt;/strong&gt;和带参数&lt;strong&gt;PrintWriter&lt;/strong&gt;&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;
-    &lt;p&gt;先说无参，无参的printStackTrace()方法也就是我们平常使用的查看异常信息的方式，直接在控制台打印&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;带参数&lt;strong&gt;PrintStream&lt;/strong&gt;（打印输出流）：能够将信息通过流输出至其他地方，做个测试：&lt;/p&gt;
-  &lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;import java.io.*;
-
-public class Test {
-    public static void main(String[] args) throws IOException{
-        OutputStream out;
-        try{
-            throw new RuntimeException();
-        }catch (RuntimeException e){
-            out = new FileOutputStream(&quot;C:\\Users\\94545\\Desktop\\test.txt&quot;);
-            //将FileOutputStream作为PrintStream的输出流
-            PrintStream printStream = new PrintStream(out);
-            e.printStackTrace(printStream);
-            out.close();
-            printStream.close();
-        }
-    }
-}
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-5de76ee338ba68df.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;成功打印出了信息&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;带参数&lt;strong&gt;PrintWriter&lt;/strong&gt;（字符打印输出流）：将信息输出至其他地方&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;import java.io.*;
-
-public class Test {
-    public static void main(String[] args) throws Exception{
-        OutputStream out;
-        try{
-            throw new RuntimeException();
-        }catch (RuntimeException e){
-            out = new FileOutputStream(&quot;C:\\Users\\94545\\Desktop\\test.txt&quot;);
-            PrintWriter printWriter = new PrintWriter(out,true);
-            e.printStackTrace(printWriter);
-            out.close();
-            printWriter.close();
-        }
-    }
-}
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-18e1286f6abb9850.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;也成功的打印出了信息&lt;/p&gt;
-
-&lt;p&gt;关于其他的继承自Throwable类的方法会专门写一篇源码解读&lt;/p&gt;
-</description>
-        <pubDate>Wed, 25 Apr 2018 00:00:00 -0700</pubDate>
-        <link>http://localhost:4000/2018/04/25/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E5%9B%9B-%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86%E8%BF%9B%E9%98%B6/</link>
-        <guid isPermaLink="true">http://localhost:4000/2018/04/25/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E5%9B%9B-%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86%E8%BF%9B%E9%98%B6/</guid>
-        
-        <category>Java基础</category>
         
         
       </item>

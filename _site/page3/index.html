@@ -19,9 +19,9 @@
     <meta name="keyword"  content="Java">
     <link rel="shortcut icon" href="/img/favicon.ico">
 
-    <title>树莓派小车（三）Python控制小车 - 李汉祥的博客 | L Blog</title>
+    <title>李汉祥的博客 | L Blog</title>
 
-    <link rel="canonical" href="http://localhost:4000/2018/04/21/%E6%A0%91%E8%8E%93%E6%B4%BE%E5%B0%8F%E8%BD%A6-%E4%B8%89-Python%E6%8E%A7%E5%88%B6%E5%B0%8F%E8%BD%A6/">
+    <link rel="canonical" href="http://localhost:4000/page3/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -141,318 +141,228 @@
 </script>
 
 
-    <!-- Image to hack wechat -->
-<!-- <img src="/img/post/2018-04/21.jpg" width="0" height="0"> -->
-
-<!-- Post Header -->
-<style type="text/css">
-    header.intro-header{
-        background-image: url('/img/post/2018-04/21.jpg')
-    }
-</style>
-<header class="intro-header" >
+    <!-- Page Header -->
+<header class="intro-header" style="background-image: url('/img/top.jpg')">
     <div class="container">
         <div class="row">
-            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
-                <div class="post-heading">
-                    <div class="tags">
-                        
-                        <a class="tag" href="/tags/#树莓派" title="树莓派">树莓派</a>
-                        
-                    </div>
-                    <h1>树莓派小车（三）Python控制小车</h1>
-                    
-                    
-                    <h2 class="subheading">随便玩玩</h2>
-                    
-                    <span class="meta">Posted by L on April 21, 2018</span>
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 ">
+                <div class="site-heading">
+                    <h1>L Blog</h1>
+                    <!--<hr class="small">-->
+                    <span class="subheading"></span>
                 </div>
             </div>
         </div>
     </div>
 </header>
 
-<!-- Post Content -->
-<article>
-    <div class="container">
-        <div class="row">
+<!-- Main Content -->
+<div class="container">
+	<div class="row">
+        
 
+<!-- USE SIDEBAR -->
     <!-- Post Container -->
-            <div class="
-                col-lg-8 col-lg-offset-2
-                col-md-10 col-md-offset-1
-                post-container">
+    		<div class="
+                col-lg-8 col-lg-offset-1
+                col-md-8 col-md-offset-1
+                col-sm-12
+                col-xs-12
+                post-container
+            ">
+    			
+<div class="post-preview">
+    <a href="/2018/04/16/%E7%AE%80%E6%98%93%E5%95%86%E5%93%81%E4%BF%A1%E6%81%AF%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F-%E9%A6%96%E4%B8%AAWeb%E9%A1%B9%E7%9B%AE/">
+        <h2 class="post-title">
+            简易商品信息管理系统——首个Web项目
+        </h2>
+        
+        <h3 class="post-subtitle">
+            练手项目
+        </h3>
+        
+        <div class="post-content-preview">
+            这篇文章转载自我的简书
 
-				<p>这篇博客来自<a href="https://www.jianshu.com/p/43baa2037dfc">我的简书</a></p>
+正文之前
 
-<h3 id="正文之前">正文之前</h3>
-<blockquote>
-  <p>由于最近忙于复习赶考，所以暂时没有拿起树莓派小车，直到昨天，终于空出时间来把代码整理一下来和大家分享</p>
-</blockquote>
 
-<h3 id="正文">正文</h3>
-<p>在<a href="http://hxblog.site/2018/04/20/%E6%A0%91%E8%8E%93%E6%B4%BE%E5%B0%8F%E8%BD%A6-%E4%BA%8C-%E6%A0%91%E8%8E%93%E6%B4%BE-%E5%B0%8F%E8%BD%A6%E5%92%8C%E7%BA%A2%E5%A4%96%E7%BA%BF%E6%A8%A1%E5%9D%97%E8%BF%9E%E6%8E%A5/">树莓派小车系列之二</a>中，讲到了树莓派的引脚定义方式有两种：</p>
-<ul>
-  <li>PHYSICAL NUMBERING</li>
-  <li>GPIO NUMBERING</li>
+  在学习了一段时间的Java Web的内容之后，当然需要有个项目来练练手，我相信大多数人的首选项目都是信息管理系统吧，所以我选择了商品信息管理系统
+
+  目前项目源码已全部上传至GitHub，欢迎大家来fork —— 商品信息管理系统
+
+
+
+
+正文
+
+项目构思
+
+简易的管理系统，结构为 Servlet + JSP + MySQL，使用IntelliJ...
+        </div>
+    </a>
+    <p class="post-meta">
+        Posted by L on April 16, 2018
+    </p>
+</div>
+<hr>
+
+
+<!-- Pager -->
+
+<ul class="pager">
+    
+    <li class="previous">
+        <a href="/page2">&larr; Newer Posts</a>
+    </li>
+    
+    
 </ul>
 
-<p>我采用的是第二种方式</p>
 
-<h4 id="开始写">开始写</h4>
-<h5 id="1-导入库">1. 导入库</h5>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>import RPi.GPIO as GPIO
-import time
-</code></pre></div></div>
-
-<h5 id="2-定义接口方式以及接口位置">2. 定义接口方式以及接口位置</h5>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>GPIO.setmode(GPIO.BCM)
-IN1 = 17
-IN2 = 18
-IN3 = 27
-IN4 = 22
-IN5 = 23
-IN6 = 24 
-</code></pre></div></div>
-<p>IN1 - IN4为L298N接入，IN5和IN6为红外线模块接入</p>
-<h6 id="车轮驱动方式">车轮驱动方式：</h6>
-<p>IN1和IN2负责驱动车轮转动（前进）
-IN3和IN4负责驱动车轮转动（后退）</p>
-
-<h5 id="3-初始化">3. 初始化</h5>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>def init():
-    GPIO.setup(IN1, GPIO.OUT)
-    GPIO.setup(IN2, GPIO.OUT)
-    GPIO.setup(IN3, GPIO.OUT)
-    GPIO.setup(IN4, GPIO.OUT)
-    GPIO.setup(IN5, GPIO.IN)
-    GPIO.setup(IN6, GPIO.IN)
-</code></pre></div></div>
-<p>连接L298N的接口设为输出，因为需要输出的信号来驱动电机
-连接红外线模块的接口为输入，因为需要输入的信号来做出判断</p>
-
-<h5 id="4-基础方向行为">4. 基础方向行为</h5>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>def up():
-    GPIO.output(IN1, GPIO.HIGH)          //右侧车轮前进
-    GPIO.output(IN2, GPIO.HIGH)          //左侧车轮前进
-    GPIO.output(IN3, GPIO.LOW)
-    GPIO.output(IN4, GPIO.LOW)
-
-
-def down():
-    GPIO.output(IN1, GPIO.LOW)
-    GPIO.output(IN2, GPIO.LOW)
-    GPIO.output(IN3, GPIO.HIGH)          //右侧车轮后退
-    GPIO.output(IN4, GPIO.HIGH)          //左侧车轮后退
-
-
-def turn_left():
-    GPIO.output(IN1, GPIO.HIGH)          //右侧车轮前进
-    GPIO.output(IN2, GPIO.LOW)
-    GPIO.output(IN3, GPIO.LOW)
-    GPIO.output(IN4, GPIO.LOW)
-
-
-def turn_right():
-    GPIO.output(IN1, GPIO.LOW)
-    GPIO.output(IN2, GPIO.HIGH)          //左侧车轮前进
-    GPIO.output(IN3, GPIO.LOW)
-    GPIO.output(IN4, GPIO.LOW)
-</code></pre></div></div>
-
-<p>需要说明的是：由于不含舵机，转弯的操作是单边车轮驱动，带动车身转动</p>
-
-<h5 id="5-红外控制">5. 红外控制</h5>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>init()
-
-n = 5
-
-while (n &gt; 0):                                  //总共转弯五次
-    in_left = GPIO.input(IN5)                   //左侧红外线接收器
-    in_right = GPIO.input(IN6)                  //右侧红外线接收器
-    up()                                        //未遇到障碍时直行
-    if (in_left == GPIO.LOW):
-        down()
-        time.sleep(1)
-        turn_right()
-        time.sleep(1)
-        n = n - 1
-        continue
-    
-    if (in_right == GPIO.LOW):
-        down()
-        time.sleep(1)
-        turn_left()
-        time.sleep(1)
-        n = n - 1
-        continue
-    
-    if (in_right == GPIO.LOW &amp; in_left == GPIO.LOW):
-        down()
-        time.sleep(1)
-        turn_right()               //如果两侧都有障碍，就右转（个人喜好）
-        time.sleep(1)
-        n = n - 1
-        continue
-
-stop()                      
-GPIO.cleanup()                    //清空GPIO接口配置信息
-</code></pre></div></div>
-
-<p>如果前方遇到障碍，就后退一秒，然后转弯，最后继续直行，直到遇到下一个障碍</p>
-
-<p>需要说明的是time.sleep()的用法：
-time.sleep(time) 表示的是经过 time 秒后执行下一步操作，就是休眠一段时间的意思
-如果不使用time.sleep()，将会一直执行第一步操作</p>
-
-<h4 id="关于运行">关于运行：</h4>
-<ul>
-  <li>由于红外传感器的有效距离偏短(5cm左右)，以及传感器的安装位置在车的底部，所以在车辆运动时，如果遇到凹凸不平的物体，有可能造成避障的延迟</li>
-</ul>
-
-<h4 id="运行视频">运行视频</h4>
-
-<p><a href="http://v.youku.com/v_show/id_XMzE2NzkzNjAwMA==.html?spm=a2h3j.8428770.3416059.1">树莓派小车</a></p>
-
-<p>遇到凹凸不平的物体有些许碰撞（环境简陋）</p>
-
-<p>关于树莓派信息的内容就先告一段落</p>
-
-
-                <hr>
-
-               
-
-
-                <ul class="pager">
-                    
-                    <li class="previous">
-                        <a href="/2018/04/20/%E6%A0%91%E8%8E%93%E6%B4%BE%E5%B0%8F%E8%BD%A6-%E4%BA%8C-%E6%A0%91%E8%8E%93%E6%B4%BE-%E5%B0%8F%E8%BD%A6%E5%92%8C%E7%BA%A2%E5%A4%96%E7%BA%BF%E6%A8%A1%E5%9D%97%E8%BF%9E%E6%8E%A5/" data-toggle="tooltip" data-placement="top" title="树莓派小车（二）树莓派、小车和红外线模块连接">&larr; Previous Post</a>
-                    </li>
-                    
-                    
-                    <li class="next">
-                        <a href="/2018/04/22/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E4%B8%80/" data-toggle="tooltip" data-placement="top" title="Java基础知识梳理（一）">Next Post &rarr;</a>
-                    </li>
-                    
-                </ul>
-
-		
-                <!-- disqus 评论框 start -->
-                <div class="comment">
-                    <div id="disqus_thread" class="disqus-thread"></div>
-                </div>
-                <!-- disqus 评论框 end -->
-                
-
-
-
-            </div>
-
+    		</div>
     <!-- Sidebar Container -->
             <div class="
-                col-lg-8 col-lg-offset-2
-                col-md-10 col-md-offset-1
-                sidebar-container">
-
+                col-lg-3 col-lg-offset-0
+                col-md-3 col-md-offset-0
+                col-sm-12
+                col-xs-12
+                sidebar-container
+            ">
                 <!-- Featured Tags -->
                 
                 <section>
                     <hr class="hidden-sm hidden-xs">
                     <h5><a href="/tags/">FEATURED TAGS</a></h5>
                     <div class="tags">
-        				
+                        
                             
-                				<a href="/tags/#Java Web" title="Java Web" rel="3">
+                                <a href="/tags/#Java Web" title="Java Web" rel="3">
                                     Java Web
                                 </a>
                             
-        				
+                        
                             
-                				<a href="/tags/#IntelliJ IDEA" title="IntelliJ IDEA" rel="1">
+                                <a href="/tags/#IntelliJ IDEA" title="IntelliJ IDEA" rel="1">
                                     IntelliJ IDEA
                                 </a>
                             
-        				
+                        
                             
-                				<a href="/tags/#Spring MVC" title="Spring MVC" rel="1">
+                                <a href="/tags/#Spring MVC" title="Spring MVC" rel="1">
                                     Spring MVC
                                 </a>
                             
-        				
+                        
                             
-                				<a href="/tags/#随笔" title="随笔" rel="2">
+                                <a href="/tags/#随笔" title="随笔" rel="2">
                                     随笔
                                 </a>
                             
-        				
+                        
                             
-                				<a href="/tags/#树莓派" title="树莓派" rel="3">
+                                <a href="/tags/#树莓派" title="树莓派" rel="3">
                                     树莓派
                                 </a>
                             
-        				
+                        
                             
-                				<a href="/tags/#Java基础" title="Java基础" rel="4">
+                                <a href="/tags/#Java基础" title="Java基础" rel="4">
                                     Java基础
                                 </a>
                             
-        				
+                        
                             
-                				<a href="/tags/#MySQL" title="MySQL" rel="1">
+                                <a href="/tags/#MySQL" title="MySQL" rel="1">
                                     MySQL
                                 </a>
                             
-        				
+                        
                             
-                				<a href="/tags/#项目模块" title="项目模块" rel="2">
+                                <a href="/tags/#项目模块" title="项目模块" rel="2">
                                     项目模块
                                 </a>
                             
-        				
+                        
                             
-                				<a href="/tags/#Java源码解析" title="Java源码解析" rel="6">
+                                <a href="/tags/#Java源码解析" title="Java源码解析" rel="6">
                                     Java源码解析
                                 </a>
                             
-        				
+                        
                             
-                				<a href="/tags/#Spring" title="Spring" rel="1">
+                                <a href="/tags/#Spring" title="Spring" rel="1">
                                     Spring
                                 </a>
                             
-        				
-        			</div>
+                        
+                    </div>
                 </section>
                 
 
+                <!-- Short About -->
+                <section class="visible-md visible-lg">
+                    <hr><h5><a href="/about/">ABOUT ME</a></h5>
+                    <div class="short-about">
+                        
+                            <img src="/img/Hank.jpg" />
+                        
+                        
+                            <p>写写Java，一天就过去了</p>
+                        
+                        <!-- SNS Link -->
+                        <ul class="list-inline">
+                            
+                           
+			    
+                            <li>
+                                <a target="_blank" href="https://www.jianshu.com/u/fbc9284d5523">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fa fa-circle fa-stack-2x"></i>
+                                        <i class="fa  fa-stack-1x fa-inverse">简</i>
+                                    </span>
+                                </a>
+                            </li>
+                            
+				
+                            
+                            <li>
+                                <a target="_blank" href="https://www.zhihu.com/people/li-han-xiang-54-15">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fa fa-circle fa-stack-2x"></i>
+                                        <i class="fa  fa-stack-1x fa-inverse">知</i>
+                                    </span>
+                                </a>
+                            </li>
+                            
+                            
+                            
+                            <li>
+                                <a target="_blank" href="https://github.com/lihanxiang">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fa fa-circle fa-stack-2x"></i>
+                                        <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                                    </span>
+                                </a>
+                            </li>
+                            
+                        </ul>
+                    </div>
+                </section>
                 <!-- Something else -->
                 
-            </div>
-        </div>
-    </div>
-</article>
-
-<!-- disqus 公共JS代码 end -->
-
-<!-- disqus 公共JS代码 start (一个网页只需插入一次) -->
-<script type="text/javascript">
-    /* * * CONFIGURATION VARIABLES * * */
-    var disqus_shortname = "http-hxblog-site";
-    var disqus_identifier = "/2018/04/21/树莓派小车（三）Python控制小车";
-    var disqus_url = "http://localhost:4000/2018/04/21/%E6%A0%91%E8%8E%93%E6%B4%BE%E5%B0%8F%E8%BD%A6-%E4%B8%89-Python%E6%8E%A7%E5%88%B6%E5%B0%8F%E8%BD%A6/";
-
-    (function() {
-        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
-        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-    })();
-</script>
-<!-- disqus 公共JS代码 end -->
-
-
-
-
+                <hr>
+                <h5>Something else</h5>
+                <ul class="list-inline">
+                    
+                        <li><a href="http://www.cnblogs.com/lihanxiang">博客园</a></li>
+                    
+                </ul>
+                
+    		</div>
+        
+	</div>
+</div>
 
 
     <!-- Footer -->
