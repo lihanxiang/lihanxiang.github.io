@@ -284,3 +284,5 @@ remove()方法是从队首还是进行遍历，如果找到与指定元素相同
 ```
 
 这一篇文章就结束了，接下来会是迭代器的分析，作为链表系列文章的最后一篇，然后会有一个关于**ArrayList**和**LinkedList**的对比分析
+
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-79919768b5365766.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" width="40%" height="40%" /></p>

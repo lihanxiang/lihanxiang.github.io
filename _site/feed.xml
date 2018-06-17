@@ -5,8 +5,8 @@
     <description>写写Java，一天就过去了</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Tue, 12 Jun 2018 06:41:54 -0700</pubDate>
-    <lastBuildDate>Tue, 12 Jun 2018 06:41:54 -0700</lastBuildDate>
+    <pubDate>Sun, 17 Jun 2018 03:43:47 -0700</pubDate>
+    <lastBuildDate>Sun, 17 Jun 2018 03:43:47 -0700</lastBuildDate>
     <generator>Jekyll v3.8.0</generator>
     
       <item>
@@ -326,6 +326,8 @@
 &lt;p&gt;IoC 能够由 DI 来实现，也就是说，程序中的各个组件之间的依赖关系都是由 Spring 来管理的，这就称作&lt;strong&gt;控制反转&lt;/strong&gt;，这是 Spring 的核心&lt;/p&gt;
 
 &lt;p&gt;接下来还陆续会有文章来讲述这一概念&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-79919768b5365766.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; width=&quot;40%&quot; height=&quot;40%&quot; /&gt;&lt;/p&gt;
 </description>
         <pubDate>Tue, 12 Jun 2018 00:00:00 -0700</pubDate>
         <link>http://localhost:4000/2018/06/12/Bean%E7%9A%84%E8%A3%85%E9%85%8D-%E4%BA%8C/</link>
@@ -555,6 +557,8 @@ hamcrest-all-1.3.jar&lt;/p&gt;
 &lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-270e1384ae570932.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;关于最基础的 Bean 的装配就说到这里了，下一篇文章中将会详细讲述这三种方式的细节&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-79919768b5365766.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; width=&quot;40%&quot; height=&quot;40%&quot; /&gt;&lt;/p&gt;
 </description>
         <pubDate>Sat, 09 Jun 2018 00:00:00 -0700</pubDate>
         <link>http://localhost:4000/2018/06/09/Bean%E7%9A%84%E8%A3%85%E9%85%8D-%E4%B8%80/</link>
@@ -781,6 +785,8 @@ hamcrest-all-1.3.jar&lt;/p&gt;
 &lt;p&gt;因为这是反向的，所以向前方法的名字还是 &lt;strong&gt;next()&lt;/strong&gt;，但是，是使用了 &lt;strong&gt;previous&lt;/strong&gt; 来进行的&lt;/p&gt;
 
 &lt;p&gt;那么，有关 LinkedList 的基本用法的源码就已经解读完毕了，接下来会是其他容器类的源码解读&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-79919768b5365766.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; width=&quot;40%&quot; height=&quot;40%&quot; /&gt;&lt;/p&gt;
 </description>
         <pubDate>Fri, 08 Jun 2018 00:00:00 -0700</pubDate>
         <link>http://localhost:4000/2018/06/08/LinkedList%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E4%B8%89/</link>
@@ -942,6 +948,8 @@ git push&lt;/p&gt;
 &lt;/blockquote&gt;
 
 &lt;p&gt;这四条命令就够了，博客的基础搭建就这样结束了，祝大家都能挑选到心仪的模板，最后再次抛出&lt;a href=&quot;http://lihanxiang.github.io&quot;&gt;我的博客&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-79919768b5365766.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; width=&quot;40%&quot; height=&quot;40%&quot; /&gt;&lt;/p&gt;
 </description>
         <pubDate>Tue, 29 May 2018 00:00:00 -0700</pubDate>
         <link>http://localhost:4000/2018/05/29/Github-Pages-+-Jekyll-%E5%88%9B%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/</link>
@@ -1263,6 +1271,8 @@ git push&lt;/p&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;p&gt;这一篇文章就结束了，接下来会是迭代器的分析，作为链表系列文章的最后一篇，然后会有一个关于&lt;strong&gt;ArrayList&lt;/strong&gt;和&lt;strong&gt;LinkedList&lt;/strong&gt;的对比分析&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-79919768b5365766.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; width=&quot;40%&quot; height=&quot;40%&quot; /&gt;&lt;/p&gt;
 </description>
         <pubDate>Mon, 28 May 2018 00:00:00 -0700</pubDate>
         <link>http://localhost:4000/2018/05/28/LinkedList%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E4%BA%8C/</link>
@@ -1955,6 +1965,8 @@ git push&lt;/p&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;p&gt;LinkedList基于列表的操作到这里就介绍完了，下一篇会是基于队列的操作&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-79919768b5365766.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; width=&quot;40%&quot; height=&quot;40%&quot; /&gt;&lt;/p&gt;
 </description>
         <pubDate>Tue, 22 May 2018 00:00:00 -0700</pubDate>
         <link>http://localhost:4000/2018/05/22/LinkedList%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E4%B8%80/</link>
@@ -2361,6 +2373,8 @@ public interface ListIterator&amp;lt;E&amp;gt; extends Iterator&amp;lt;E&amp;gt;
 &lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-8efaae0d3d9302c8.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;到此，ArrayList的基本用法的源码解读就告一段落了，接下来会是LinkedList的源码解析&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-79919768b5365766.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; width=&quot;40%&quot; height=&quot;40%&quot; /&gt;&lt;/p&gt;
 </description>
         <pubDate>Tue, 15 May 2018 00:00:00 -0700</pubDate>
         <link>http://localhost:4000/2018/05/15/ArrayList%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E4%B8%89/</link>
@@ -2630,6 +2644,8 @@ public interface ListIterator&amp;lt;E&amp;gt; extends Iterator&amp;lt;E&amp;gt;
 &lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-3a3506b06f27cb29.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;这样子，ArrayList常用的方法就讲完了，下一篇就会是与ArrayList有关的迭代器的使用了&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-79919768b5365766.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; width=&quot;40%&quot; height=&quot;40%&quot; /&gt;&lt;/p&gt;
 </description>
         <pubDate>Wed, 09 May 2018 00:00:00 -0700</pubDate>
         <link>http://localhost:4000/2018/05/09/ArrayList%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E4%BA%8C/</link>
@@ -2767,6 +2783,8 @@ public interface ListIterator&amp;lt;E&amp;gt; extends Iterator&amp;lt;E&amp;gt;
 &lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-c80d837ecc0c8b1a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;就这样，简单的验证码就做完了&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-79919768b5365766.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; width=&quot;40%&quot; height=&quot;40%&quot; /&gt;&lt;/p&gt;
 </description>
         <pubDate>Sun, 06 May 2018 00:00:00 -0700</pubDate>
         <link>http://localhost:4000/2018/05/06/%E7%99%BB%E9%99%86%E7%95%8C%E9%9D%A2%E6%A8%A1%E5%9D%97%E8%A7%A3%E6%9E%90-%E7%94%9F%E6%88%90%E5%9B%BE%E7%89%87%E9%AA%8C%E8%AF%81%E7%A0%81/</link>
@@ -3341,6 +3359,9 @@ public class Test {
     }
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
+&lt;p&gt;今天只是开个头，接下来，还会有介绍 ArrayList 的文章&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-79919768b5365766.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; width=&quot;40%&quot; height=&quot;40%&quot; /&gt;&lt;/p&gt;
 </description>
         <pubDate>Fri, 04 May 2018 00:00:00 -0700</pubDate>
         <link>http://localhost:4000/2018/05/04/ArrayList%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E4%B8%80/</link>

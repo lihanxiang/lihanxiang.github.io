@@ -384,3 +384,5 @@ public interface ListIterator<E> extends Iterator<E> {}
 ![](https://upload-images.jianshu.io/upload_images/3426615-8efaae0d3d9302c8.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
 到此，ArrayList的基本用法的源码解读就告一段落了，接下来会是LinkedList的源码解析
+
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-79919768b5365766.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" width="40%" height="40%" /></p>

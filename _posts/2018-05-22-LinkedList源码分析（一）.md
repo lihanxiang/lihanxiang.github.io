@@ -686,3 +686,5 @@ public class LinkedList<E>
 ```
 
 LinkedList基于列表的操作到这里就介绍完了，下一篇会是基于队列的操作
+
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-79919768b5365766.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" width="40%" height="40%" /></p>
