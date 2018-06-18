@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- Global site tag (gtag.js) - Google Analytics -->
+	<script async src="https://www.googletagmanager.com/gtag/js?id=UA-117570649-1"></script>
+	<script>
+	  window.dataLayer = window.dataLayer || [];
+	  function gtag(){dataLayer.push(arguments);}
+	  gtag('js', new Date());
+
+	  gtag('config', 'UA-117570649-1');
+	</script>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="你问我什么咖啡最好，我当然觉得是 Java">
+    <meta name="keyword"  content="Java">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>Vector源码分析 - 李汉祥的博客 | L Blog</title>
+
+    <link rel="canonical" href="http://localhost:4000/2018/06/18/Vector-%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/hux-blog.min.css">
+
+    <!-- Pygments Github CSS -->
+    <link rel="stylesheet" href="/css/syntax.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="http://cdn.staticfile.org/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+	<!-- Global site tag (gtag.js) - Google Analytics -->
+	<script async src="https://www.googletagmanager.com/gtag/js?id=UA-117570649-1"></script>
+	<script>
+	  window.dataLayer = window.dataLayer || [];
+	  function gtag(){dataLayer.push(arguments);}
+	  gtag('js', new Date());
+
+	  gtag('config', 'UA-117570649-1');
+	</script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">L Blog</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+                    
+                    <li>
+                        <a href="/about/">About</a>
+                    </li>
+                    
+                    <li>
+                        <a href="/tags/">Tags</a>
+                    </li>
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Image to hack wechat -->
+<!-- <img src="/img/post/2018-06/18.jpg" width="0" height="0"> -->
+
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        background-image: url('/img/post/2018-06/18.jpg')
+    }
+</style>
+<header class="intro-header" >
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                        <a class="tag" href="/tags/#Java源码解析" title="Java源码解析">Java源码解析</a>
+                        
+                    </div>
+                    <h1>Vector源码分析</h1>
+                    
+                    
+                    <h2 class="subheading">读读源码</h2>
+                    
+                    <span class="meta">Posted by L on June 18, 2018</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+				<h3 id="正文之前">正文之前</h3>
+
+<blockquote>
+  <p>之前介绍过 <a href="http://hxblog.site/2018/05/04/ArrayList%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E4%B8%80/">ArrayList</a> 和 <a href="http://hxblog.site/2018/05/22/LinkedList%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E4%B8%80/">LinkedList</a>，所以今天来说说 List 接口的另一个实现类：<strong>Vector</strong>，其实这也是一个类似的动态数组，只不过是线程安全的，和 ArrayList 还是有一点区别的</p>
+
+  <p>主要内容：</p>
+  <ol>
+    <li>基本概念</li>
+    <li>构造</li>
+    <li>针对容量的操作</li>
+    <li>增删改查</li>
+  </ol>
+</blockquote>
+
+<h3 id="正文">正文</h3>
+
+<h4 id="1-基本概念">1. 基本概念</h4>
+
+<p>关于 <strong>Vector</strong> 的介绍，其实直接看 JDK 中的注释就解释的很清楚了：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/**
+ * The {@code Vector} class implements a growable array of
+ * objects. Like an array, it contains components that can be
+ * accessed using an integer index. However, the size of a
+ * {@code Vector} can grow or shrink as needed to accommodate
+ * adding and removing items after the {@code Vector} has been created.
+ *
+ * &lt;p&gt;Each vector tries to optimize storage management by maintaining a
+ * {@code capacity} and a {@code capacityIncrement}. The
+ * {@code capacity} is always at least as large as the vector
+ * size; it is usually larger because as components are added to the
+ * vector, the vector's storage increases in chunks the size of
+ * {@code capacityIncrement}. An application can increase the
+ * capacity of a vector before inserting a large number of
+ * components; this reduces the amount of incremental reallocation.
+ */
+</code></pre></div></div>
+
+<p>首先，Vector 是一个可增长的数组（和 ArrayList 类似），能够用索引直接找到元素，Vector 的容量可增可减</p>
+
+<p>其次，Vector 使用变量 <code class="highlighter-rouge">capacity</code> 和 <code class="highlighter-rouge">capacityIncrement</code> 来进行容量的管理，关于容量和大小的说法，之前也提到过，容量是最多能够容纳多少元素，而大小是目前容纳了多少元素。<code class="highlighter-rouge">capacity</code> 指的就是容量，是永远大于或等于 Vector 的大小的，不过容量通常是大于 Vector 的大小的，因为它扩容的方式有点特殊，下文提及，在插入大量数据之前，最好能进行适当的扩容，避免了再分配的时间浪费</p>
+
+<p>Vector 是线程安全的，它所有的方法都加上了 <code class="highlighter-rouge">synchronized</code> 关键字</p>
+
+<p>关于 Vector，需要先介绍一下它的变量：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    // Vector 的操作就是基于这个数组来实现的：
+    protected Object[] elementData;
+    
+    // Vector 中的元素数量
+    protected int elementCount;
+
+    // Vector 的增量，用它来判断需要扩容多少
+    protected int capacityIncrement;
+
+    //某些 JVM 会在数组的前几位保留一些信息（具体的也不晓得）
+    private static final int MAX_ARRAY_SIZE = Integer.MAX_VALUE - 8;
+</code></pre></div></div>
+
+<h4 id="2-构造">2. 构造</h4>
+
+<p>关于 Vector 的构造器，有四种方式：</p>
+
+<h6 id="1--使用给定的初始容量和增量来创造一个空的-vector">1.  使用给定的初始容量和增量来创造一个空的 Vector</h6>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    public Vector(int initialCapacity, int capacityIncrement) {
+        super();
+        if (initialCapacity &lt; 0)
+            //容量为负
+            throw new IllegalArgumentException("Illegal Capacity: "+
+                                               initialCapacity);
+        //根据容量创造数组
+        this.elementData = new Object[initialCapacity];
+        this.capacityIncrement = capacityIncrement;
+    }
+</code></pre></div></div>
+
+<h6 id="2-使用给定的容量来创造一个空的-vector">2. 使用给定的容量来创造一个空的 Vector</h6>
+
+<p>调用了上一个构造器</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    //增量设置为0
+    public Vector(int initialCapacity) {
+        this(initialCapacity, 0);
+    }
+</code></pre></div></div>
+
+<h6 id="3-不带参数创造一个空的-vector">3. 不带参数创造一个空的 Vector</h6>
+
+<p>调用上一个构造器，并将容量初始值设为10</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    public Vector() {
+        this(10);
+    }
+</code></pre></div></div>
+
+<h6 id="4-创造一个带有其他容器元素的-vector">4. 创造一个带有其他容器元素的 Vector</h6>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    public Vector(Collection&lt;? extends E&gt; c) {
+        elementData = c.toArray();
+        elementCount = elementData.length;
+        // c.toArray might (incorrectly) not return Object[] (see 6260652)
+        if (elementData.getClass() != Object[].class)
+            elementData = Arrays.copyOf(elementData, elementCount, Object[].class);
+    }
+</code></pre></div></div>
+
+<h4 id="3-针对容量的操作">3. 针对容量的操作</h4>
+
+<h6 id="1-增长容量">1. 增长容量</h6>
+
+<p>增长容量的操作真是一套又一套，和俄罗斯套娃一样，用一个同步的公有方法来调用其他未同步的私有方法：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    public synchronized void ensureCapacity(int minCapacity) {
+        if (minCapacity &gt; 0) {
+            modCount++;
+            ensureCapacityHelper(minCapacity);
+        }
+    }
+
+    private void ensureCapacityHelper(int minCapacity) {
+        // overflow-conscious code
+        if (minCapacity - elementData.length &gt; 0)
+            grow(minCapacity);
+    }
+
+    //先确定需要扩容多少，在方法最后才进行扩容
+    private void grow(int minCapacity) {
+        // overflow-conscious code
+        //现有的容量
+        int oldCapacity = elementData.length;
+        //如果增量大于0，就按增量来扩容，否则就扩容至原来的2倍容量
+        int newCapacity = oldCapacity + ((capacityIncrement &gt; 0) ?
+                                         capacityIncrement : oldCapacity);
+        //如果扩容之后的容量还是小于给定的容量，则按照给定容量扩容
+        if (newCapacity - minCapacity &lt; 0)
+            newCapacity = minCapacity;
+        if (newCapacity - MAX_ARRAY_SIZE &gt; 0)
+            newCapacity = hugeCapacity(minCapacity);
+        elementData = Arrays.copyOf(elementData, newCapacity);
+    }
+
+    private static int hugeCapacity(int minCapacity) {
+        if (minCapacity &lt; 0) // overflow
+            throw new OutOfMemoryError();
+        return (minCapacity &gt; MAX_ARRAY_SIZE) ?
+            Integer.MAX_VALUE :
+            MAX_ARRAY_SIZE;
+    }
+</code></pre></div></div>
+
+<h6 id="2-缩减容量">2. 缩减容量</h6>
+
+<p>有时候，使用 Vector 完成任务之后，容量会有剩余，可以调用这个方法把容量调整至与大小相同：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    public synchronized void trimToSize() {
+        modCount++;
+        int oldCapacity = elementData.length;
+        //如果容量多余
+        if (elementCount &lt; oldCapacity) {
+            //原地复制
+            elementData = Arrays.copyOf(elementData, elementCount);
+        }
+    }
+</code></pre></div></div>
+
+<h6 id="3-设置大小">3. 设置大小</h6>
+
+<p>根据给定的大小设置 Vector，如果 newSize 小于 Vector 的 size，则抹掉后面的部分</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    public synchronized void setSize(int newSize) {
+        modCount++;
+        if (newSize &gt; elementCount) {
+            ensureCapacityHelper(newSize);
+        //抹掉后面的部分
+        } else {
+            for (int i = newSize ; i &lt; elementCount ; i++) {
+                elementData[i] = null;
+            }
+        }
+        //调整大小
+        elementCount = newSize;
+    }
+</code></pre></div></div>
+
+<h6 id="4-得到容量或大小的数值">4. 得到容量或大小的数值</h6>
+
+<p>很简单，直接上代码：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    public synchronized int capacity() {
+        return elementData.length;
+    }
+
+    public synchronized int size() {
+        return elementCount;
+    }
+</code></pre></div></div>
+
+<h6 id="5-判断是否为空">5. 判断是否为空</h6>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    public synchronized boolean isEmpty() {
+        return elementCount == 0;
+    }
+</code></pre></div></div>
+
+<h4 id="4-增删改查">4. 增删改查</h4>
+
+<h6 id="1-增">1. 增</h6>
+
+<ul>
+  <li>先扩容，再添加：</li>
+</ul>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    public synchronized boolean add(E e) {
+        modCount++;
+        //先扩容
+        ensureCapacityHelper(elementCount + 1);
+        elementData[elementCount++] = e;
+        return true;
+    }
+</code></pre></div></div>
+
+<ul>
+  <li>在指定位置添加：</li>
+</ul>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    public synchronized void insertElementAt(E obj, int index) {
+        modCount++;
+        //下标越界
+        if (index &gt; elementCount) {
+            throw new ArrayIndexOutOfBoundsException(index
+                                                     + " &gt; " + elementCount);
+        }
+        //先扩容
+        ensureCapacityHelper(elementCount + 1);
+        //把要插入的位置后面的元素后移一位
+        System.arraycopy(elementData, index, elementData, index + 1, elementCount - index);
+        elementData[index] = obj;
+        elementCount++;
+    }
+
+    //调用上面的方法
+    public void add(int index, E element) {
+        insertElementAt(element, index);
+    }
+</code></pre></div></div>
+
+<ul>
+  <li>在末尾添加：</li>
+</ul>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    public synchronized void addElement(E obj) {
+        modCount++;
+        //扩容后在末尾添加
+        ensureCapacityHelper(elementCount + 1);
+        elementData[elementCount++] = obj;
+    }
+</code></pre></div></div>
+
+<ul>
+  <li>在末尾添加指定集合的元素：</li>
+</ul>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    public synchronized boolean addAll(Collection&lt;? extends E&gt; c) {
+        modCount++;
+        //转为数组后根据大小进行扩容
+        Object[] a = c.toArray();
+        int numNew = a.length;
+        ensureCapacityHelper(elementCount + numNew);
+        //将数组内容复制到 Vector 的末尾
+        System.arraycopy(a, 0, elementData, elementCount, numNew);
+        elementCount += numNew;
+        return numNew != 0;
+    }
+</code></pre></div></div>
+
+<ul>
+  <li>在指定位置添加指定集合的元素</li>
+</ul>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    public synchronized boolean addAll(int index, Collection&lt;? extends E&gt; c) {
+        modCount++;
+        if (index &lt; 0 || index &gt; elementCount)
+            throw new ArrayIndexOutOfBoundsException(index);
+
+        Object[] a = c.toArray();
+        int numNew = a.length;
+        ensureCapacityHelper(elementCount + numNew);
+        //算出需要后移几个元素
+        int numMoved = elementCount - index;
+        //先将元素后移，空出位置之后，在将指定容器的元素加入
+        if (numMoved &gt; 0)
+            System.arraycopy(elementData, index, elementData, index + numNew,
+                             numMoved);
+
+        System.arraycopy(a, 0, elementData, index, numNew);
+        elementCount += numNew;
+        return numNew != 0;
+    }
+</code></pre></div></div>
+
+<h6 id="2-删">2. 删</h6>
+
+<ul>
+  <li>删除指定位置的元素（无返回值）</li>
+</ul>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    public synchronized void removeElementAt(int index) {
+        modCount++;
+        if (index &gt;= elementCount) {
+            throw new ArrayIndexOutOfBoundsException(index + " &gt;= " +
+                                                     elementCount);
+        }
+        else if (index &lt; 0) {
+            throw new ArrayIndexOutOfBoundsException(index);
+        }
+        //先算出需要前移的元素个数
+        int j = elementCount - index - 1;
+        if (j &gt; 0) {
+            System.arraycopy(elementData, index + 1, elementData, index, j);
+        }
+        //元素前移，大小减1，并将最后一个位置设为 null，让 GC 进行处理
+        elementCount--;
+        elementData[elementCount] = null; /* to let gc do its work */
+    }
+</code></pre></div></div>
+
+<ul>
+  <li>删除指定位置的元素（有返回值）</li>
+</ul>
+
+<p>过程和上面的是类似的，区别就是这个方法返回删除的元素</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    public synchronized E remove(int index) {
+        modCount++;
+        if (index &gt;= elementCount)
+            throw new ArrayIndexOutOfBoundsException(index);
+        E oldValue = elementData(index);
+
+        int numMoved = elementCount - index - 1;
+        if (numMoved &gt; 0)
+            System.arraycopy(elementData, index+1, elementData, index,
+                             numMoved);
+        elementData[--elementCount] = null; // Let gc do its work
+
+        return oldValue;
+    }
+</code></pre></div></div>
+
+<ul>
+  <li>在某个元素第一次出现的位置将其删除：</li>
+</ul>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    public synchronized boolean removeElement(Object obj) {
+        modCount++;
+        //查找该元素位置
+        int i = indexOf(obj);
+        if (i &gt;= 0) {
+            removeElementAt(i);
+            return true;
+        }
+        return false;
+    }
+
+    //这也是一样的
+    public boolean remove(Object o) {
+        return removeElement(o);
+    }
+</code></pre></div></div>
+
+<ul>
+  <li>删除全部元素</li>
+</ul>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    public synchronized void removeAllElements() {
+        modCount++;
+        // Let gc do its work
+        for (int i = 0; i &lt; elementCount; i++)
+            //把每个位置都设为空就行了
+            elementData[i] = null;
+
+        elementCount = 0;
+    }
+
+    //清空列表，效果是一样的
+    public void clear() {
+        removeAllElements();
+    }
+</code></pre></div></div>
+
+<h6 id="3-改">3. 改</h6>
+
+<ul>
+  <li>修改指定位置的元素</li>
+</ul>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    public synchronized void setElementAt(E obj, int index) {
+        if (index &gt;= elementCount) {
+            throw new ArrayIndexOutOfBoundsException(index + " &gt;= " +
+                                                     elementCount);
+        }
+        elementData[index] = obj;
+    }
+
+    //和上面方法类似，只是参数位置对调，带有返回值
+    public synchronized E set(int index, E element) {
+        if (index &gt;= elementCount)
+            throw new ArrayIndexOutOfBoundsException(index);
+
+        E oldValue = elementData(index);
+        elementData[index] = element;
+        return oldValue;
+    }
+</code></pre></div></div>
+
+<h6 id="4-查">4. 查</h6>
+
+<p>Vector 中查找的方式比较多，下面一一列举：</p>
+
+<ul>
+  <li>枚举出所有元素</li>
+</ul>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    public Enumeration&lt;E&gt; elements() {
+        return new Enumeration&lt;E&gt;() {
+            int count = 0;
+
+            public boolean hasMoreElements() {
+                return count &lt; elementCount;
+            }
+
+            public E nextElement() {
+                synchronized (Vector.this) {
+                    if (count &lt; elementCount) {
+                        return elementData(count++);
+                    }
+                }
+                throw new NoSuchElementException("Vector Enumeration");
+            }
+        };
+    }
+</code></pre></div></div>
+
+<ul>
+  <li>从指定位置开始搜索元素第一次出现的位置：</li>
+</ul>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    public synchronized int indexOf(Object o, int index) {
+        if (o == null) {
+            for (int i = index ; i &lt; elementCount ; i++)
+                if (elementData[i]==null)
+                    return i;
+        } else {
+            //从给定的位置开始搜索
+            for (int i = index ; i &lt; elementCount ; i++)
+                if (o.equals(elementData[i]))
+                    return i;
+        }
+        return -1;
+    }
+</code></pre></div></div>
+
+<ul>
+  <li>查找指定元素或判断是否包含指定元素：</li>
+</ul>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    //从0开始查找
+    public int indexOf(Object o) {
+        return indexOf(o, 0);
+    }
+
+    //也是从0开始，返回布尔类型
+    public boolean contains(Object o) {
+        return indexOf(o, 0) &gt;= 0;
+    }
+</code></pre></div></div>
+
+<ul>
+  <li>查找指定元素最后一次出现的位置</li>
+</ul>
+
+<p>其实就是把上面查找的方式倒过来，不解释：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    public synchronized int lastIndexOf(Object o) {
+        return lastIndexOf(o, elementCount-1);
+    }
+
+
+    public synchronized int lastIndexOf(Object o, int index) {
+        if (index &gt;= elementCount)
+            throw new IndexOutOfBoundsException(index + " &gt;= "+ elementCount);
+
+        if (o == null) {
+            for (int i = index; i &gt;= 0; i--)
+                if (elementData[i]==null)
+                    return i;
+        } else {
+            for (int i = index; i &gt;= 0; i--)
+                if (o.equals(elementData[i]))
+                    return i;
+        }
+        return -1;
+    }
+</code></pre></div></div>
+
+<ul>
+  <li>根据给定位置查找元素：</li>
+</ul>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    //两个方法是一样的
+    public synchronized E elementAt(int index) {
+        if (index &gt;= elementCount) {
+            throw new ArrayIndexOutOfBoundsException(index + " &gt;= " + elementCount);
+        }
+
+        return elementData(index);
+    }
+
+    public synchronized E get(int index) {
+        if (index &gt;= elementCount)
+            throw new ArrayIndexOutOfBoundsException(index);
+
+        return elementData(index);
+    }
+</code></pre></div></div>
+
+<ul>
+  <li>查找首尾元素：</li>
+</ul>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    public synchronized E firstElement() {
+        if (elementCount == 0) {
+            throw new NoSuchElementException();
+        }
+        return elementData(0);
+    }
+
+    public synchronized E lastElement() {
+        if (elementCount == 0) {
+            throw new NoSuchElementException();
+        }
+        return elementData(elementCount - 1);
+    }
+</code></pre></div></div>
+
+<h4 id="4-总结">4. 总结</h4>
+
+<p>之前在学习 Java 的时候，没有听到过 Vector 的相关概念，还是在学习 ArrayList 的时候，发现挺多人拿 ArrayList 和 Vector 来作比较，后来才知道，Vector 其实可以算得上是线程安全的 ArrayList</p>
+
+<p>首先，他们继承的类和实现的接口是一样的，说明他们能够实现相同的功能：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public class ArrayList&lt;E&gt; extends AbstractList&lt;E&gt;
+        implements List&lt;E&gt;, RandomAccess, Cloneable, java.io.Serializable
+
+public class Vector&lt;E&gt; extends AbstractList&lt;E&gt;
+    implements List&lt;E&gt;, RandomAccess, Cloneable, java.io.Serializable
+
+</code></pre></div></div>
+
+<p>其次，在上述的操作中可以看出，它和 ArrayList 的操作还是很类似的</p>
+
+<p>Vector 是从 JDK1.0 出现的，而 ArrayList 是从 JDK1.2 出现的，从网上的一些其他人的观点中可以看出，Vector 似乎没什么存在感了，ArrayList 也可以通过集合的包装来实现线程安全的效果，不过这不应该成为我们不学习的理由，谁知道哪一天就派上用场了呢</p>
+
+<p>关于 Vector 的迭代器操作，粗略看了一下，与 ArrayList 的极其相似，甚至有一些操作就是 ArrayList 的操作，所以就不必用多篇文章来阐述，接下来会是集合类中的其他 API</p>
+
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-79919768b5365766.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" width="40%" height="40%" /></p>
+
+
+                <hr>
+
+               
+
+
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/2018/06/12/Bean%E7%9A%84%E8%A3%85%E9%85%8D-%E4%BA%8C/" data-toggle="tooltip" data-placement="top" title="Bean的装配（二）">&larr; Previous Post</a>
+                    </li>
+                    
+                    
+                </ul>
+
+		
+                <!-- disqus 评论框 start -->
+                <div class="comment">
+                    <div id="disqus_thread" class="disqus-thread"></div>
+                </div>
+                <!-- disqus 评论框 end -->
+                
+
+
+
+            </div>
+
+    <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <hr class="hidden-sm hidden-xs">
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+        				
+                            
+                				<a href="/tags/#Java Web" title="Java Web" rel="3">
+                                    Java Web
+                                </a>
+                            
+        				
+                            
+                				<a href="/tags/#IntelliJ IDEA" title="IntelliJ IDEA" rel="1">
+                                    IntelliJ IDEA
+                                </a>
+                            
+        				
+                            
+                				<a href="/tags/#Spring MVC" title="Spring MVC" rel="1">
+                                    Spring MVC
+                                </a>
+                            
+        				
+                            
+                				<a href="/tags/#随笔" title="随笔" rel="2">
+                                    随笔
+                                </a>
+                            
+        				
+                            
+                				<a href="/tags/#树莓派" title="树莓派" rel="3">
+                                    树莓派
+                                </a>
+                            
+        				
+                            
+                				<a href="/tags/#Java基础" title="Java基础" rel="4">
+                                    Java基础
+                                </a>
+                            
+        				
+                            
+                				<a href="/tags/#MySQL" title="MySQL" rel="1">
+                                    MySQL
+                                </a>
+                            
+        				
+                            
+                				<a href="/tags/#项目模块" title="项目模块" rel="2">
+                                    项目模块
+                                </a>
+                            
+        				
+                            
+                				<a href="/tags/#Java源码解析" title="Java源码解析" rel="7">
+                                    Java源码解析
+                                </a>
+                            
+        				
+                            
+                				<a href="/tags/#Spring" title="Spring" rel="2">
+                                    Spring
+                                </a>
+                            
+        				
+        			</div>
+                </section>
+                
+
+                <!-- Something else -->
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+<!-- disqus 公共JS代码 end -->
+
+<!-- disqus 公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = "http-hxblog-site";
+    var disqus_identifier = "/2018/06/18/Vector 源码分析";
+    var disqus_url = "http://localhost:4000/2018/06/18/Vector-%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/";
+
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<!-- disqus 公共JS代码 end -->
+
+
+
+
+
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                    
+
+		    
+                            <li>
+                                <a target="_blank" href="https://juejin.im/user/58e48dc38d6d810061654870">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fa fa-circle fa-stack-2x"></i>
+                                        <i class="fa fa-stack-1x fa-inverse">掘</i>
+                                    </span>
+                                </a>
+                            </li>
+                            
+                   
+		    
+                            <li>
+                                <a target="_blank" href="https://www.jianshu.com/u/fbc9284d5523">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fa fa-circle fa-stack-2x"></i>
+                                        <i class="fa fa-stack-1x fa-inverse">简</i>
+                                    </span>
+                                </a>
+                            </li>
+                            
+                   
+                    
+                    <li>
+                        <a target="_blank" href="https://www.zhihu.com/people/li-han-xiang-54-15">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-stack-1x fa-inverse">知</i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+
+
+                    
+                    
+                    <li>
+                        <a target="_blank" href="https://github.com/lihanxiang">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; L Blog 2018
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("http://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+<script>
+    // dynamic User by Hux
+    var _gaId = 'UA-117570649-1';
+    var _gaDomain = 'http://hxblog.site/';
+
+    // Originial
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', _gaId, _gaDomain);
+    ga('send', 'pageview');
+</script>
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+
+<!-- Image to hack wechat -->
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>

@@ -2,12 +2,590 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>L Blog</title>
-    <description>写写Java，一天就过去了</description>
+    <description>你问我什么咖啡最好，我当然觉得是 Java</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Sun, 17 Jun 2018 03:43:47 -0700</pubDate>
-    <lastBuildDate>Sun, 17 Jun 2018 03:43:47 -0700</lastBuildDate>
+    <pubDate>Mon, 18 Jun 2018 01:05:41 -0700</pubDate>
+    <lastBuildDate>Mon, 18 Jun 2018 01:05:41 -0700</lastBuildDate>
     <generator>Jekyll v3.8.0</generator>
+    
+      <item>
+        <title>Vector源码分析</title>
+        <description>&lt;h3 id=&quot;正文之前&quot;&gt;正文之前&lt;/h3&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;之前介绍过 &lt;a href=&quot;http://hxblog.site/2018/05/04/ArrayList%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E4%B8%80/&quot;&gt;ArrayList&lt;/a&gt; 和 &lt;a href=&quot;http://hxblog.site/2018/05/22/LinkedList%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E4%B8%80/&quot;&gt;LinkedList&lt;/a&gt;，所以今天来说说 List 接口的另一个实现类：&lt;strong&gt;Vector&lt;/strong&gt;，其实这也是一个类似的动态数组，只不过是线程安全的，和 ArrayList 还是有一点区别的&lt;/p&gt;
+
+  &lt;p&gt;主要内容：&lt;/p&gt;
+  &lt;ol&gt;
+    &lt;li&gt;基本概念&lt;/li&gt;
+    &lt;li&gt;构造&lt;/li&gt;
+    &lt;li&gt;针对容量的操作&lt;/li&gt;
+    &lt;li&gt;增删改查&lt;/li&gt;
+  &lt;/ol&gt;
+&lt;/blockquote&gt;
+
+&lt;h3 id=&quot;正文&quot;&gt;正文&lt;/h3&gt;
+
+&lt;h4 id=&quot;1-基本概念&quot;&gt;1. 基本概念&lt;/h4&gt;
+
+&lt;p&gt;关于 &lt;strong&gt;Vector&lt;/strong&gt; 的介绍，其实直接看 JDK 中的注释就解释的很清楚了：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;/**
+ * The {@code Vector} class implements a growable array of
+ * objects. Like an array, it contains components that can be
+ * accessed using an integer index. However, the size of a
+ * {@code Vector} can grow or shrink as needed to accommodate
+ * adding and removing items after the {@code Vector} has been created.
+ *
+ * &amp;lt;p&amp;gt;Each vector tries to optimize storage management by maintaining a
+ * {@code capacity} and a {@code capacityIncrement}. The
+ * {@code capacity} is always at least as large as the vector
+ * size; it is usually larger because as components are added to the
+ * vector, the vector's storage increases in chunks the size of
+ * {@code capacityIncrement}. An application can increase the
+ * capacity of a vector before inserting a large number of
+ * components; this reduces the amount of incremental reallocation.
+ */
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;首先，Vector 是一个可增长的数组（和 ArrayList 类似），能够用索引直接找到元素，Vector 的容量可增可减&lt;/p&gt;
+
+&lt;p&gt;其次，Vector 使用变量 &lt;code class=&quot;highlighter-rouge&quot;&gt;capacity&lt;/code&gt; 和 &lt;code class=&quot;highlighter-rouge&quot;&gt;capacityIncrement&lt;/code&gt; 来进行容量的管理，关于容量和大小的说法，之前也提到过，容量是最多能够容纳多少元素，而大小是目前容纳了多少元素。&lt;code class=&quot;highlighter-rouge&quot;&gt;capacity&lt;/code&gt; 指的就是容量，是永远大于或等于 Vector 的大小的，不过容量通常是大于 Vector 的大小的，因为它扩容的方式有点特殊，下文提及，在插入大量数据之前，最好能进行适当的扩容，避免了再分配的时间浪费&lt;/p&gt;
+
+&lt;p&gt;Vector 是线程安全的，它所有的方法都加上了 &lt;code class=&quot;highlighter-rouge&quot;&gt;synchronized&lt;/code&gt; 关键字&lt;/p&gt;
+
+&lt;p&gt;关于 Vector，需要先介绍一下它的变量：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    // Vector 的操作就是基于这个数组来实现的：
+    protected Object[] elementData;
+    
+    // Vector 中的元素数量
+    protected int elementCount;
+
+    // Vector 的增量，用它来判断需要扩容多少
+    protected int capacityIncrement;
+
+    //某些 JVM 会在数组的前几位保留一些信息（具体的也不晓得）
+    private static final int MAX_ARRAY_SIZE = Integer.MAX_VALUE - 8;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h4 id=&quot;2-构造&quot;&gt;2. 构造&lt;/h4&gt;
+
+&lt;p&gt;关于 Vector 的构造器，有四种方式：&lt;/p&gt;
+
+&lt;h6 id=&quot;1--使用给定的初始容量和增量来创造一个空的-vector&quot;&gt;1.  使用给定的初始容量和增量来创造一个空的 Vector&lt;/h6&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    public Vector(int initialCapacity, int capacityIncrement) {
+        super();
+        if (initialCapacity &amp;lt; 0)
+            //容量为负
+            throw new IllegalArgumentException(&quot;Illegal Capacity: &quot;+
+                                               initialCapacity);
+        //根据容量创造数组
+        this.elementData = new Object[initialCapacity];
+        this.capacityIncrement = capacityIncrement;
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h6 id=&quot;2-使用给定的容量来创造一个空的-vector&quot;&gt;2. 使用给定的容量来创造一个空的 Vector&lt;/h6&gt;
+
+&lt;p&gt;调用了上一个构造器&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    //增量设置为0
+    public Vector(int initialCapacity) {
+        this(initialCapacity, 0);
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h6 id=&quot;3-不带参数创造一个空的-vector&quot;&gt;3. 不带参数创造一个空的 Vector&lt;/h6&gt;
+
+&lt;p&gt;调用上一个构造器，并将容量初始值设为10&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    public Vector() {
+        this(10);
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h6 id=&quot;4-创造一个带有其他容器元素的-vector&quot;&gt;4. 创造一个带有其他容器元素的 Vector&lt;/h6&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    public Vector(Collection&amp;lt;? extends E&amp;gt; c) {
+        elementData = c.toArray();
+        elementCount = elementData.length;
+        // c.toArray might (incorrectly) not return Object[] (see 6260652)
+        if (elementData.getClass() != Object[].class)
+            elementData = Arrays.copyOf(elementData, elementCount, Object[].class);
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h4 id=&quot;3-针对容量的操作&quot;&gt;3. 针对容量的操作&lt;/h4&gt;
+
+&lt;h6 id=&quot;1-增长容量&quot;&gt;1. 增长容量&lt;/h6&gt;
+
+&lt;p&gt;增长容量的操作真是一套又一套，和俄罗斯套娃一样，用一个同步的公有方法来调用其他未同步的私有方法：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    public synchronized void ensureCapacity(int minCapacity) {
+        if (minCapacity &amp;gt; 0) {
+            modCount++;
+            ensureCapacityHelper(minCapacity);
+        }
+    }
+
+    private void ensureCapacityHelper(int minCapacity) {
+        // overflow-conscious code
+        if (minCapacity - elementData.length &amp;gt; 0)
+            grow(minCapacity);
+    }
+
+    //先确定需要扩容多少，在方法最后才进行扩容
+    private void grow(int minCapacity) {
+        // overflow-conscious code
+        //现有的容量
+        int oldCapacity = elementData.length;
+        //如果增量大于0，就按增量来扩容，否则就扩容至原来的2倍容量
+        int newCapacity = oldCapacity + ((capacityIncrement &amp;gt; 0) ?
+                                         capacityIncrement : oldCapacity);
+        //如果扩容之后的容量还是小于给定的容量，则按照给定容量扩容
+        if (newCapacity - minCapacity &amp;lt; 0)
+            newCapacity = minCapacity;
+        if (newCapacity - MAX_ARRAY_SIZE &amp;gt; 0)
+            newCapacity = hugeCapacity(minCapacity);
+        elementData = Arrays.copyOf(elementData, newCapacity);
+    }
+
+    private static int hugeCapacity(int minCapacity) {
+        if (minCapacity &amp;lt; 0) // overflow
+            throw new OutOfMemoryError();
+        return (minCapacity &amp;gt; MAX_ARRAY_SIZE) ?
+            Integer.MAX_VALUE :
+            MAX_ARRAY_SIZE;
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h6 id=&quot;2-缩减容量&quot;&gt;2. 缩减容量&lt;/h6&gt;
+
+&lt;p&gt;有时候，使用 Vector 完成任务之后，容量会有剩余，可以调用这个方法把容量调整至与大小相同：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    public synchronized void trimToSize() {
+        modCount++;
+        int oldCapacity = elementData.length;
+        //如果容量多余
+        if (elementCount &amp;lt; oldCapacity) {
+            //原地复制
+            elementData = Arrays.copyOf(elementData, elementCount);
+        }
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h6 id=&quot;3-设置大小&quot;&gt;3. 设置大小&lt;/h6&gt;
+
+&lt;p&gt;根据给定的大小设置 Vector，如果 newSize 小于 Vector 的 size，则抹掉后面的部分&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    public synchronized void setSize(int newSize) {
+        modCount++;
+        if (newSize &amp;gt; elementCount) {
+            ensureCapacityHelper(newSize);
+        //抹掉后面的部分
+        } else {
+            for (int i = newSize ; i &amp;lt; elementCount ; i++) {
+                elementData[i] = null;
+            }
+        }
+        //调整大小
+        elementCount = newSize;
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h6 id=&quot;4-得到容量或大小的数值&quot;&gt;4. 得到容量或大小的数值&lt;/h6&gt;
+
+&lt;p&gt;很简单，直接上代码：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    public synchronized int capacity() {
+        return elementData.length;
+    }
+
+    public synchronized int size() {
+        return elementCount;
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h6 id=&quot;5-判断是否为空&quot;&gt;5. 判断是否为空&lt;/h6&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    public synchronized boolean isEmpty() {
+        return elementCount == 0;
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h4 id=&quot;4-增删改查&quot;&gt;4. 增删改查&lt;/h4&gt;
+
+&lt;h6 id=&quot;1-增&quot;&gt;1. 增&lt;/h6&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;先扩容，再添加：&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    public synchronized boolean add(E e) {
+        modCount++;
+        //先扩容
+        ensureCapacityHelper(elementCount + 1);
+        elementData[elementCount++] = e;
+        return true;
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;在指定位置添加：&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    public synchronized void insertElementAt(E obj, int index) {
+        modCount++;
+        //下标越界
+        if (index &amp;gt; elementCount) {
+            throw new ArrayIndexOutOfBoundsException(index
+                                                     + &quot; &amp;gt; &quot; + elementCount);
+        }
+        //先扩容
+        ensureCapacityHelper(elementCount + 1);
+        //把要插入的位置后面的元素后移一位
+        System.arraycopy(elementData, index, elementData, index + 1, elementCount - index);
+        elementData[index] = obj;
+        elementCount++;
+    }
+
+    //调用上面的方法
+    public void add(int index, E element) {
+        insertElementAt(element, index);
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;在末尾添加：&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    public synchronized void addElement(E obj) {
+        modCount++;
+        //扩容后在末尾添加
+        ensureCapacityHelper(elementCount + 1);
+        elementData[elementCount++] = obj;
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;在末尾添加指定集合的元素：&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    public synchronized boolean addAll(Collection&amp;lt;? extends E&amp;gt; c) {
+        modCount++;
+        //转为数组后根据大小进行扩容
+        Object[] a = c.toArray();
+        int numNew = a.length;
+        ensureCapacityHelper(elementCount + numNew);
+        //将数组内容复制到 Vector 的末尾
+        System.arraycopy(a, 0, elementData, elementCount, numNew);
+        elementCount += numNew;
+        return numNew != 0;
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;在指定位置添加指定集合的元素&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    public synchronized boolean addAll(int index, Collection&amp;lt;? extends E&amp;gt; c) {
+        modCount++;
+        if (index &amp;lt; 0 || index &amp;gt; elementCount)
+            throw new ArrayIndexOutOfBoundsException(index);
+
+        Object[] a = c.toArray();
+        int numNew = a.length;
+        ensureCapacityHelper(elementCount + numNew);
+        //算出需要后移几个元素
+        int numMoved = elementCount - index;
+        //先将元素后移，空出位置之后，在将指定容器的元素加入
+        if (numMoved &amp;gt; 0)
+            System.arraycopy(elementData, index, elementData, index + numNew,
+                             numMoved);
+
+        System.arraycopy(a, 0, elementData, index, numNew);
+        elementCount += numNew;
+        return numNew != 0;
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h6 id=&quot;2-删&quot;&gt;2. 删&lt;/h6&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;删除指定位置的元素（无返回值）&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    public synchronized void removeElementAt(int index) {
+        modCount++;
+        if (index &amp;gt;= elementCount) {
+            throw new ArrayIndexOutOfBoundsException(index + &quot; &amp;gt;= &quot; +
+                                                     elementCount);
+        }
+        else if (index &amp;lt; 0) {
+            throw new ArrayIndexOutOfBoundsException(index);
+        }
+        //先算出需要前移的元素个数
+        int j = elementCount - index - 1;
+        if (j &amp;gt; 0) {
+            System.arraycopy(elementData, index + 1, elementData, index, j);
+        }
+        //元素前移，大小减1，并将最后一个位置设为 null，让 GC 进行处理
+        elementCount--;
+        elementData[elementCount] = null; /* to let gc do its work */
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;删除指定位置的元素（有返回值）&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;过程和上面的是类似的，区别就是这个方法返回删除的元素&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    public synchronized E remove(int index) {
+        modCount++;
+        if (index &amp;gt;= elementCount)
+            throw new ArrayIndexOutOfBoundsException(index);
+        E oldValue = elementData(index);
+
+        int numMoved = elementCount - index - 1;
+        if (numMoved &amp;gt; 0)
+            System.arraycopy(elementData, index+1, elementData, index,
+                             numMoved);
+        elementData[--elementCount] = null; // Let gc do its work
+
+        return oldValue;
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;在某个元素第一次出现的位置将其删除：&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    public synchronized boolean removeElement(Object obj) {
+        modCount++;
+        //查找该元素位置
+        int i = indexOf(obj);
+        if (i &amp;gt;= 0) {
+            removeElementAt(i);
+            return true;
+        }
+        return false;
+    }
+
+    //这也是一样的
+    public boolean remove(Object o) {
+        return removeElement(o);
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;删除全部元素&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    public synchronized void removeAllElements() {
+        modCount++;
+        // Let gc do its work
+        for (int i = 0; i &amp;lt; elementCount; i++)
+            //把每个位置都设为空就行了
+            elementData[i] = null;
+
+        elementCount = 0;
+    }
+
+    //清空列表，效果是一样的
+    public void clear() {
+        removeAllElements();
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h6 id=&quot;3-改&quot;&gt;3. 改&lt;/h6&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;修改指定位置的元素&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    public synchronized void setElementAt(E obj, int index) {
+        if (index &amp;gt;= elementCount) {
+            throw new ArrayIndexOutOfBoundsException(index + &quot; &amp;gt;= &quot; +
+                                                     elementCount);
+        }
+        elementData[index] = obj;
+    }
+
+    //和上面方法类似，只是参数位置对调，带有返回值
+    public synchronized E set(int index, E element) {
+        if (index &amp;gt;= elementCount)
+            throw new ArrayIndexOutOfBoundsException(index);
+
+        E oldValue = elementData(index);
+        elementData[index] = element;
+        return oldValue;
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h6 id=&quot;4-查&quot;&gt;4. 查&lt;/h6&gt;
+
+&lt;p&gt;Vector 中查找的方式比较多，下面一一列举：&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;枚举出所有元素&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    public Enumeration&amp;lt;E&amp;gt; elements() {
+        return new Enumeration&amp;lt;E&amp;gt;() {
+            int count = 0;
+
+            public boolean hasMoreElements() {
+                return count &amp;lt; elementCount;
+            }
+
+            public E nextElement() {
+                synchronized (Vector.this) {
+                    if (count &amp;lt; elementCount) {
+                        return elementData(count++);
+                    }
+                }
+                throw new NoSuchElementException(&quot;Vector Enumeration&quot;);
+            }
+        };
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;从指定位置开始搜索元素第一次出现的位置：&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    public synchronized int indexOf(Object o, int index) {
+        if (o == null) {
+            for (int i = index ; i &amp;lt; elementCount ; i++)
+                if (elementData[i]==null)
+                    return i;
+        } else {
+            //从给定的位置开始搜索
+            for (int i = index ; i &amp;lt; elementCount ; i++)
+                if (o.equals(elementData[i]))
+                    return i;
+        }
+        return -1;
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;查找指定元素或判断是否包含指定元素：&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    //从0开始查找
+    public int indexOf(Object o) {
+        return indexOf(o, 0);
+    }
+
+    //也是从0开始，返回布尔类型
+    public boolean contains(Object o) {
+        return indexOf(o, 0) &amp;gt;= 0;
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;查找指定元素最后一次出现的位置&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;其实就是把上面查找的方式倒过来，不解释：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    public synchronized int lastIndexOf(Object o) {
+        return lastIndexOf(o, elementCount-1);
+    }
+
+
+    public synchronized int lastIndexOf(Object o, int index) {
+        if (index &amp;gt;= elementCount)
+            throw new IndexOutOfBoundsException(index + &quot; &amp;gt;= &quot;+ elementCount);
+
+        if (o == null) {
+            for (int i = index; i &amp;gt;= 0; i--)
+                if (elementData[i]==null)
+                    return i;
+        } else {
+            for (int i = index; i &amp;gt;= 0; i--)
+                if (o.equals(elementData[i]))
+                    return i;
+        }
+        return -1;
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;根据给定位置查找元素：&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    //两个方法是一样的
+    public synchronized E elementAt(int index) {
+        if (index &amp;gt;= elementCount) {
+            throw new ArrayIndexOutOfBoundsException(index + &quot; &amp;gt;= &quot; + elementCount);
+        }
+
+        return elementData(index);
+    }
+
+    public synchronized E get(int index) {
+        if (index &amp;gt;= elementCount)
+            throw new ArrayIndexOutOfBoundsException(index);
+
+        return elementData(index);
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;查找首尾元素：&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    public synchronized E firstElement() {
+        if (elementCount == 0) {
+            throw new NoSuchElementException();
+        }
+        return elementData(0);
+    }
+
+    public synchronized E lastElement() {
+        if (elementCount == 0) {
+            throw new NoSuchElementException();
+        }
+        return elementData(elementCount - 1);
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h4 id=&quot;4-总结&quot;&gt;4. 总结&lt;/h4&gt;
+
+&lt;p&gt;之前在学习 Java 的时候，没有听到过 Vector 的相关概念，还是在学习 ArrayList 的时候，发现挺多人拿 ArrayList 和 Vector 来作比较，后来才知道，Vector 其实可以算得上是线程安全的 ArrayList&lt;/p&gt;
+
+&lt;p&gt;首先，他们继承的类和实现的接口是一样的，说明他们能够实现相同的功能：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public class ArrayList&amp;lt;E&amp;gt; extends AbstractList&amp;lt;E&amp;gt;
+        implements List&amp;lt;E&amp;gt;, RandomAccess, Cloneable, java.io.Serializable
+
+public class Vector&amp;lt;E&amp;gt; extends AbstractList&amp;lt;E&amp;gt;
+    implements List&amp;lt;E&amp;gt;, RandomAccess, Cloneable, java.io.Serializable
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;其次，在上述的操作中可以看出，它和 ArrayList 的操作还是很类似的&lt;/p&gt;
+
+&lt;p&gt;Vector 是从 JDK1.0 出现的，而 ArrayList 是从 JDK1.2 出现的，从网上的一些其他人的观点中可以看出，Vector 似乎没什么存在感了，ArrayList 也可以通过集合的包装来实现线程安全的效果，不过这不应该成为我们不学习的理由，谁知道哪一天就派上用场了呢&lt;/p&gt;
+
+&lt;p&gt;关于 Vector 的迭代器操作，粗略看了一下，与 ArrayList 的极其相似，甚至有一些操作就是 ArrayList 的操作，所以就不必用多篇文章来阐述，接下来会是集合类中的其他 API&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-79919768b5365766.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; width=&quot;40%&quot; height=&quot;40%&quot; /&gt;&lt;/p&gt;
+</description>
+        <pubDate>Mon, 18 Jun 2018 00:00:00 -0700</pubDate>
+        <link>http://localhost:4000/2018/06/18/Vector-%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/</link>
+        <guid isPermaLink="true">http://localhost:4000/2018/06/18/Vector-%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/</guid>
+        
+        <category>Java源码解析</category>
+        
+        
+      </item>
     
       <item>
         <title>Bean的装配（二）</title>
@@ -2791,583 +3369,6 @@ public interface ListIterator&amp;lt;E&amp;gt; extends Iterator&amp;lt;E&amp;gt;
         <guid isPermaLink="true">http://localhost:4000/2018/05/06/%E7%99%BB%E9%99%86%E7%95%8C%E9%9D%A2%E6%A8%A1%E5%9D%97%E8%A7%A3%E6%9E%90-%E7%94%9F%E6%88%90%E5%9B%BE%E7%89%87%E9%AA%8C%E8%AF%81%E7%A0%81/</guid>
         
         <category>项目模块</category>
-        
-        
-      </item>
-    
-      <item>
-        <title>ArrayList源码分析（一）</title>
-        <description>&lt;h3 id=&quot;正文之前&quot;&gt;正文之前&lt;/h3&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;最近在复习Java基础，感觉又学到了好多，集合作为Java的一大重点，之前是看着《Java编程思想》学的，这次刚好配合着源码重新学一遍，首先学的是ArrayList，顺便做点总结（迭代器无关）：&lt;/p&gt;
-  &lt;ol&gt;
-    &lt;li&gt;ArrayList的基本概念&lt;/li&gt;
-    &lt;li&gt;ArrayList的源码剖析（常量，构造器，常用方法）&lt;/li&gt;
-  &lt;/ol&gt;
-
-  &lt;p&gt;关于ArrayList的源码，至少要写三四篇才够吧，这源码可是有足足1500行左右（一半是注释），慢慢积累吧&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;h3 id=&quot;正文&quot;&gt;正文&lt;/h3&gt;
-
-&lt;h4 id=&quot;arraylist基本概念&quot;&gt;ArrayList基本概念&lt;/h4&gt;
-
-&lt;p&gt;刚开始学的时候管它叫动态数组，因为它的大小是根据数据量而自动变化的，它的结构是基于动态数组(Dynamic array)&lt;/p&gt;
-
-&lt;h5 id=&quot;注释&quot;&gt;注释&lt;/h5&gt;
-
-&lt;p&gt;我在IDEA中之间右键点击ArrayList查看了源码，先将注释作为HTML放在浏览器中看看：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-16421ad35dfcd914.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;把它称作&lt;strong&gt;Resizable-array&lt;/strong&gt;就可以看出它的性质了&lt;/p&gt;
-
-&lt;p&gt;接下来说说这一整页的大概内容：&lt;/p&gt;
-
-&lt;ol&gt;
-  &lt;li&gt;
-    &lt;p&gt;它实现了&lt;strong&gt;List&lt;/strong&gt;接口，实现了所有&lt;strong&gt;List&lt;/strong&gt;的方法，它可以容纳所有元素类型（包括&lt;strong&gt;null&lt;/strong&gt;），ArrayList除了不是多线程同步之外，其余的内容都与&lt;strong&gt;Vector&lt;/strong&gt;大致相同&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;size, isEmpty, get, set, iterator 和 listIterator 操作用时是常数级别的，add 操作耗时是和插入位置有关，除此之外，其他操作的时间是线性增长的，下面会做个实验验证一下&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;Arraylist有着容量的概念，容量随着数据量的增长而增长，也可以在直接定义这个容器的大小，使用&lt;strong&gt;ensureCapacity&lt;/strong&gt;操作，能够一次增长所需要的容量，提高效率，避免一个个添加从而不断增长容量&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;&lt;strong&gt;划重点&lt;/strong&gt;，上面说过这个容器不是同步的，如果在多线程中使用，有一个线程要改变容器的结构时，就需要在容器外部进行同步，官方推荐的做法是用同步的容器&lt;strong&gt;将它包装起来&lt;/strong&gt;：&lt;/p&gt;
-  &lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;List list = Collections.synchronizedList(new ArrayList(...));
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;ol&gt;
-  &lt;li&gt;注释中接下来关于迭代器的我们就先跳过，之后会有专门分析迭代器的源码&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;h6 id=&quot;demo&quot;&gt;Demo:&lt;/h6&gt;
-
-&lt;p&gt;测试一下第2点中的运行时间：&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;先算一下&lt;strong&gt;add&lt;/strong&gt;操作的运行时间：&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;import java.util.ArrayList;
-import java.util.List;
-
-public class Test {
-    public static void main(String[] args) {
-
-        List&amp;lt;String&amp;gt; list = new ArrayList&amp;lt;&amp;gt;();
-        long startTime = 0, endTime = 0;
-
-        //插入操作
-        startTime = System.currentTimeMillis();
-        //需要大一点的数据量才能算出时间
-        for (int i = 0; i &amp;lt; 100000; i++) {
-            list.add(String.valueOf(i));
-        }
-        endTime = System.currentTimeMillis();
-        System.out.println(endTime - startTime);
-
-        //
-        startTime = System.currentTimeMillis();
-        for (int i = 100000; i &amp;lt; 200000; i++) {
-            list.add(String.valueOf(i));
-        }
-        endTime = System.currentTimeMillis();
-        System.out.println(endTime - startTime);
-        list.clear();
-    }
-}
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-f7db36bb17079292.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;从十万的位置开始插入，多用了一毫秒，说明运行时间和插入位置是有关的&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;get操作&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;import java.util.ArrayList;
-import java.util.List;
-
-public class Test {
-    public static void main(String[] args) {
-
-        List&amp;lt;String&amp;gt; list = new ArrayList&amp;lt;&amp;gt;();
-        long startTime = 0, endTime = 0;
-        String index;
-
-        //插入操作
-        startTime = System.currentTimeMillis();
-        for (int i = 0; i &amp;lt; 2000000; i++) {
-            list.add(String.valueOf(i));
-        }
-        endTime = System.currentTimeMillis();
-        System.out.println(&quot;插入两百万数据时间: &quot;);
-        System.out.println(endTime - startTime);
-
-        startTime = System.currentTimeMillis();
-        for (int i = 0; i &amp;lt; 1000000; i++) {
-            index = list.get(i);
-        }
-        endTime = System.currentTimeMillis();
-        System.out.println(&quot;得到前一百万数据时间: &quot;);
-        System.out.println(endTime - startTime);
-
-
-        startTime = System.currentTimeMillis();
-        for (int i = 1000000; i &amp;lt; 2000000; i++) {
-            index = list.get(i);
-        }
-        endTime = System.currentTimeMillis();
-        System.out.println(&quot;得到前一百万数据时间: &quot;);
-        System.out.println(endTime - startTime);
-        list.clear();
-    }
-}
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-5ad55e66f035254d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;get操作时间在相同数据量的前提下是一样的&lt;/p&gt;
-
-&lt;p&gt;其他的都是用差不多的方法来验证，就不做了&lt;/p&gt;
-
-&lt;h4 id=&quot;源码剖析&quot;&gt;源码剖析&lt;/h4&gt;
-
-&lt;ol&gt;
-  &lt;li&gt;类&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public class ArrayList&amp;lt;E&amp;gt; extends AbstractList&amp;lt;E&amp;gt;
-        implements List&amp;lt;E&amp;gt;, RandomAccess, Cloneable, java.io.Serializable
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;说明这个类是实现了几个接口：&lt;/p&gt;
-&lt;ul&gt;
-  &lt;li&gt;List&lt;/li&gt;
-  &lt;li&gt;RandomAccess&lt;/li&gt;
-  &lt;li&gt;Cloneable&lt;/li&gt;
-  &lt;li&gt;java.io.Serializable&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;第一个不说，说说后面三个，这三个接口都是空的，只是用来说明：&lt;/p&gt;
-
-&lt;p&gt;支持快速随机访问&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-d7ea7ec302b9d44f.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;br /&gt;&lt;/p&gt;
-
-&lt;p&gt;能够使用Object.clone()方法&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-00df11968b343723.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;br /&gt;&lt;/p&gt;
-
-&lt;p&gt;可序列化&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-098ae15104dc5253.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;br /&gt;&lt;/p&gt;
-
-&lt;ol&gt;
-  &lt;li&gt;常量&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;p&gt;常量部分在方法中会使用，直接截取源码部分：&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;默认容量为10
-    &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;  private static final int DEFAULT_CAPACITY = 10;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
-  &lt;/li&gt;
-  &lt;li&gt;定义一个数组，存放元素
-    &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;  private static final Object[] EMPTY_ELEMENTDATA = {};
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
-  &lt;/li&gt;
-  &lt;li&gt;定义一个数组，用处和上面类似，下文将会说明
-    &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;  private static final Object[] DEFAULTCAPACITY_EMPTY_ELEMENTDATA = {};
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
-  &lt;/li&gt;
-  &lt;li&gt;不序列化的数组，存放元素
-    &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;transient Object[] elementData;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
-  &lt;/li&gt;
-  &lt;li&gt;容器大小
-    &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;private int size;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
-    &lt;p&gt;&lt;br /&gt;&lt;/p&gt;
-  &lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;ol&gt;
-  &lt;li&gt;构造器&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;p&gt;构造器共有三种：&lt;/p&gt;
-&lt;blockquote&gt;
-  &lt;ol&gt;
-    &lt;li&gt;public ArrayList(int initialCapacity) {}&lt;/li&gt;
-    &lt;li&gt;public ArrayList() {}&lt;/li&gt;
-    &lt;li&gt;public ArrayList(Collection&amp;lt;? extends E&amp;gt; c) {}&lt;/li&gt;
-  &lt;/ol&gt;
-&lt;/blockquote&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;给定容量参数的构造器&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;用到上面所说的常量中的两个&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public ArrayList(int initialCapacity) {
-        //如果给定数值为正的容量值，数组初始化就是用这个值        
-        if (initialCapacity &amp;gt; 0) {  
-            this.elementData = new Object[initialCapacity];
-        //否则就定义一个空的数组
-        } else if (initialCapacity == 0) {
-            this.elementData = EMPTY_ELEMENTDATA;
-        } else {
-            throw new IllegalArgumentException(&quot;Illegal Capacity: &quot;+
-                                               initialCapacity);
-        }
-    }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;无参构造器&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;这个简单，直接按照默认容量10，定义一个大小为10的数组&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public ArrayList() {
-        this.elementData = DEFAULTCAPACITY_EMPTY_ELEMENTDATA;
-    }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;带泛型参数的构造器&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public ArrayList(Collection&amp;lt;? extends E&amp;gt; c) {
-        //先将参数转为数组类型，toArray()方法重载自AbstractCollection&amp;lt;E&amp;gt;和List&amp;lt;E&amp;gt;类
-        elementData = c.toArray();
-        if ((size = elementData.length) != 0) {
-            // c.toArray might (incorrectly) not return Object[] (see 6260652)
-            //这是一个官方的bug，说不一定能够返回Object[]类
-            if (elementData.getClass() != Object[].class)
-                //如果真出现了这个bug，就强制转回Object[]类
-                elementData = Arrays.copyOf(elementData, size, Object[].class);
-        } else {
-            // replace with empty array.
-            //如果传入的容器参数的容量为0，就替换为空数组
-            this.elementData = EMPTY_ELEMENTDATA;
-        }
-    }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
-
-&lt;ol&gt;
-  &lt;li&gt;常用方法&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;p&gt;这里先给出的都是平常使用的方法，不包括迭代器的，关于迭代器的内容是需要单独拿一篇来说的&lt;/p&gt;
-
-&lt;p&gt;先从&lt;strong&gt;增删改查&lt;/strong&gt; 下手，最后会有一个Demo&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;增&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;增加元素有好几种，末尾添加，定点添加，以及直接添加一整个容器的元素&lt;/p&gt;
-
-&lt;p&gt;末尾添加：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    //直接在列表末尾添加元素
-    public boolean add(E e) {
-		//先扩容
-        ensureCapacityInternal(size + 1);  // Increments modCount!!
-		//把下标为size的位置的值设为e，然后size自增
-        elementData[size++] = e;
-        return true;
-    }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;末尾添加其他容器元素：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public boolean addAll(Collection&amp;lt;? extends E&amp;gt; c) {
-        //转换为数组
-        Object[] a = c.toArray();
-        int numNew = a.length;
-        //扩容
-        ensureCapacityInternal(size + numNew);  // Increments modCount
-        System.arraycopy(a, 0, elementData, size, numNew);
-        size += numNew;
-        return numNew != 0;
-    }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;定点添加：&lt;/p&gt;
-
-&lt;p&gt;这里有一个检查数组下标是否越界的方法，需要先说明一下：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    private void rangeCheckForAdd(int index) {
-        if (index &amp;gt; size || index &amp;lt; 0)
-            throw new IndexOutOfBoundsException(outOfBoundsMsg(index));
-    }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;关于异常信息，源码是这样的：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-edce0a0e0de4cf89.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    //在指定位置添加元素，可能抛出数组越界，数组存储异常和空指针异常
-    public void add(int index, E element) {
-        //先检查给定的位置是否越界
-        rangeCheckForAdd(index);
-        //扩容
-        ensureCapacityInternal(size + 1);  // Increments modCount!!
-		//将以这个下标开始的元素全部向后复制一位，下文讲解此方法
-        System.arraycopy(elementData, index, elementData, index + 1,
-                         size - index);
-		//复制完数组后，添加元素
-        elementData[index] = element;
-		//数组大小加1
-        size++;
-    }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;关于&lt;strong&gt;System.arraycopy()&lt;/strong&gt;，我查了一下源码中的解释：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-14071afc8c702bcb.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;这里面的参数就是：1. 原始数组    2. 原始位置     3. 目标数组    4. 目标位置    5. 需要移动的元素数量&lt;/p&gt;
-
-&lt;p&gt;其实上面添加的方法就是在同一个数组里面移动元素&lt;/p&gt;
-
-&lt;p&gt;然后还有直接添加其他容器的元素到指定位置&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    //在指定位置添加其他容器的元素,可能会抛出空指针异常和数组下标越界异常
-    public boolean addAll(int index, Collection&amp;lt;? extends E&amp;gt; c) {
-        rangeCheckForAdd(index);
-        //将容器转换为数组形式
-        Object[] a = c.toArray();
-        int numNew = a.length;
-        //按照转换后的数组长度来扩容
-        ensureCapacityInternal(size + numNew);  // Increments modCount
-
-		//先确定要移动几个数字
-        int numMoved = size - index;
-        //如果要移动，往后移
-        if (numMoved &amp;gt; 0)
-            System.arraycopy(elementData, index, elementData, index + numNew,
-                             numMoved);
-		//然后将其他容器的元素复制过来
-        System.arraycopy(a, 0, elementData, index, numNew);
-        //改变大小
-        size += numNew;
-		//判断列表结构是否改变
-        return numNew != 0;
-    }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;删&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;关于删除，有定点删除，有删除特定元素，批量删除，还有清空列表，思想就是把要删除的位置的值设为NULL，然后让垃圾回收器处理&lt;/p&gt;
-
-&lt;p&gt;定点删除：&lt;/p&gt;
-
-&lt;p&gt;首先还是要给出一个检查数组是否越界的方法，和上面的类似：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    private void rangeCheck(int index) {
-        if (index &amp;gt;= size)
-            throw new IndexOutOfBoundsException(outOfBoundsMsg(index));
-    }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    //在指定位置删除元素,
-    public E remove(int index) {
-        rangeCheck(index);
-
-        modCount++;
-		//得到要删除的元素
-        E oldValue = elementData(index);
-
-		//需要移动的元素数量
-        int numMoved = size - index - 1;
-        if (numMoved &amp;gt; 0)
-            //这些元素全部前移一位
-            System.arraycopy(elementData, index+1, elementData, index,
-                             numMoved);
-        elementData[--size] = null; // clear to let GC do its work
-
-		//返回删除的值
-        return oldValue;
-    }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;删除特定元素&lt;/p&gt;
-
-&lt;p&gt;需要先说明一个私有方法，下面会用到：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    //快速删除，不检查是否有数组下标越界
-    private void fastRemove(int index) {
-        modCount++;
-        int numMoved = size - index - 1;
-        if (numMoved &amp;gt; 0)
-            System.arraycopy(elementData, index+1, elementData, index,
-                             numMoved);
-        //先删除，再减值
-        elementData[--size] = null; // clear to let GC do its work
-    }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    public boolean remove(Object o) {
-        //如果没找到特定元素，数组就不变化
-        if (o == null) {
-            for (int index = 0; index &amp;lt; size; index++)
-                if (elementData[index] == null) {
-                    fastRemove(index);
-                    return true;
-                }
-        } else {
-            //遍历数组
-            for (int index = 0; index &amp;lt; size; index++)
-                if (o.equals(elementData[index])) {
-                    fastRemove(index);
-                    return true;
-                }
-        }
-        return false;
-    }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;批量删除：&lt;/p&gt;
-
-&lt;p&gt;这个方法是私有的，实现它的有另外两个方法 &lt;strong&gt;removeAll()&lt;/strong&gt;和&lt;strong&gt;retainAll()&lt;/strong&gt;，批量删除方法中的布尔类型参数就和这两个实现方法有关：&lt;/p&gt;
-
-&lt;p&gt;传入一个容器，如果&lt;strong&gt;complement&lt;/strong&gt;为true，就只保留和容器元素
-相同的元素，如果&lt;strong&gt;complement&lt;/strong&gt;为false，就删除和容器元素相同的元素&lt;/p&gt;
-
-&lt;p&gt;这个测试中，第一个&lt;strong&gt;complement&lt;/strong&gt;为true，第二个&lt;strong&gt;complement&lt;/strong&gt;为false：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-08a6bc2d2ae6dec4.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;private boolean batchRemove(Collection&amp;lt;?&amp;gt; c, boolean complement) {
-        //复制数组来存放筛选后的数据
-        final Object[] elementData = this.elementData;
-        //r用来遍历数组，w用来给数组赋值
-        int r = 0, w = 0;
-        //判断结构是否改变
-        boolean modified = false;
-        try {
-            //遍历
-            for (; r &amp;lt; size; r++)
-                //如果传入的容器含有和原先数组相同的元素，就向新数组赋值
-                if (c.contains(elementData[r]) == complement)
-                    elementData[w++] = elementData[r];
-        } finally {
-            // Preserve behavioral compatibility with AbstractCollection,
-            // even if c.contains() throws.
-            //如果抛出异常，将r位置之后的元素复制到w位置之后
-            if (r != size) {
-                System.arraycopy(elementData, r,
-                                 elementData, w,
-                                 size - r);
-                w += size - r;
-            }
-            //在筛选完之后，如果w位置后面有空位，就清理掉
-            if (w != size) {
-                // clear to let GC do its work
-                for (int i = w; i &amp;lt; size; i++)
-                    elementData[i] = null;
-                modCount += size - w;
-                size = w;
-                //结构改变了
-                modified = true;
-            }
-        }
-        return modified;
-    }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;接下来就是调用批量删除的方法了：&lt;/p&gt;
-
-&lt;p&gt;删除容器元素：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    //可能抛出强制类型转换异常和空指针异常
-    public boolean removeAll(Collection&amp;lt;?&amp;gt; c) {
-        Objects.requireNonNull(c);
-        return batchRemove(c, false);
-    }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;保留容器元素：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    //也可能抛出同样的异常
-    public boolean retainAll(Collection&amp;lt;?&amp;gt; c) {
-        Objects.requireNonNull(c);
-        return batchRemove(c, true);
-    }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
-
-&lt;p&gt;清空列表：&lt;/p&gt;
-
-&lt;p&gt;removeAll()方法也可以清空列表，只不过效率低，还是推荐使用下面这个：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public void clear() {
-        modCount++;
-
-        // clear to let GC do its work
-        //遍历数组，设值为NULL
-        for (int i = 0; i &amp;lt; size; i++)
-            elementData[i] = null;
-
-        size = 0;
-    }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;改&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;可能会抛出数组下标越界的错误&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public E set(int index, E element) {
-        rangeCheck(index);
-
-        E oldValue = elementData(index);
-        elementData[index] = element;
-        return oldValue;
-    }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;查&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;可能会抛出数组下标越界的异常&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public E get(int index) {
-        rangeCheck(index);
-
-        return elementData(index);
-    }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;今天只是开个头，接下来，还会有介绍 ArrayList 的文章&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-79919768b5365766.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; width=&quot;40%&quot; height=&quot;40%&quot; /&gt;&lt;/p&gt;
-</description>
-        <pubDate>Fri, 04 May 2018 00:00:00 -0700</pubDate>
-        <link>http://localhost:4000/2018/05/04/ArrayList%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E4%B8%80/</link>
-        <guid isPermaLink="true">http://localhost:4000/2018/05/04/ArrayList%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E4%B8%80/</guid>
-        
-        <category>Java源码解析</category>
         
         
       </item>
