@@ -5,9 +5,319 @@
     <description>你问我什么咖啡最好，我当然觉得是 Java</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Mon, 18 Jun 2018 01:05:41 -0700</pubDate>
-    <lastBuildDate>Mon, 18 Jun 2018 01:05:41 -0700</lastBuildDate>
+    <pubDate>Mon, 25 Jun 2018 16:51:19 -0700</pubDate>
+    <lastBuildDate>Mon, 25 Jun 2018 16:51:19 -0700</lastBuildDate>
     <generator>Jekyll v3.8.0</generator>
+    
+      <item>
+        <title>初始 Mybatis（一） —— 基本配置及用法</title>
+        <description>&lt;h3 id=&quot;正文之前&quot;&gt;正文之前&lt;/h3&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;在使用 SSM 对之前所做的小项目重构了之后，发现需要写几篇文章来总结一下各个部件的用法，先写几篇关于 Mybatis 的文章，正好补缺补漏顺便总结一下&lt;/p&gt;
+
+  &lt;p&gt;主要内容：&lt;/p&gt;
+  &lt;ol&gt;
+    &lt;li&gt;Mybatis 简介&lt;/li&gt;
+    &lt;li&gt;测试项目构建&lt;/li&gt;
+    &lt;li&gt;配置文件&lt;/li&gt;
+    &lt;li&gt;增删改查&lt;/li&gt;
+  &lt;/ol&gt;
+&lt;/blockquote&gt;
+
+&lt;h3 id=&quot;正文&quot;&gt;正文&lt;/h3&gt;
+
+&lt;h4 id=&quot;1-mybatis-简介&quot;&gt;1. Mybatis 简介&lt;/h4&gt;
+
+&lt;p&gt;引用官网的介绍：&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;MyBatis 是一款优秀的持久层框架，它支持定制化 SQL、存储过程以及高级映射。MyBatis 避免了几乎所有的 JDBC 代码和手动设置参数以及获取结果集。MyBatis 可以使用简单的 XML 或注解来配置和映射原生信息，将接口和 Java 的 POJOs(Plain Old Java Objects,普通的 Java对象)映射成数据库中的记录。&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;总而言之，是个框架就对了&lt;/p&gt;
+
+&lt;h4 id=&quot;2-测试项目构建&quot;&gt;2. 测试项目构建&lt;/h4&gt;
+
+&lt;p&gt;要使用 Mybatis，我们需要先导入两个包：&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;mybatis-3.4.6
+mysql-connector-java-5.1.46&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;我们先创建所要用到的包和类：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-ef36e6bbb733f491.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;Product 是实体类，对应数据库中的表&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;db.properties 是外部配置数据库信息的文件&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;SqlMapConfig 是 Mybatis 的配置文件（文件名不固定）&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;ProductMapper.xml 是对应的映射文件&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;ProductTest 是测试类&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;lib 包中的其他文件是日志文件和单元测试文件&lt;/p&gt;
+
+&lt;p&gt;使用到的数据库中的表为 product 表：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-107fa62a0eb47291.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;创建实体类 Product ：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-f03ca16807cc8b6a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;3-配置文件&quot;&gt;3. 配置文件&lt;/h4&gt;
+
+&lt;p&gt;关于 Mybatis 的信息都在 &lt;code class=&quot;highlighter-rouge&quot;&gt;SqlMapConfig.xml&lt;/code&gt; 文件中&lt;/p&gt;
+
+&lt;h6 id=&quot;1-配置环境&quot;&gt;1. 配置环境&lt;/h6&gt;
+
+&lt;p&gt;Mybatis 可以对应多种环境，这在配置文件中定义：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;cp&quot;&gt;&amp;lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; ?&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;cp&quot;&gt;&amp;lt;!DOCTYPE configuration
+        PUBLIC &quot;-//mybatis.org//DTD Config 3.0//EN&quot;
+        &quot;http://mybatis.org/dtd/mybatis-3-config.dtd&quot;&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;configuration&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;c&quot;&gt;&amp;lt;!-- 配置的环境，可以有多个环境来对应多种数据库，至少要有一个环境 id 与此对应 --&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;environments&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;default=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;mysql&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;c&quot;&gt;&amp;lt;!-- 这里的环境 id，就是具体某个数据库的 id --&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;environment&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;id=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;mysql&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;
+            &lt;span class=&quot;nt&quot;&gt;&amp;lt;transactionManager&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;type=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&amp;lt;/transactionManager&amp;gt;&lt;/span&gt;
+            &lt;span class=&quot;nt&quot;&gt;&amp;lt;dataSource&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;type=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&amp;lt;/dataSource&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;/environment&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;c&quot;&gt;&amp;lt;!--
+        &amp;lt;environment id=&quot;oracle&quot;&amp;gt;
+            &amp;lt;transactionManager type=&quot;&quot;&amp;gt;&amp;lt;/transactionManager&amp;gt;
+            &amp;lt;dataSource type=&quot;&quot;&amp;gt;&amp;lt;/dataSource&amp;gt;
+        &amp;lt;/environment&amp;gt;
+        --&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;/environments&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;/configuration&amp;gt;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h6 id=&quot;2-事务管理和数据源&quot;&gt;2. 事务管理和数据源&lt;/h6&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&amp;lt;transactionManager type=&quot;JDBC&quot;/&amp;gt;
+&amp;lt;dataSource type=&quot;POOLED&quot;&amp;gt;&amp;lt;/dataSource&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;事务管理有两种：JDBC 和 MANAGED，我们就关注 JDBC，它其实就是使用了 JDBC 的设置来进行管理、&lt;/p&gt;
+
+&lt;p&gt;数据源有三种：&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;UNPOOLED：在请求时打开和关闭连接，如果对数据库的使用较为频繁，则不适用此方式，太浪费时间&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;POOLED：连接池，最常用的方式，一开始创建一定数量的连接，即用即取，用完归还&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;JNDI：为了能在如 EJB 或应用服务器这类容器中使用&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h6 id=&quot;3-数据库信息&quot;&gt;3. 数据库信息&lt;/h6&gt;
+
+&lt;p&gt;有关数据库的信息可以直接写在配置文件里面：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-75e127c1b65c9281.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;不过，通常的做法是在外部创建一个 &lt;code class=&quot;highlighter-rouge&quot;&gt;db.properties&lt;/code&gt; 文件：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-5ad00ff70d932d8e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;然后用外部配置来替换这些属性的值，只是引用外部配置文件需要在&lt;strong&gt;配置数据源之前进行&lt;/strong&gt;：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-6e4ab8f0df2196ad.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;关于 Mybatis 的系统配置就先到这，接下来是实体类相关的一个映射文件 ProductMapper.xml 的配置&lt;/p&gt;
+
+&lt;h6 id=&quot;4-映射文件&quot;&gt;4. 映射文件&lt;/h6&gt;
+
+&lt;p&gt;在实体类的映射文件中写明了你要进行什么操作：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-2b20d4a68786366c.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;接下来解释这个文件：&lt;/p&gt;
+
+&lt;p&gt;mapper 映射器：需要定义命名空间，因为后面调用的时候要用到&lt;/p&gt;
+
+&lt;p&gt;select 元素：对应 SQL 中的查询操作，id 指的是这个查询操作的名称，调用它的时候需要使用这个 id， resultType 指的是返回类型，我这里查询出的每一条记录都指定为 Product 类型，相类似的还有 update、insert 和 delete 元素，对应相关的的 SQL 操作&lt;/p&gt;
+
+&lt;h6 id=&quot;5-加载映射文件&quot;&gt;5. 加载映射文件&lt;/h6&gt;
+
+&lt;p&gt;把映射文件写完了之后，我们需要告诉 Mybatis 去哪里找这些 SQL 语句，所以我们在 Mybatis 配置文件里写出路径：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    &amp;lt;mappers&amp;gt;
+        &amp;lt;mapper resource=&quot;mapper/ProductMapper.xml&quot;/&amp;gt;
+    &amp;lt;/mappers&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h4 id=&quot;4-增删改查&quot;&gt;4. 增删改查&lt;/h4&gt;
+
+&lt;p&gt;首先我们先说一下 Mybatis 是怎么用的：&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;Mybatis 中有一个工具类叫 Resources，使用它来加载你的配置文件&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;SqlSessionFactoryBuilder 根据配置的 XML 文件（我们这里就是指 SqlMapConfig.xml）中的 &lt;configuration&gt; 元素来创建一个 **SqlSessionFactory** 实例&lt;/configuration&gt;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Mybatis 应用是以一个 &lt;strong&gt;SqlSessionFactory&lt;/strong&gt; 的实例为中心来展开工作的&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;        //配置文件的位置是基于我这个测试项目来写的
+        String resource = &quot;config/SqlMapConfig&quot;;
+        //输入流
+        InputStream inputStream = Resources.getResourceAsStream(resource);
+        SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;然后得到 SqlSession 的实例，就可以用来执行 SQL 语句了：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;        SqlSession sqlSession = sqlSessionFactory.openSession();
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h6 id=&quot;1-增加记录&quot;&gt;1. 增加记录&lt;/h6&gt;
+
+&lt;p&gt;我们先在映射文件中写一个增加记录的操作：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    &amp;lt;insert id=&quot;insertProduct&quot; parameterType=&quot;bean.Product&quot;&amp;gt;
+        INSERT INTO product VALUES
+        (#{id}, #{barcode}, #{name}, #{units}, #{purchasePrice}, #{salePrice}, #{inventory})
+    &amp;lt;/insert&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;这里的 #{} 是一个占位符，就相当于 SQL 中的 ? 符号，添加的参数类型是 Product 类型的&lt;/p&gt;
+
+&lt;p&gt;然后我们在测试类中进行添加操作：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-ec60e74b810e0d4a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;这里的 insert 操作的第一个参数就是用来定位 SQL 语句的，它是命名方式是&lt;strong&gt;映射文件的命名空间.SQL语句的 ID&lt;/strong&gt;，然后这第二个参数就是我添加进去的记录，在最后&lt;strong&gt;一定要进行提交&lt;/strong&gt;，否则是无效的，进行测试：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-61ce8922af72fdac.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;这时候查看表中的所有记录就会发现刚才的操作是成功的：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-3c7a71fe976a6c0a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;h6 id=&quot;2-删除记录&quot;&gt;2. 删除记录&lt;/h6&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    &amp;lt;delete id=&quot;deleteProduct&quot; parameterType=&quot;String&quot;&amp;gt;
+        DELETE FROM product
+        WHERE id = #{id}
+    &amp;lt;/delete&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;根据 ID 来删除商品，这里的参数类型是 String&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    @Test
+    public void test() throws IOException{
+        String resource = &quot;config/SqlMapConfig&quot;;
+        InputStream inputStream = Resources.getResourceAsStream(resource);
+        SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
+        SqlSession sqlSession = sqlSessionFactory.openSession();
+        sqlSession.delete(&quot;ProductMapper.deleteProduct&quot;, &quot;123&quot;);
+        sqlSession.commit();
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;运行之后就能看到我们第一步添加进去的商品被删除了：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-40f6b6e53334e646.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;h6 id=&quot;3-修改记录&quot;&gt;3. 修改记录&lt;/h6&gt;
+
+&lt;p&gt;我们也是根据商品 ID 来修改记录，只不过参数类型是 Product：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    &amp;lt;update id=&quot;updateProduct&quot; parameterType=&quot;bean.Product&quot;&amp;gt;
+        UPDATE product SET 
+        barcode = #{barcode},
+        name = #{name},
+        units = #{units},
+        purchasePrice = #{purchasePrice},
+        salePrice = #{salePrice},
+        inventory = #{inventory}
+        WHERE id = #{id}
+    &amp;lt;/update&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;在测试中，我们创建一个商品的实例，然后用这个实例来替换掉数据库中的相对应的记录：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;        Product product = new Product(&quot;1F01DC70F9A64B2CBB52B92C41FBCC9E&quot;, &quot;123&quot;, 
+                                        &quot;T-shirt&quot;, &quot;piece&quot;, &quot;50&quot;, &quot;100&quot;, &quot;10&quot;);
+        sqlSession.update(&quot;ProductMapper.updateProduct&quot;, product);
+        sqlSession.commit();
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;然后就会发现表中的第一条记录已被更改：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-d1f6d157239253fa.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;h6 id=&quot;4-查询记录&quot;&gt;4. 查询记录&lt;/h6&gt;
+
+&lt;p&gt;我们用一个列表来存放表中的所有数据，这里没有用到参数，只要定义返回类型就可以了：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    &amp;lt;select id=&quot;findAllProducts&quot;  resultType=&quot;bean.Product&quot;&amp;gt;
+        SELECT * FROM product
+    &amp;lt;/select&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;这里不需要 commit，我们并没有提交至数据库中，只是查询：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;        List&amp;lt;Product&amp;gt; list = sqlSession.selectList(&quot;ProductMapper.findAllProducts&quot;);
+        for (Product p :
+                list) {
+            System.out.println(p);
+        }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;然后就能看到 5 条记录：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-d0db12a07b6213b4.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;总结&quot;&gt;总结&lt;/h4&gt;
+
+&lt;p&gt;若想要成功地使用 Mybatis，总共有三个要点：&lt;/p&gt;
+
+&lt;h6 id=&quot;1-sqlmapconfigxmlmybatis-配置文件&quot;&gt;1. SqlMapConfig.xml（Mybatis 配置文件）&lt;/h6&gt;
+
+&lt;p&gt;这是 Mybatis 的核心，这里面配置了数据库的基本信息以及映射文件的加载信息等&lt;/p&gt;
+
+&lt;h6 id=&quot;2-实体类接口&quot;&gt;2. 实体类、接口&lt;/h6&gt;
+
+&lt;p&gt;也就是 POJO（Plain Old Java Objects,普通的 Java对象），我们这篇文章中的 Product 实体类，关于接口，我们这一篇文章中没有说明，接口是对应映射文件存在的，接口的命名和映射文件同名，这个在之后将 Mybatis 逆向工程的时候会说到&lt;/p&gt;
+
+&lt;h6 id=&quot;3-映射文件&quot;&gt;3. 映射文件&lt;/h6&gt;
+
+&lt;p&gt;映射文件就是我们上面写到的 ProductMapper.xml，它的作用不仅仅是带有 SQL 语句，还能将 POJO 映射成为数据库中的记录，所以我们刚才才能够使用占位符进行增删改查操作或将查询结果映射为POJO&lt;/p&gt;
+</description>
+        <pubDate>Thu, 21 Jun 2018 00:00:00 -0700</pubDate>
+        <link>http://localhost:4000/2018/06/21/%E5%88%9D%E5%A7%8B-Mybatis-%E4%B8%80-%E5%9F%BA%E6%9C%AC%E9%85%8D%E7%BD%AE%E5%8F%8A%E7%94%A8%E6%B3%95/</link>
+        <guid isPermaLink="true">http://localhost:4000/2018/06/21/%E5%88%9D%E5%A7%8B-Mybatis-%E4%B8%80-%E5%9F%BA%E6%9C%AC%E9%85%8D%E7%BD%AE%E5%8F%8A%E7%94%A8%E6%B3%95/</guid>
+        
+        <category>Mybatis</category>
+        
+        
+      </item>
     
       <item>
         <title>Vector源码分析</title>
@@ -3230,145 +3540,6 @@ public interface ListIterator&amp;lt;E&amp;gt; extends Iterator&amp;lt;E&amp;gt;
         <guid isPermaLink="true">http://localhost:4000/2018/05/09/ArrayList%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E4%BA%8C/</guid>
         
         <category>Java源码解析</category>
-        
-        
-      </item>
-    
-      <item>
-        <title>登陆界面模块解析——生成图片验证码</title>
-        <description>&lt;h3 id=&quot;正文之前&quot;&gt;正文之前&lt;/h3&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;之前做过一个练手的Web项目&lt;a href=&quot;https://github.com/lihanxiang/Register_login_interface&quot;&gt;登陆界面&lt;/a&gt;，其中有一个验证码模块，涉及到JavaIO和Java AWT工具所以打算写一篇介绍，顺便对练手项目的源码做一点小变动&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;h3 id=&quot;正文&quot;&gt;正文&lt;/h3&gt;
-
-&lt;h5 id=&quot;1-变量&quot;&gt;1. 变量&lt;/h5&gt;
-
-&lt;p&gt;首先先定义几个需要的变量&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    private int width=50;                               //图片缓冲区的宽
-    private int height=15;                              //图片缓冲区的高
-    private Random random=new Random();                 //随机数字
-    private Color color=new Color(255,255,255);         //白色背景
-    private String text;                                //图片上的文本
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h5 id=&quot;2-随机字符颜色&quot;&gt;2. 随机字符、颜色&lt;/h5&gt;
-
-&lt;p&gt;随机字符包括了10位数字和26个字母&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    //生成随机字符
-    private char randomChar()
-    {
-        //选取随机数字，生成字符
-        String numbers = &quot;1234567890qwertyuiopasdfghjklzxcvbnm&quot;;
-        int index=random.nextInt(numbers.length());
-        //转换为char类型
-        return numbers.charAt(index);
-    }
-
-    //生成随机颜色
-    private Color randomColor()
-    {
-        //以RGB形式表示颜色
-        int red=random.nextInt(255);
-        int green=random.nextInt(255);
-        int blue=random.nextInt(255);
-        //返回随机生成的颜色
-        return new Color(red,green,blue);
-    }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h5 id=&quot;3-干扰线&quot;&gt;3. 干扰线&lt;/h5&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    //画干扰线
-    private void drawLine(Graphics g){
-        for (int i = 0; i &amp;lt; 2; i++) {
-            //设置线的颜色
-            g.setColor(randomColor());
-            //线的长度从(x1,y1)到(x2,y2)
-            g.drawLine(random.nextInt(width), random.nextInt(height),
-                    random.nextInt(width), random.nextInt(height));
-        }
-    }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h5 id=&quot;4-验证码中的文本&quot;&gt;4. 验证码中的文本&lt;/h5&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;//返回验证码图片中的文本
-    public String getText()
-    {
-        return text;
-    }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h5 id=&quot;5-图片缓冲区&quot;&gt;5. 图片缓冲区&lt;/h5&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    //创造图片缓冲区
-    private BufferedImage createImage()
-    {
-        //参数为宽度，高度和图像类型
-        BufferedImage image=new BufferedImage(width,height,BufferedImage.TYPE_INT_RGB);
-        Graphics g=image.getGraphics();
-        //设置颜色
-        g.setColor(color);
-        //填充内容
-        g.fillRect(0,0,width,height);
-        return image;
-    }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    //得到图片缓冲区
-    public BufferedImage getImage()
-    {
-        BufferedImage image = createImage();                    //创建缓冲区
-        Graphics g = image.getGraphics();                       //得到绘制环境
-        StringBuilder stringBuilder = new StringBuilder();      //验证码文本
-
-        //验证码长度为4
-        for (int i=0;i&amp;lt;4;i++)
-        {
-            String str = String.valueOf(randomChar());           //产生随机字符,将char类型转为String类型
-            stringBuilder.append(str);                           //将生成的随机字符添加至stringBuilder
-            g.setColor(randomColor());                           //产生随机颜色
-            g.drawString(str, i * width / 4, height);           //绘制文本
-        }
-        drawLine(g);                                             //添加干扰线
-        text = stringBuilder.toString();                         //把生成字符串赋给文本，以便于验证
-        return image;
-    }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h5 id=&quot;6-输出图片&quot;&gt;6. 输出图片&lt;/h5&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    //使用输出流打印图片
-    public static void output(BufferedImage image, OutputStream out) throws IOException {
-        //作为JPEG格式输出图片
-        ImageIO.write(image,&quot;JPG&quot;,out);
-    }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h5 id=&quot;demo&quot;&gt;Demo&lt;/h5&gt;
-
-&lt;p&gt;直接输出图片到我的桌面&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-ab5d18773816796f.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;运行之后的结果：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-c80d837ecc0c8b1a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;就这样，简单的验证码就做完了&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-79919768b5365766.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; width=&quot;40%&quot; height=&quot;40%&quot; /&gt;&lt;/p&gt;
-</description>
-        <pubDate>Sun, 06 May 2018 00:00:00 -0700</pubDate>
-        <link>http://localhost:4000/2018/05/06/%E7%99%BB%E9%99%86%E7%95%8C%E9%9D%A2%E6%A8%A1%E5%9D%97%E8%A7%A3%E6%9E%90-%E7%94%9F%E6%88%90%E5%9B%BE%E7%89%87%E9%AA%8C%E8%AF%81%E7%A0%81/</link>
-        <guid isPermaLink="true">http://localhost:4000/2018/05/06/%E7%99%BB%E9%99%86%E7%95%8C%E9%9D%A2%E6%A8%A1%E5%9D%97%E8%A7%A3%E6%9E%90-%E7%94%9F%E6%88%90%E5%9B%BE%E7%89%87%E9%AA%8C%E8%AF%81%E7%A0%81/</guid>
-        
-        <category>项目模块</category>
         
         
       </item>

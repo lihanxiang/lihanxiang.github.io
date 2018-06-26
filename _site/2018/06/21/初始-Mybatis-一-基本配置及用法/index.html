@@ -19,9 +19,9 @@
     <meta name="keyword"  content="Java">
     <link rel="shortcut icon" href="/img/favicon.ico">
 
-    <title>LinkedList源码分析（二） - 李汉祥的博客 | L Blog</title>
+    <title>初始 Mybatis（一） —— 基本配置及用法 - 李汉祥的博客 | L Blog</title>
 
-    <link rel="canonical" href="http://localhost:4000/2018/05/28/LinkedList%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E4%BA%8C/">
+    <link rel="canonical" href="http://localhost:4000/2018/06/21/%E5%88%9D%E5%A7%8B-Mybatis-%E4%B8%80-%E5%9F%BA%E6%9C%AC%E9%85%8D%E7%BD%AE%E5%8F%8A%E7%94%A8%E6%B3%95/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -142,12 +142,12 @@
 
 
     <!-- Image to hack wechat -->
-<!-- <img src="/img/post/2018-05/28.jpg" width="0" height="0"> -->
+<!-- <img src="/img/post/2018-06/21.jpg" width="0" height="0"> -->
 
 <!-- Post Header -->
 <style type="text/css">
     header.intro-header{
-        background-image: url('/img/post/2018-05/28.jpg')
+        background-image: url('/img/post/2018-06/21.jpg')
     }
 </style>
 <header class="intro-header" >
@@ -157,15 +157,15 @@
                 <div class="post-heading">
                     <div class="tags">
                         
-                        <a class="tag" href="/tags/#Java源码解析" title="Java源码解析">Java源码解析</a>
+                        <a class="tag" href="/tags/#Mybatis" title="Mybatis">Mybatis</a>
                         
                     </div>
-                    <h1>LinkedList源码分析（二）</h1>
+                    <h1>初始 Mybatis（一） —— 基本配置及用法</h1>
                     
                     
-                    <h2 class="subheading">读读源码</h2>
+                    <h2 class="subheading">数据库模块</h2>
                     
-                    <span class="meta">Posted by L on May 28, 2018</span>
+                    <span class="meta">Posted by L on June 21, 2018</span>
                 </div>
             </div>
         </div>
@@ -186,314 +186,301 @@
 				<h3 id="正文之前">正文之前</h3>
 
 <blockquote>
-  <p>在上一篇文章中已经讲述了<a href="http://hxblog.site/2018/05/22/LinkedList%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E4%B8%80/">链表基于列表的基本用法</a>，所以，这一篇文章要讲述链表基于队列的基本用法</p>
-</blockquote>
+  <p>在使用 SSM 对之前所做的小项目重构了之后，发现需要写几篇文章来总结一下各个部件的用法，先写几篇关于 Mybatis 的文章，正好补缺补漏顺便总结一下</p>
 
-<p>主要内容</p>
-
-<blockquote>
+  <p>主要内容：</p>
   <ol>
-    <li>基本概念</li>
-    <li>基于单向队列的操作</li>
-    <li>基于双向队列的操作</li>
+    <li>Mybatis 简介</li>
+    <li>测试项目构建</li>
+    <li>配置文件</li>
+    <li>增删改查</li>
   </ol>
 </blockquote>
 
 <h3 id="正文">正文</h3>
 
-<h4 id="1-基本概念">1. 基本概念</h4>
+<h4 id="1-mybatis-简介">1. Mybatis 简介</h4>
 
-<p>既然是基于队列的操作，就要介绍一下队列的概念：</p>
-
-<p>单向队列(Queue)是先进先出(First-In-First-Out)的线性结构，就好比我们生活中的排队，先来排队的人先办理事务，队列只支持在队尾添加元素，在队首删除元素</p>
-
-<p>双向队列(Deque，double-ended queue)，也叫做双端队列，是基于队列和栈的结构，可以在队列两边进行添加和删除操作</p>
-
-<p>在链表中使用基于队列的方法时，其实是调用上一篇文章中定义的方法，只不过在不同的位置使用来达到模拟的效果
-<br /></p>
-
-<h4 id="2-基于单向队列的操作">2. 基于单向队列的操作</h4>
-
-<p>主要内容：</p>
+<p>引用官网的介绍：</p>
 
 <blockquote>
-  <ul>
-    <li>添加节点
-      <ul>
-        <li>offer()</li>
-      </ul>
-    </li>
-    <li>删除节点
-      <ul>
-        <li>poll()</li>
-        <li>remove()</li>
-      </ul>
-    </li>
-    <li>查找元素
-      <ul>
-        <li>peek()</li>
-        <li>element()</li>
-      </ul>
-    </li>
-  </ul>
+  <p>MyBatis 是一款优秀的持久层框架，它支持定制化 SQL、存储过程以及高级映射。MyBatis 避免了几乎所有的 JDBC 代码和手动设置参数以及获取结果集。MyBatis 可以使用简单的 XML 或注解来配置和映射原生信息，将接口和 Java 的 POJOs(Plain Old Java Objects,普通的 Java对象)映射成数据库中的记录。</p>
 </blockquote>
 
-<p>在这几个基本的操作中，添加和删除是针对节点而言，而查找虽然是针对节点，但是查询的结果是返回节点中的元素的</p>
+<p>总而言之，是个框架就对了</p>
 
-<h5 id="1-添加节点">1. 添加节点</h5>
+<h4 id="2-测试项目构建">2. 测试项目构建</h4>
 
-<p>使用add()，在add()中又有linkLast()，结果就是在末尾添加节点：</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    /**
-     * Adds the specified element as the tail (last element) of this list.
-     *
-     * @param e the element to add
-     * @return {@code true} (as specified by {@link Queue#offer})
-     * @since 1.5
-     */
-    public boolean offer(E e) {
-        return add(e);
-    }
-</code></pre></div></div>
-
-<h5 id="2-删除节点">2. 删除节点</h5>
-
-<p>删除元素有两种方法，区别就是，一个先判断元素是否为null，而另一个不进行判断：</p>
-
-<ul>
-  <li>poll()</li>
-</ul>
-
-<p>先判断元素是否存在，然后调用unlinkFirst()，删除第一个节点：</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    /**
-     * Retrieves and removes the head (first element) of this list.
-     *
-     * @return the head of this list, or {@code null} if this list is empty
-     * @since 1.5
-     */
-    public E poll() {
-        final Node&lt;E&gt; f = first;
-        return (f == null) ? null : unlinkFirst(f);
-    }
-</code></pre></div></div>
-
-<ul>
-  <li>remove()</li>
-</ul>
-
-<p>调用removeFirst()，最终也是调用unlinkFirst()，删除第一个节点：</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    /**
-     * Retrieves and removes the head (first element) of this list.
-     *
-     * @return the head of this list
-     * @throws NoSuchElementException if this list is empty
-     * @since 1.5
-     */
-    public E remove() {
-        return removeFirst();
-    }
-</code></pre></div></div>
-
-<h5 id="3-修改元素">3. 修改元素</h5>
-
-<p>在基于队列的操作中是没有修改元素的方法的，不管是单向还是双向队列：</p>
-
-<h5 id="4-查找元素">4. 查找元素</h5>
-
-<ul>
-  <li>peek()</li>
-</ul>
-
-<p>先检查节点是否为空，若不为空就返回第一个节点的元素：</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    /**
-     * Retrieves, but does not remove, the head (first element) of this list.
-     *
-     * @return the head of this list, or {@code null} if this list is empty
-     * @since 1.5
-     */
-    public E peek() {
-        final Node&lt;E&gt; f = first;
-        return (f == null) ? null : f.item;
-    }
-</code></pre></div></div>
-
-<ul>
-  <li>element()</li>
-</ul>
-
-<p>直接返回第一个节点的元素，可能会抛出异常：</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    /**
-     * Retrieves, but does not remove, the head (first element) of this list.
-     *
-     * @return the head of this list
-     * @throws NoSuchElementException if this list is empty
-     * @since 1.5
-     */
-    public E element() {
-        return getFirst();
-    }
-</code></pre></div></div>
-
-<p><br /></p>
-
-<h4 id="3-基于双向队列的操作">3. 基于双向队列的操作</h4>
-
-<p>主要内容：</p>
+<p>要使用 Mybatis，我们需要先导入两个包：</p>
 
 <blockquote>
-  <ul>
-    <li>添加节点
-      <ul>
-        <li>offerFirst()</li>
-        <li>offerLast()</li>
-        <li>push()</li>
-      </ul>
-    </li>
-    <li>删除节点
-      <ul>
-        <li>pollFirst()</li>
-        <li>pollLast()</li>
-        <li>pop()</li>
-        <li>removeFirstOccurrence()</li>
-        <li>removeLastOccurrence()</li>
-      </ul>
-    </li>
-    <li>查找元素
-      <ul>
-        <li>peekFirst()</li>
-        <li>peekLast()</li>
-      </ul>
-    </li>
-  </ul>
+  <p>mybatis-3.4.6
+mysql-connector-java-5.1.46</p>
 </blockquote>
 
-<h5 id="1-添加节点-1">1. 添加节点</h5>
+<p>我们先创建所要用到的包和类：</p>
+
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-ef36e6bbb733f491.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
 
 <ul>
-  <li>添加节点至队首</li>
+  <li>
+    <p>Product 是实体类，对应数据库中的表</p>
+  </li>
+  <li>
+    <p>db.properties 是外部配置数据库信息的文件</p>
+  </li>
+  <li>
+    <p>SqlMapConfig 是 Mybatis 的配置文件（文件名不固定）</p>
+  </li>
+  <li>
+    <p>ProductMapper.xml 是对应的映射文件</p>
+  </li>
+  <li>
+    <p>ProductTest 是测试类</p>
+  </li>
 </ul>
 
-<p>调用addFirst()，然后是linkFirst()，添加节点至队首：</p>
+<p>lib 包中的其他文件是日志文件和单元测试文件</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    public boolean offerFirst(E e) {
-        addFirst(e);
-        return true;
+<p>使用到的数据库中的表为 product 表：</p>
+
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-107fa62a0eb47291.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
+
+<p>创建实体类 Product ：</p>
+
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-f03ca16807cc8b6a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
+
+<h4 id="3-配置文件">3. 配置文件</h4>
+
+<p>关于 Mybatis 的信息都在 <code class="highlighter-rouge">SqlMapConfig.xml</code> 文件中</p>
+
+<h6 id="1-配置环境">1. 配置环境</h6>
+
+<p>Mybatis 可以对应多种环境，这在配置文件中定义：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;?xml version="1.0" encoding="UTF-8" ?&gt;</span>
+<span class="cp">&lt;!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd"&gt;</span>
+<span class="nt">&lt;configuration&gt;</span>
+    <span class="c">&lt;!-- 配置的环境，可以有多个环境来对应多种数据库，至少要有一个环境 id 与此对应 --&gt;</span>
+    <span class="nt">&lt;environments</span> <span class="na">default=</span><span class="s">"mysql"</span><span class="nt">&gt;</span>
+        <span class="c">&lt;!-- 这里的环境 id，就是具体某个数据库的 id --&gt;</span>
+        <span class="nt">&lt;environment</span> <span class="na">id=</span><span class="s">"mysql"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;transactionManager</span> <span class="na">type=</span><span class="s">""</span><span class="nt">&gt;&lt;/transactionManager&gt;</span>
+            <span class="nt">&lt;dataSource</span> <span class="na">type=</span><span class="s">""</span><span class="nt">&gt;&lt;/dataSource&gt;</span>
+        <span class="nt">&lt;/environment&gt;</span>
+        <span class="c">&lt;!--
+        &lt;environment id="oracle"&gt;
+            &lt;transactionManager type=""&gt;&lt;/transactionManager&gt;
+            &lt;dataSource type=""&gt;&lt;/dataSource&gt;
+        &lt;/environment&gt;
+        --&gt;</span>
+    <span class="nt">&lt;/environments&gt;</span>
+<span class="nt">&lt;/configuration&gt;</span>
+</code></pre></div></div>
+
+<h6 id="2-事务管理和数据源">2. 事务管理和数据源</h6>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;transactionManager type="JDBC"/&gt;
+&lt;dataSource type="POOLED"&gt;&lt;/dataSource&gt;
+</code></pre></div></div>
+
+<p>事务管理有两种：JDBC 和 MANAGED，我们就关注 JDBC，它其实就是使用了 JDBC 的设置来进行管理、</p>
+
+<p>数据源有三种：</p>
+
+<ul>
+  <li>
+    <p>UNPOOLED：在请求时打开和关闭连接，如果对数据库的使用较为频繁，则不适用此方式，太浪费时间</p>
+  </li>
+  <li>
+    <p>POOLED：连接池，最常用的方式，一开始创建一定数量的连接，即用即取，用完归还</p>
+  </li>
+  <li>
+    <p>JNDI：为了能在如 EJB 或应用服务器这类容器中使用</p>
+  </li>
+</ul>
+
+<h6 id="3-数据库信息">3. 数据库信息</h6>
+
+<p>有关数据库的信息可以直接写在配置文件里面：</p>
+
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-75e127c1b65c9281.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
+
+<p>不过，通常的做法是在外部创建一个 <code class="highlighter-rouge">db.properties</code> 文件：</p>
+
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-5ad00ff70d932d8e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
+
+<p>然后用外部配置来替换这些属性的值，只是引用外部配置文件需要在<strong>配置数据源之前进行</strong>：</p>
+
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-6e4ab8f0df2196ad.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
+
+<p>关于 Mybatis 的系统配置就先到这，接下来是实体类相关的一个映射文件 ProductMapper.xml 的配置</p>
+
+<h6 id="4-映射文件">4. 映射文件</h6>
+
+<p>在实体类的映射文件中写明了你要进行什么操作：</p>
+
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-2b20d4a68786366c.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
+
+<p>接下来解释这个文件：</p>
+
+<p>mapper 映射器：需要定义命名空间，因为后面调用的时候要用到</p>
+
+<p>select 元素：对应 SQL 中的查询操作，id 指的是这个查询操作的名称，调用它的时候需要使用这个 id， resultType 指的是返回类型，我这里查询出的每一条记录都指定为 Product 类型，相类似的还有 update、insert 和 delete 元素，对应相关的的 SQL 操作</p>
+
+<h6 id="5-加载映射文件">5. 加载映射文件</h6>
+
+<p>把映射文件写完了之后，我们需要告诉 Mybatis 去哪里找这些 SQL 语句，所以我们在 Mybatis 配置文件里写出路径：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    &lt;mappers&gt;
+        &lt;mapper resource="mapper/ProductMapper.xml"/&gt;
+    &lt;/mappers&gt;
+</code></pre></div></div>
+
+<h4 id="4-增删改查">4. 增删改查</h4>
+
+<p>首先我们先说一下 Mybatis 是怎么用的：</p>
+
+<ul>
+  <li>
+    <p>Mybatis 中有一个工具类叫 Resources，使用它来加载你的配置文件</p>
+  </li>
+  <li>
+    <p>SqlSessionFactoryBuilder 根据配置的 XML 文件（我们这里就是指 SqlMapConfig.xml）中的 <configuration> 元素来创建一个 **SqlSessionFactory** 实例</configuration></p>
+  </li>
+  <li>
+    <p>Mybatis 应用是以一个 <strong>SqlSessionFactory</strong> 的实例为中心来展开工作的</p>
+  </li>
+</ul>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>        //配置文件的位置是基于我这个测试项目来写的
+        String resource = "config/SqlMapConfig";
+        //输入流
+        InputStream inputStream = Resources.getResourceAsStream(resource);
+        SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
+</code></pre></div></div>
+
+<p>然后得到 SqlSession 的实例，就可以用来执行 SQL 语句了：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>        SqlSession sqlSession = sqlSessionFactory.openSession();
+</code></pre></div></div>
+
+<h6 id="1-增加记录">1. 增加记录</h6>
+
+<p>我们先在映射文件中写一个增加记录的操作：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    &lt;insert id="insertProduct" parameterType="bean.Product"&gt;
+        INSERT INTO product VALUES
+        (#{id}, #{barcode}, #{name}, #{units}, #{purchasePrice}, #{salePrice}, #{inventory})
+    &lt;/insert&gt;
+</code></pre></div></div>
+
+<p>这里的 #{} 是一个占位符，就相当于 SQL 中的 ? 符号，添加的参数类型是 Product 类型的</p>
+
+<p>然后我们在测试类中进行添加操作：</p>
+
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-ec60e74b810e0d4a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
+
+<p>这里的 insert 操作的第一个参数就是用来定位 SQL 语句的，它是命名方式是<strong>映射文件的命名空间.SQL语句的 ID</strong>，然后这第二个参数就是我添加进去的记录，在最后<strong>一定要进行提交</strong>，否则是无效的，进行测试：</p>
+
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-61ce8922af72fdac.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
+
+<p>这时候查看表中的所有记录就会发现刚才的操作是成功的：</p>
+
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-3c7a71fe976a6c0a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
+
+<h6 id="2-删除记录">2. 删除记录</h6>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    &lt;delete id="deleteProduct" parameterType="String"&gt;
+        DELETE FROM product
+        WHERE id = #{id}
+    &lt;/delete&gt;
+</code></pre></div></div>
+
+<p>根据 ID 来删除商品，这里的参数类型是 String</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    @Test
+    public void test() throws IOException{
+        String resource = "config/SqlMapConfig";
+        InputStream inputStream = Resources.getResourceAsStream(resource);
+        SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
+        SqlSession sqlSession = sqlSessionFactory.openSession();
+        sqlSession.delete("ProductMapper.deleteProduct", "123");
+        sqlSession.commit();
     }
 </code></pre></div></div>
 
-<ul>
-  <li>添加节点至队尾</li>
-</ul>
+<p>运行之后就能看到我们第一步添加进去的商品被删除了：</p>
 
-<p>和上述一样，都是连着再次调用其他方法来达到效果：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-40f6b6e53334e646.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    public boolean offerLast(E e) {
-        addLast(e);
-        return true;
-    }
+<h6 id="3-修改记录">3. 修改记录</h6>
+
+<p>我们也是根据商品 ID 来修改记录，只不过参数类型是 Product：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    &lt;update id="updateProduct" parameterType="bean.Product"&gt;
+        UPDATE product SET 
+        barcode = #{barcode},
+        name = #{name},
+        units = #{units},
+        purchasePrice = #{purchasePrice},
+        salePrice = #{salePrice},
+        inventory = #{inventory}
+        WHERE id = #{id}
+    &lt;/update&gt;
 </code></pre></div></div>
 
-<ul>
-  <li>模拟栈操作的添加一个节点至队首，最终还是调用linkFirst()：</li>
-</ul>
+<p>在测试中，我们创建一个商品的实例，然后用这个实例来替换掉数据库中的相对应的记录：</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    public void push(E e) {
-        addFirst(e);
-    }
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>        Product product = new Product("1F01DC70F9A64B2CBB52B92C41FBCC9E", "123", 
+                                        "T-shirt", "piece", "50", "100", "10");
+        sqlSession.update("ProductMapper.updateProduct", product);
+        sqlSession.commit();
 </code></pre></div></div>
 
-<h5 id="2-删除节点-1">2. 删除节点</h5>
+<p>然后就会发现表中的第一条记录已被更改：</p>
 
-<ul>
-  <li>删除第一个节点，调用unlinkFirst()：</li>
-</ul>
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-d1f6d157239253fa.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    public E pollFirst() {
-        final Node&lt;E&gt; f = first;
-        return (f == null) ? null : unlinkFirst(f);
-    }
+<h6 id="4-查询记录">4. 查询记录</h6>
+
+<p>我们用一个列表来存放表中的所有数据，这里没有用到参数，只要定义返回类型就可以了：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    &lt;select id="findAllProducts"  resultType="bean.Product"&gt;
+        SELECT * FROM product
+    &lt;/select&gt;
 </code></pre></div></div>
 
-<ul>
-  <li>删除最后一个节点， 调用unlinkLast()：</li>
-</ul>
+<p>这里不需要 commit，我们并没有提交至数据库中，只是查询：</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    public E pollLast() {
-        final Node&lt;E&gt; l = last;
-        return (l == null) ? null : unlinkLast(l);
-    }
-</code></pre></div></div>
-
-<ul>
-  <li>模拟栈操作的删除第一个节点，最终还是调用unlinkFirst()：</li>
-</ul>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    public E pop() {
-        return removeFirst();
-    }
-</code></pre></div></div>
-
-<ul>
-  <li>删除某个节点的元素，在它第一次出现的位置</li>
-</ul>
-
-<p>remove()方法是从队首还是进行遍历，如果找到与指定元素相同的节点元素，就返回，所以是在元素第一次出现的位置将其删除：</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   public boolean removeFirstOccurrence(Object o) {
-        return remove(o);
-    }
-</code></pre></div></div>
-
-<ul>
-  <li>删除某个节点的元素，在它最后一次出现的位置</li>
-</ul>
-
-<p>其实这个方法的写法和remove()是类似的，只不过是从队尾开始遍历：</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    public boolean removeLastOccurrence(Object o) {
-        if (o == null) {
-            for (Node&lt;E&gt; x = last; x != null; x = x.prev) {
-                if (x.item == null) {
-                    unlink(x);
-                    return true;
-                }
-            }
-        } else {
-            for (Node&lt;E&gt; x = last; x != null; x = x.prev) {
-                if (o.equals(x.item)) {
-                    unlink(x);
-                    return true;
-                }
-            }
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>        List&lt;Product&gt; list = sqlSession.selectList("ProductMapper.findAllProducts");
+        for (Product p :
+                list) {
+            System.out.println(p);
         }
-        return false;
-    }
 </code></pre></div></div>
 
-<h5 id="3-查找元素">3. 查找元素</h5>
+<p>然后就能看到 5 条记录：</p>
 
-<ul>
-  <li>得到队首、队尾的节点的元素</li>
-</ul>
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-d0db12a07b6213b4.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    public E peekFirst() {
-        final Node&lt;E&gt; f = first;
-        return (f == null) ? null : f.item;
-    }
+<h4 id="总结">总结</h4>
 
-    public E peekLast() {
-        final Node&lt;E&gt; l = last;
-        return (l == null) ? null : l.item;
-    }
-</code></pre></div></div>
+<p>若想要成功地使用 Mybatis，总共有三个要点：</p>
 
-<p>这一篇文章就结束了，接下来会是迭代器的分析，作为链表系列文章的最后一篇，然后会有一个关于<strong>ArrayList</strong>和<strong>LinkedList</strong>的对比分析</p>
+<h6 id="1-sqlmapconfigxmlmybatis-配置文件">1. SqlMapConfig.xml（Mybatis 配置文件）</h6>
 
-<p><img src="https://upload-images.jianshu.io/upload_images/3426615-79919768b5365766.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" width="40%" height="40%" /></p>
+<p>这是 Mybatis 的核心，这里面配置了数据库的基本信息以及映射文件的加载信息等</p>
+
+<h6 id="2-实体类接口">2. 实体类、接口</h6>
+
+<p>也就是 POJO（Plain Old Java Objects,普通的 Java对象），我们这篇文章中的 Product 实体类，关于接口，我们这一篇文章中没有说明，接口是对应映射文件存在的，接口的命名和映射文件同名，这个在之后将 Mybatis 逆向工程的时候会说到</p>
+
+<h6 id="3-映射文件">3. 映射文件</h6>
+
+<p>映射文件就是我们上面写到的 ProductMapper.xml，它的作用不仅仅是带有 SQL 语句，还能将 POJO 映射成为数据库中的记录，所以我们刚才才能够使用占位符进行增删改查操作或将查询结果映射为POJO</p>
 
 
                 <hr>
@@ -504,13 +491,9 @@
                 <ul class="pager">
                     
                     <li class="previous">
-                        <a href="/2018/05/22/LinkedList%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E4%B8%80/" data-toggle="tooltip" data-placement="top" title="LinkedList源码分析（一）">&larr; Previous Post</a>
+                        <a href="/2018/06/18/Vector-%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" data-toggle="tooltip" data-placement="top" title="Vector源码分析">&larr; Previous Post</a>
                     </li>
                     
-                    
-                    <li class="next">
-                        <a href="/2018/05/29/Github-Pages-+-Jekyll-%E5%88%9B%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/" data-toggle="tooltip" data-placement="top" title="Github Pages + Jekyll 创建个人博客">Next Post &rarr;</a>
-                    </li>
                     
                 </ul>
 
@@ -622,8 +605,8 @@
 <script type="text/javascript">
     /* * * CONFIGURATION VARIABLES * * */
     var disqus_shortname = "http-hxblog-site";
-    var disqus_identifier = "/2018/05/28/LinkedList源码分析（二）";
-    var disqus_url = "http://localhost:4000/2018/05/28/LinkedList%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E4%BA%8C/";
+    var disqus_identifier = "/2018/06/21/初始 Mybatis（一） —— 基本配置及用法";
+    var disqus_url = "http://localhost:4000/2018/06/21/%E5%88%9D%E5%A7%8B-Mybatis-%E4%B8%80-%E5%9F%BA%E6%9C%AC%E9%85%8D%E7%BD%AE%E5%8F%8A%E7%94%A8%E6%B3%95/";
 
     (function() {
         var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
