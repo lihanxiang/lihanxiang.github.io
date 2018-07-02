@@ -19,9 +19,9 @@
     <meta name="keyword"  content="Java">
     <link rel="shortcut icon" href="/img/favicon.ico">
 
-    <title>LinkedList源码分析（三） - 李汉祥的博客 | L Blog</title>
+    <title>初始 Mybatis（二）—— 动态 SQL - 李汉祥的博客 | L Blog</title>
 
-    <link rel="canonical" href="http://localhost:4000/2018/06/08/LinkedList%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E4%B8%89/">
+    <link rel="canonical" href="http://localhost:4000/2018/07/02/%E5%88%9D%E5%A7%8B-Mybatis-%E4%BA%8C-%E5%8A%A8%E6%80%81-SQL/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -142,12 +142,12 @@
 
 
     <!-- Image to hack wechat -->
-<!-- <img src="/img/post/2018-06/08.jpg" width="0" height="0"> -->
+<!-- <img src="/img/post/2018-07/02.jpg" width="0" height="0"> -->
 
 <!-- Post Header -->
 <style type="text/css">
     header.intro-header{
-        background-image: url('/img/post/2018-06/08.jpg')
+        background-image: url('/img/post/2018-07/02.jpg')
     }
 </style>
 <header class="intro-header" >
@@ -157,15 +157,15 @@
                 <div class="post-heading">
                     <div class="tags">
                         
-                        <a class="tag" href="/tags/#Java源码解析" title="Java源码解析">Java源码解析</a>
+                        <a class="tag" href="/tags/#Mybatis" title="Mybatis">Mybatis</a>
                         
                     </div>
-                    <h1>LinkedList源码分析（三）</h1>
+                    <h1>初始 Mybatis（二）—— 动态 SQL</h1>
                     
                     
-                    <h2 class="subheading">读读源码</h2>
+                    <h2 class="subheading">数据库模块</h2>
                     
-                    <span class="meta">Posted by L on June 8, 2018</span>
+                    <span class="meta">Posted by L on July 2, 2018</span>
                 </div>
             </div>
         </div>
@@ -186,219 +186,163 @@
 				<h3 id="正文之前">正文之前</h3>
 
 <blockquote>
-  <p>在前面两篇文章中已经讲述了 LinkedList <a href="http://hxblog.site/2018/05/22/LinkedList%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E4%B8%80/">基于列表</a>和<a href="http://hxblog.site/2018/05/28/LinkedList%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E4%BA%8C/">基于队列</a>的操作，这一篇文章作为 LinkedList 系列文章的最后一篇，将会讲述迭代器的用法：</p>
+  <p>上一篇介绍了 <a href="http://hxblog.site/2018/06/21/%E5%88%9D%E5%A7%8B-Mybatis-%E4%B8%80-%E5%9F%BA%E6%9C%AC%E9%85%8D%E7%BD%AE%E5%8F%8A%E7%94%A8%E6%B3%95/">Mybatis 的基本用法</a>，这一篇我们着重介绍一下 Mybatis 对 SQL 拼接的支持，在之前写 JDBC 代码的时候，SQL 拼接的代码一直是处于一种很繁琐的状态，拼接一张表的代码动则几十行，用 Mybatis 就只需要几行就搞定了</p>
 
+  <p>主要内容：</p>
   <ol>
-    <li>ListItr</li>
-    <li>DescendingIterator</li>
+    <li>if 标签</li>
+    <li>where 标签</li>
+    <li>trim 标签</li>
   </ol>
 </blockquote>
 
 <h3 id="正文">正文</h3>
 
-<h4 id="1-listitr">1. ListItr</h4>
+<h4 id="1-if-标签">1. if 标签</h4>
 
-<blockquote>
-  <ol>
-    <li>成员变量</li>
-    <li>构造</li>
-    <li>增</li>
-    <li>删</li>
-    <li>改</li>
-    <li>查</li>
-  </ol>
-</blockquote>
+<p>使用 if 标签来判断参数是否为空，来达到 SQL 拼接的效果：</p>
 
-<p>在源码中，<strong>ListItr</strong> 对象是私有的，对象的发布是通过 <strong>listIterator()</strong> 方法进行的，关于对象的发布这里不讲述，先看看 <strong>listIterator()</strong> 方法是怎样的：</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    //index是从1开始的
-    public ListIterator&lt;E&gt; listIterator(int index) {
-        //先检查给出的索引是否有效
-        checkPositionIndex(index);
-        //返回 ListItr 对象
-        return new ListItr(index);
-    }
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    &lt;select id="selectProduct" resultType="bean.Product"&gt;
+        SELECT * FROM product
+        WHERE id = 1
+        &lt;if test="name != null"&gt;
+            AND name LIKE #{name}
+        &lt;/if&gt;
+    &lt;/select&gt;
 </code></pre></div></div>
 
-<p>然后看看 <strong>ListItr</strong> 类：</p>
+<p>在 if 标签中有一个 test 属性，它用来进行条件判断，如果 test 属性中的语句为 true，就将 if 标签中的语句添加至上面的 SQL 语句中，目前，我都是用在 Web 项目中使用 if 标签配合表单的输入来进行模糊查找</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    private class ListItr implements ListIterator&lt;E&gt; {}
+<p>那么如果所有的 if 标签都不成立呢？马上就会说到</p>
+
+<h4 id="2-where-标签">2. where 标签</h4>
+
+<p>这里给出一条新的 SQL 语句：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    &lt;select id="selectProduct" resultType="bean.Product"&gt;
+        SELECT * FROM product
+        WHERE
+        &lt;if test="id != null"&gt;
+            id = #{id}
+        &lt;/if&gt;
+        &lt;if test="name != null"&gt;
+            AND name LIKE #{name}
+        &lt;/if&gt;
+    &lt;/select&gt;
 </code></pre></div></div>
 
-<h5 id="1-成员变量">1. 成员变量</h5>
+<p>如果上述的所有 if 标签都不成立呢，这 SQL 语句就变为：</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>        //当前节点
-        private Node&lt;E&gt; lastReturned;
-        //下一个节点
-        private Node&lt;E&gt; next;
-        //下一个节点的位置
-        private int nextIndex;
-        private int expectedModCount = modCount;
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>        SELECT * FROM product
+        WHERE
 </code></pre></div></div>
 
-<h5 id="2-构造">2. 构造</h5>
+<p>这时候就不能执行了，因为发生了语法错误，所以我们改用 where 标签：</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>        ListItr(int index) {
-            // assert isPositionIndex(index);
-            //需要判断索引是否有效，然后确定下一个节点
-            next = (index == size) ? null : node(index);
-            //下一个节点的位置
-            nextIndex = index;
-        }
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>        SELECT * FROM product
+        &lt;where&gt;
+            &lt;if test="id != null"&gt;
+                id = #{id}
+            &lt;/if&gt;
+            &lt;if test="name != null"&gt;
+                AND name LIKE #{name}
+            &lt;/if&gt;
+        &lt;/where&gt;
 </code></pre></div></div>
 
-<p>传入的参数 index 是从1开始的，一试便知：</p>
+<p>where 标签存在的条件是至少有一个子标签存在，也就是至少有一个 if 标签成立，所以如果所有 if 标签都不成立，SQL 语句就变为：</p>
 
-<p><img src="https://upload-images.jianshu.io/upload_images/3426615-897d6574fbe14444.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
-
-<h5 id="3-增">3. 增</h5>
-
-<p>方法中使用到了之前写的基于列表的操作：</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>        public void add(E e) {
-            checkForComodification();
-            lastReturned = null;
-            //最后一个节点
-            if (next == null)
-                //末尾添加
-                linkLast(e);
-            else
-                //在指定位置添加
-                linkBefore(e, next);
-            //把下一个节点的位置往后移
-            nextIndex++;
-            expectedModCount++;
-        }
-
-        
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>        SELECT * FROM product
 </code></pre></div></div>
 
-<h5 id="4-删">4. 删</h5>
+<h4 id="3-trim-标签">3. trim 标签</h4>
 
-<p>方法中使用到了之前写的基于列表的操作：</p>
+<p>我们<strong>假设</strong>，在上面的 SQL 语句中还有一个问题：如果 id 为空，而 name 不为空，那么 SQL 语句就变为：</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>        public void remove() {
-            checkForComodification();
-            //如果当前节点为空
-            if (lastReturned == null)
-                throw new IllegalStateException();
-
-            //定义一个节点，表示当前节点的下一个节点
-            Node&lt;E&gt; lastNext = lastReturned.next;
-            //删除节点
-            unlink(lastReturned);
-            if (next == lastReturned)
-                next = lastNext;
-            else
-                nextIndex--;
-            //将当前节点设为null
-            lastReturned = null;
-            expectedModCount++;
-        }
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>        SELECT * FROM product
+        WHERE AND name LIKE #{name}
 </code></pre></div></div>
 
-<h5 id="5-改">5. 改</h5>
+<p>虽然这个假设不成立，在 where 标签和接下来要说的 set 标签中不会出现多余的情况（是否可以认为是内置了 trim 标签），但是我们还是要试一试，多出来一个 AND，看看 trim 标签如何去除：</p>
 
-<p>将当前节点中的元素改为传入的参数：</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>        public void set(E e) {
-            //如果节点为空
-            if (lastReturned == null)
-                throw new IllegalStateException();
-            checkForComodification();
-            lastReturned.item = e;
-        }
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>        SELECT * FROM product
+        &lt;trim prefix="WHERE" prefixOverrides="AND "&gt;
+            &lt;if test="id != null"&gt;
+                id = #{id}
+            &lt;/if&gt;
+            &lt;if test="name != null"&gt;
+                AND name LIKE #{name}
+            &lt;/if&gt;
+        &lt;/trim&gt;
 </code></pre></div></div>
 
-<h5 id="6-查">6. 查</h5>
+<p>将 where 标签换成 trim 标签，prefix 属性表示我在这个标签前面需要添加什么，我这里添加 WHERE，因为我们已经把 where 标签去掉了，为了语法正确性，添加 WHERE</p>
 
-<p>迭代器支持双向操作，所以能够向前或向后移动：</p>
+<p>prefixOverrides 表示，如果指定的内容是多余的（这里指的是 AND以及一个空格），就会去掉</p>
 
-<p>向后移动：</p>
+<p>所以，如果 id 为空，name 不为空，SQL 语句就变为：</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>        //判断是否有下一个节点
-        public boolean hasNext() {
-            return nextIndex &lt; size;
-        }
-
-        public E next() {
-            checkForComodification();
-            if (!hasNext())
-                throw new NoSuchElementException();
-            //将下一个节点表示为当前节点
-            lastReturned = next;
-            next = next.next;
-            //位置向后移动
-            nextIndex++;
-            //返回当前节点的元素
-            return lastReturned.item;
-        }
-
-        //返回下一个节点的位置
-        public int nextIndex() {
-            return nextIndex;
-        }
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>        SELECT * FROM product
+        WHERE name LIKE #{name}
 </code></pre></div></div>
 
-<p>向前移动，操作是类似的：</p>
+<p>这时候就能正常运行了</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>        public boolean hasPrevious() {
-            return nextIndex &gt; 0;
-        }
+<p>有的人会想，那如果有多个 AND，岂不是就有多个 WHERE？</p>
 
-        public E previous() {
-            checkForComodification();
-            if (!hasPrevious())
-                throw new NoSuchElementException();
-            //向前移，并修改位置
-            lastReturned = next = (next == null) ? last : next.prev;
-            nextIndex--;
-            //返回元素
-            return lastReturned.item;
-        }
+<p>稍微修改一下：</p>
 
-        //同样是返回位置
-        public int previousIndex() {
-            return nextIndex - 1;
-        }
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>        &lt;trim prefix="WHERE" prefixOverrides="AND "&gt;
+            &lt;if test="barcode != null"&gt;
+                AND barcode LIKE #{barcode}
+            &lt;/if&gt;
+            &lt;if test="name != null"&gt;
+                AND name LIKE #{name}
+            &lt;/if&gt;
+            &lt;if test="units != null"&gt;
+                AND units LIKE #{units}
+            &lt;/if&gt;
+        &lt;/trim&gt;
 </code></pre></div></div>
 
-<h4 id="2-descendingiterator">2. DescendingIterator</h4>
+<p>其实有多个 if 标签，要去掉 AND 的就只有第一个成立的，比如说 barcode 不为空，就用 WHERE 来替换 AND，后面的不管成立不成立，都不会影响语法的正确性</p>
 
-<p>反向迭代器对象的发布方式也和上面的一样，通过 <strong>descendingIterator()</strong> 来发布对象：</p>
+<p>注意，是语法的正确性，不管 name 或 units 是否为空，都不会导致 SQL 语句无法执行，因为 WHERE 后面已经有一条 <code class="highlighter-rouge">barcode LIKE #{barcode}</code></p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    public Iterator&lt;E&gt; descendingIterator() {
-        return new DescendingIterator();
-    }
+<h4 id="4-set-标签">4. set 标签</h4>
 
-    private class DescendingIterator implements Iterator&lt;E&gt; {}
+<p>set 标签用于动态更新，也就是更新那些需要更新的行，我们来看看用法：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>        UPDATE product
+        &lt;set&gt;
+            &lt;if test="barcode != null"&gt;
+                barcode = #{barcode},
+            &lt;/if&gt;
+            &lt;if test="name != null"&gt;
+                name = #{name},
+            &lt;/if&gt;
+            ...
+        &lt;/set&gt;
 </code></pre></div></div>
 
-<p>反向迭代器实现的方法就3个，我们先看一眼成员变量：</p>
+<p>这里由于篇幅关系，只给出更新两项内容的语句，其余的类似</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    private final ListItr itr = new ListItr(size());
+<p>在 if 标签中的语句中最后又一个逗号，这就和上面说的 AND 是类似的，set 标签会自动去除多余的逗号，否则就会有语法错误，如果你想用 trim 来达到这种效果：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>        UPDATE product
+        &lt;trim prefix="SET" suffixOverrides=","&gt;
+            &lt;if test="barcode != null"&gt;
+                barcode = #{barcode},
+            &lt;/if&gt;
+            &lt;if test="name != null"&gt;
+                name = #{name},
+            &lt;/if&gt;
+        &lt;/trim&gt;
 </code></pre></div></div>
 
-<p>其实反向迭代器是基于 <strong>ListItr</strong> 来实现的，直接在迭代器的初始位置设置在链表的末尾</p>
+<p>这个标签表示，去掉多余的逗号，并在前面加上 SET，使其成为语法正确的语句</p>
 
-<p>接下来来看看3个方法：</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>        public boolean hasNext() {
-            return itr.hasPrevious();
-        }
-        public E next() {
-            return itr.previous();
-        }
-        public void remove() {
-            itr.remove();
-        }
-</code></pre></div></div>
-
-<p>因为这是反向的，所以向前方法的名字还是 <strong>next()</strong>，但是，是使用了 <strong>previous</strong> 来进行的</p>
-
-<p>那么，有关 LinkedList 的基本用法的源码就已经解读完毕了，接下来会是其他容器类的源码解读</p>
-
-<p><img src="https://upload-images.jianshu.io/upload_images/3426615-79919768b5365766.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" width="40%" height="40%" /></p>
+<p>总而言之，使用动态 SQL 能够避免 SQL 拼接时可能会发生的种种错误</p>
 
 
                 <hr>
@@ -409,13 +353,9 @@
                 <ul class="pager">
                     
                     <li class="previous">
-                        <a href="/2018/05/29/Github-Pages-+-Jekyll-%E5%88%9B%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/" data-toggle="tooltip" data-placement="top" title="Github Pages + Jekyll 创建个人博客">&larr; Previous Post</a>
+                        <a href="/2018/06/21/%E5%88%9D%E5%A7%8B-Mybatis-%E4%B8%80-%E5%9F%BA%E6%9C%AC%E9%85%8D%E7%BD%AE%E5%8F%8A%E7%94%A8%E6%B3%95/" data-toggle="tooltip" data-placement="top" title="初始 Mybatis（一） —— 基本配置及用法">&larr; Previous Post</a>
                     </li>
                     
-                    
-                    <li class="next">
-                        <a href="/2018/06/09/Bean%E7%9A%84%E8%A3%85%E9%85%8D-%E4%B8%80/" data-toggle="tooltip" data-placement="top" title="Bean的装配（一）">Next Post &rarr;</a>
-                    </li>
                     
                 </ul>
 
@@ -527,8 +467,8 @@
 <script type="text/javascript">
     /* * * CONFIGURATION VARIABLES * * */
     var disqus_shortname = "http-hxblog-site";
-    var disqus_identifier = "/2018/06/08/LinkedList源码分析（三）";
-    var disqus_url = "http://localhost:4000/2018/06/08/LinkedList%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E4%B8%89/";
+    var disqus_identifier = "/2018/07/02/初始 Mybatis（二）—— 动态 SQL";
+    var disqus_url = "http://localhost:4000/2018/07/02/%E5%88%9D%E5%A7%8B-Mybatis-%E4%BA%8C-%E5%8A%A8%E6%80%81-SQL/";
 
     (function() {
         var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
