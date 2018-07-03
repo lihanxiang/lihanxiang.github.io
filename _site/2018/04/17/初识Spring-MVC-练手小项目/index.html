@@ -19,9 +19,9 @@
     <meta name="keyword"  content="Java">
     <link rel="shortcut icon" href="/img/favicon.ico">
 
-    <title>初始 Mybatis（一） —— 基本配置及用法 - 李汉祥的博客 | L Blog</title>
+    <title>初识 Spring MVC——练手小项目 - 李汉祥的博客 | L Blog</title>
 
-    <link rel="canonical" href="http://localhost:4000/2018/06/21/%E5%88%9D%E5%A7%8B-Mybatis-%E4%B8%80-%E5%9F%BA%E6%9C%AC%E9%85%8D%E7%BD%AE%E5%8F%8A%E7%94%A8%E6%B3%95/">
+    <link rel="canonical" href="http://localhost:4000/2018/04/17/%E5%88%9D%E8%AF%86Spring-MVC-%E7%BB%83%E6%89%8B%E5%B0%8F%E9%A1%B9%E7%9B%AE/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -142,12 +142,12 @@
 
 
     <!-- Image to hack wechat -->
-<!-- <img src="/img/post/2018-06/21.jpg" width="0" height="0"> -->
+<!-- <img src="/img/post/2018-04/17(2).jpg" width="0" height="0"> -->
 
 <!-- Post Header -->
 <style type="text/css">
     header.intro-header{
-        background-image: url('/img/post/2018-06/21.jpg')
+        background-image: url('/img/post/2018-04/17(2).jpg')
     }
 </style>
 <header class="intro-header" >
@@ -157,15 +157,17 @@
                 <div class="post-heading">
                     <div class="tags">
                         
-                        <a class="tag" href="/tags/#Mybatis" title="Mybatis">Mybatis</a>
+                        <a class="tag" href="/tags/#Spring MVC" title="Spring MVC">Spring MVC</a>
+                        
+                        <a class="tag" href="/tags/#Java Web" title="Java Web">Java Web</a>
                         
                     </div>
-                    <h1>初始 Mybatis（一） —— 基本配置及用法</h1>
+                    <h1>初识 Spring MVC——练手小项目</h1>
                     
                     
-                    <h2 class="subheading">数据库模块</h2>
+                    <h2 class="subheading">练手项目</h2>
                     
-                    <span class="meta">Posted by L on June 21, 2018</span>
+                    <span class="meta">Posted by L on April 17, 2018</span>
                 </div>
             </div>
         </div>
@@ -183,304 +185,307 @@
                 col-md-10 col-md-offset-1
                 post-container">
 
-				<h3 id="正文之前">正文之前</h3>
+				<h3 id="初始spring-mvc">初始Spring MVC</h3>
 
 <blockquote>
-  <p>在使用 SSM 对之前所做的小项目重构了之后，发现需要写几篇文章来总结一下各个部件的用法，先写几篇关于 Mybatis 的文章，正好补缺补漏顺便总结一下</p>
-
-  <p>主要内容：</p>
-  <ol>
-    <li>Mybatis 简介</li>
-    <li>测试项目构建</li>
-    <li>配置文件</li>
-    <li>增删改查</li>
-  </ol>
+  <p>前几天开始了我的spring学习之旅，由于之前使用过MVC模式来做项目，所以我先下手的是 Spring MVC，做个练手项目，非常简单</p>
 </blockquote>
 
-<h3 id="正文">正文</h3>
+<h5 id="项目介绍">项目介绍：</h5>
 
-<h4 id="1-mybatis-简介">1. Mybatis 简介</h4>
+<p>用户输入信息 -&gt; 后台处理 -&gt; 输出信息</p>
 
-<p>引用官网的介绍：</p>
+<h5 id="开始">开始</h5>
 
-<blockquote>
-  <p>MyBatis 是一款优秀的持久层框架，它支持定制化 SQL、存储过程以及高级映射。MyBatis 避免了几乎所有的 JDBC 代码和手动设置参数以及获取结果集。MyBatis 可以使用简单的 XML 或注解来配置和映射原生信息，将接口和 Java 的 POJOs(Plain Old Java Objects,普通的 Java对象)映射成数据库中的记录。</p>
-</blockquote>
+<ol>
+  <li>创建Spring MVC 项目（创建时下载所需文件）</li>
+</ol>
 
-<p>总而言之，是个框架就对了</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-d084130830d4db65.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" />
+<br />
+2.创建完的项目目录是这样的</p>
 
-<h4 id="2-测试项目构建">2. 测试项目构建</h4>
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-78e04adbbf1a2c54.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" />
+<br /></p>
+<ol>
+  <li>配置Web项目结构</li>
+</ol>
 
-<p>要使用 Mybatis，我们需要先导入两个包：</p>
+<p>参考另一篇文章<a href="https://www.jianshu.com/p/8d49d36a3c7e">IDEA如何创建及配置Web项目（多图）</a></p>
 
-<blockquote>
-  <p>mybatis-3.4.6
-mysql-connector-java-5.1.46</p>
-</blockquote>
+<p>有变化的是： 不需要自己创建 <strong>lib</strong> 文件夹，在创建项目时已经建立，另外在 <strong>WEB-INF</strong> 建立 <strong>jsp</strong> 用于存放 <strong>.jsp</strong> 文件，其他的都没什么区别</p>
 
-<p>我们先创建所要用到的包和类：</p>
+<p>配置完的样子（文件夹旁有箭头是因为我在做完项目才截图，具体的类以及其他文件都已在内）：</p>
 
-<p><img src="https://upload-images.jianshu.io/upload_images/3426615-ef36e6bbb733f491.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-e4e64f432bfe4d12.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" />
+<br /></p>
 
-<ul>
-  <li>
-    <p>Product 是实体类，对应数据库中的表</p>
+<ol>
+  <li>配置Spring MVC的核心 —— <strong>dispatcher-servlet.xml</strong>
+    <blockquote>
+      <p>Spring MVC provides an annotation-based programming model where <strong>@Controller</strong> and <strong>@RestController</strong> components use annotations to express request mappings, request input, exception handling, and more. Annotated controllers have flexible method signatures and do not have to extend base classes nor implement specific interfaces.</p>
+    </blockquote>
   </li>
-  <li>
-    <p>db.properties 是外部配置数据库信息的文件</p>
-  </li>
-  <li>
-    <p>SqlMapConfig 是 Mybatis 的配置文件（文件名不固定）</p>
-  </li>
-  <li>
-    <p>ProductMapper.xml 是对应的映射文件</p>
-  </li>
-  <li>
-    <p>ProductTest 是测试类</p>
-  </li>
-</ul>
+</ol>
 
-<p>lib 包中的其他文件是日志文件和单元测试文件</p>
+<p>如官方文档所说，我也使用了注解来定义控制器（Controller）和服务（Service）.</p>
 
-<p>使用到的数据库中的表为 product 表：</p>
+<p>首先需要添加的是</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;context:component-scan base-package="controller"/&gt;
+&lt;context:component-scan base-package="service"/&gt;
+</code></pre></div></div>
+<p>这样我们就能通过注解来定义<strong>Controller</strong>以及<strong>Service</strong>.</p>
 
-<p><img src="https://upload-images.jianshu.io/upload_images/3426615-107fa62a0eb47291.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
+<p>然后，我们需要配置视图解析器，在具体操作时只要写出视图的名称(xxx)，就可以采用URL拼接的方式，达到这种效果：/WEB-INF/jsp/xxx.jsp</p>
 
-<p>创建实体类 Product ：</p>
-
-<p><img src="https://upload-images.jianshu.io/upload_images/3426615-f03ca16807cc8b6a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
-
-<h4 id="3-配置文件">3. 配置文件</h4>
-
-<p>关于 Mybatis 的信息都在 <code class="highlighter-rouge">SqlMapConfig.xml</code> 文件中</p>
-
-<h6 id="1-配置环境">1. 配置环境</h6>
-
-<p>Mybatis 可以对应多种环境，这在配置文件中定义：</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;?xml version="1.0" encoding="UTF-8" ?&gt;</span>
-<span class="cp">&lt;!DOCTYPE configuration
-        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
-        "http://mybatis.org/dtd/mybatis-3-config.dtd"&gt;</span>
-<span class="nt">&lt;configuration&gt;</span>
-    <span class="c">&lt;!-- 配置的环境，可以有多个环境来对应多种数据库，至少要有一个环境 id 与此对应 --&gt;</span>
-    <span class="nt">&lt;environments</span> <span class="na">default=</span><span class="s">"mysql"</span><span class="nt">&gt;</span>
-        <span class="c">&lt;!-- 这里的环境 id，就是具体某个数据库的 id --&gt;</span>
-        <span class="nt">&lt;environment</span> <span class="na">id=</span><span class="s">"mysql"</span><span class="nt">&gt;</span>
-            <span class="nt">&lt;transactionManager</span> <span class="na">type=</span><span class="s">""</span><span class="nt">&gt;&lt;/transactionManager&gt;</span>
-            <span class="nt">&lt;dataSource</span> <span class="na">type=</span><span class="s">""</span><span class="nt">&gt;&lt;/dataSource&gt;</span>
-        <span class="nt">&lt;/environment&gt;</span>
-        <span class="c">&lt;!--
-        &lt;environment id="oracle"&gt;
-            &lt;transactionManager type=""&gt;&lt;/transactionManager&gt;
-            &lt;dataSource type=""&gt;&lt;/dataSource&gt;
-        &lt;/environment&gt;
-        --&gt;</span>
-    <span class="nt">&lt;/environments&gt;</span>
-<span class="nt">&lt;/configuration&gt;</span>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;bean class="org.springframework.web.servlet.view.InternalResourceViewResolver"&gt;
+    &lt;property name="prefix" value="/WEB-INF/jsp/"/&gt;
+    &lt;property name="suffix" value=".jsp"/&gt;
+&lt;/bean&gt;
 </code></pre></div></div>
 
-<h6 id="2-事务管理和数据源">2. 事务管理和数据源</h6>
+<ol>
+  <li>开始进行具体的操作</li>
+</ol>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;transactionManager type="JDBC"/&gt;
-&lt;dataSource type="POOLED"&gt;&lt;/dataSource&gt;
-</code></pre></div></div>
+<p>首先是基本数据类：</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public class Product {
+    private long id;
+    private String name;
+    private String price;
+    private String inventory;
 
-<p>事务管理有两种：JDBC 和 MANAGED，我们就关注 JDBC，它其实就是使用了 JDBC 的设置来进行管理、</p>
-
-<p>数据源有三种：</p>
-
-<ul>
-  <li>
-    <p>UNPOOLED：在请求时打开和关闭连接，如果对数据库的使用较为频繁，则不适用此方式，太浪费时间</p>
-  </li>
-  <li>
-    <p>POOLED：连接池，最常用的方式，一开始创建一定数量的连接，即用即取，用完归还</p>
-  </li>
-  <li>
-    <p>JNDI：为了能在如 EJB 或应用服务器这类容器中使用</p>
-  </li>
-</ul>
-
-<h6 id="3-数据库信息">3. 数据库信息</h6>
-
-<p>有关数据库的信息可以直接写在配置文件里面：</p>
-
-<p><img src="https://upload-images.jianshu.io/upload_images/3426615-75e127c1b65c9281.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
-
-<p>不过，通常的做法是在外部创建一个 <code class="highlighter-rouge">db.properties</code> 文件：</p>
-
-<p><img src="https://upload-images.jianshu.io/upload_images/3426615-5ad00ff70d932d8e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
-
-<p>然后用外部配置来替换这些属性的值，只是引用外部配置文件需要在<strong>配置数据源之前进行</strong>：</p>
-
-<p><img src="https://upload-images.jianshu.io/upload_images/3426615-6e4ab8f0df2196ad.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
-
-<p>关于 Mybatis 的系统配置就先到这，接下来是实体类相关的一个映射文件 ProductMapper.xml 的配置</p>
-
-<h6 id="4-映射文件">4. 映射文件</h6>
-
-<p>在实体类的映射文件中写明了你要进行什么操作：</p>
-
-<p><img src="https://upload-images.jianshu.io/upload_images/3426615-2b20d4a68786366c.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
-
-<p>接下来解释这个文件：</p>
-
-<p>mapper 映射器：需要定义命名空间，因为后面调用的时候要用到</p>
-
-<p>select 元素：对应 SQL 中的查询操作，id 指的是这个查询操作的名称，调用它的时候需要使用这个 id， resultType 指的是返回类型，我这里查询出的每一条记录都指定为 Product 类型，相类似的还有 update、insert 和 delete 元素，对应相关的的 SQL 操作</p>
-
-<h6 id="5-加载映射文件">5. 加载映射文件</h6>
-
-<p>把映射文件写完了之后，我们需要告诉 Mybatis 去哪里找这些 SQL 语句，所以我们在 Mybatis 配置文件里写出路径：</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    &lt;mappers&gt;
-        &lt;mapper resource="mapper/ProductMapper.xml"/&gt;
-    &lt;/mappers&gt;
-</code></pre></div></div>
-
-<h4 id="4-增删改查">4. 增删改查</h4>
-
-<p>首先我们先说一下 Mybatis 是怎么用的：</p>
-
-<ul>
-  <li>
-    <p>Mybatis 中有一个工具类叫 Resources，使用它来加载你的配置文件</p>
-  </li>
-  <li>
-    <p>SqlSessionFactoryBuilder 根据配置的 XML 文件（我们这里就是指 SqlMapConfig.xml）中的 <configuration> 元素来创建一个 **SqlSessionFactory** 实例</configuration></p>
-  </li>
-  <li>
-    <p>Mybatis 应用是以一个 <strong>SqlSessionFactory</strong> 的实例为中心来展开工作的</p>
-  </li>
-</ul>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>        //配置文件的位置是基于我这个测试项目来写的
-        String resource = "config/SqlMapConfig";
-        //输入流
-        InputStream inputStream = Resources.getResourceAsStream(resource);
-        SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
-</code></pre></div></div>
-
-<p>然后得到 SqlSession 的实例，就可以用来执行 SQL 语句了：</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>        SqlSession sqlSession = sqlSessionFactory.openSession();
-</code></pre></div></div>
-
-<h6 id="1-增加记录">1. 增加记录</h6>
-
-<p>我们先在映射文件中写一个增加记录的操作：</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    &lt;insert id="insertProduct" parameterType="bean.Product"&gt;
-        INSERT INTO product VALUES
-        (#{id}, #{barcode}, #{name}, #{units}, #{purchasePrice}, #{salePrice}, #{inventory})
-    &lt;/insert&gt;
-</code></pre></div></div>
-
-<p>这里的 #{} 是一个占位符，就相当于 SQL 中的 ? 符号，添加的参数类型是 Product 类型的</p>
-
-<p>然后我们在测试类中进行添加操作：</p>
-
-<p><img src="https://upload-images.jianshu.io/upload_images/3426615-ec60e74b810e0d4a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
-
-<p>这里的 insert 操作的第一个参数就是用来定位 SQL 语句的，它是命名方式是<strong>映射文件的命名空间.SQL语句的 ID</strong>，然后这第二个参数就是我添加进去的记录，在最后<strong>一定要进行提交</strong>，否则是无效的，进行测试：</p>
-
-<p><img src="https://upload-images.jianshu.io/upload_images/3426615-61ce8922af72fdac.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
-
-<p>这时候查看表中的所有记录就会发现刚才的操作是成功的：</p>
-
-<p><img src="https://upload-images.jianshu.io/upload_images/3426615-3c7a71fe976a6c0a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
-
-<h6 id="2-删除记录">2. 删除记录</h6>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    &lt;delete id="deleteProduct" parameterType="String"&gt;
-        DELETE FROM product
-        WHERE id = #{id}
-    &lt;/delete&gt;
-</code></pre></div></div>
-
-<p>根据 ID 来删除商品，这里的参数类型是 String</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    @Test
-    public void test() throws IOException{
-        String resource = "config/SqlMapConfig";
-        InputStream inputStream = Resources.getResourceAsStream(resource);
-        SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
-        SqlSession sqlSession = sqlSessionFactory.openSession();
-        sqlSession.delete("ProductMapper.deleteProduct", "123");
-        sqlSession.commit();
+    public void setId(long id) {
+        this.id = id;
     }
+    public long getId() {
+        return id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+    public String getName() { return name; }
+    public void setPrice(String price) {
+        this.price = price;
+    }
+    public String getPrice() { return price; }
+    public void setInventory(String inventory) {
+        this.inventory = inventory;
+    }
+    public String getInventory() { return inventory; }
+}
+</code></pre></div></div>
+<p><br /></p>
+
+<p>接下来是收集用户输入所需要的表单类：</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public class ProductForm {
+    private String name;
+    private String price;
+    private String inventory;
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setPrice(String price) {
+        this.price = price;
+    }
+
+    public void setInventory(String inventory) {
+        this.inventory = inventory;
+    }
+
+    public String getName() {
+        return name;
+    }
+    public String getPrice() {
+        return price;
+    }
+    public String getInventory() {
+        return inventory;
+    }
+}
+</code></pre></div></div>
+<p><br /></p>
+
+<p>然后编写服务接口，以及它的实现类</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>import domain.Product;
+
+public interface ProductService {
+    Product add(Product product);
+    Product get(long id);
+}
+
 </code></pre></div></div>
 
-<p>运行之后就能看到我们第一步添加进去的商品被删除了：</p>
+<p><strong>ProductServiceImpl</strong>就是刚才配置的服务（Service）</p>
 
-<p><img src="https://upload-images.jianshu.io/upload_images/3426615-40f6b6e53334e646.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>import domain.Product;
+import org.springframework.stereotype.Service;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
 
-<h6 id="3-修改记录">3. 修改记录</h6>
+@Service
+public class ProductServiceImpl implements ProductService{
+    private Map&lt;Long, Product&gt; productMap = new HashMap&lt;&gt;();
+    private AtomicLong atomicLong = new AtomicLong();
 
-<p>我们也是根据商品 ID 来修改记录，只不过参数类型是 Product：</p>
+    @Override
+    public Product add(Product product){
+        long id = atomicLong.incrementAndGet();
+        product.setId(id);
+        productMap.put(id, product);
+        return product;
+    }
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    &lt;update id="updateProduct" parameterType="bean.Product"&gt;
-        UPDATE product SET 
-        barcode = #{barcode},
-        name = #{name},
-        units = #{units},
-        purchasePrice = #{purchasePrice},
-        salePrice = #{salePrice},
-        inventory = #{inventory}
-        WHERE id = #{id}
-    &lt;/update&gt;
+    @Override
+    public Product get(long id){
+        return productMap.get(id);
+    }
+}
 </code></pre></div></div>
+<p><br /></p>
 
-<p>在测试中，我们创建一个商品的实例，然后用这个实例来替换掉数据库中的相对应的记录：</p>
+<p>最重要的是<strong>控制器</strong>：</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>        Product product = new Product("1F01DC70F9A64B2CBB52B92C41FBCC9E", "123", 
-                                        "T-shirt", "piece", "50", "100", "10");
-        sqlSession.update("ProductMapper.updateProduct", product);
-        sqlSession.commit();
+<p>采用<strong>@Autowired</strong>注解的方式自动装配Service，
+使用<strong>@RequestMapping</strong>注解的方式，将注解中的路径映射到控制器：</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>import domain.Product;
+import form.ProductForm;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import service.ProductService;
+
+@Controller
+public class ProductController {
+    //日志记录具体操作
+    private static final Log logger = LogFactory.getLog(ProductController.class);
+
+    @Autowired
+    private  ProductService productService;
+
+    //method = RequestMethod.POST表示只接受POST形式的请求
+    @RequestMapping(value = "/product_save", method = RequestMethod.POST)
+    //采用POST的方式发送请求
+    public String saveProduct(ProductForm productForm, RedirectAttributes redirectAttributes){
+        logger.info("saveProduct called");
+
+        //获得用户输入
+        Product product = new Product();
+        product.setName(productForm.getName());
+        product.setPrice(productForm.getPrice());
+        product.setInventory(productForm.getInventory());
+
+        //添加有记录的产品，并且根据ID进行重定向
+        Product savedProduct = productService.add(product);
+        redirectAttributes.addFlashAttribute("message", "Add product Successfully");
+        return "redirect:/product_view/" + savedProduct.getId();
+    }
+
+    //根据ID，将用户输入展示在ProductView中
+    @RequestMapping(value = "product_view/{id}")
+    public String viewProduct(@PathVariable Long id, Model model){
+        //根据ID得到信息
+        Product product = productService.get(id);
+        model.addAttribute("product", product);
+        //ProductView.jsp
+        return "ProductView";
+    }
+}
 </code></pre></div></div>
+<p><br />
+需要注意的是，在现在的Spring版本中，如果直接对Service进行注解，将会有产生警告：
+<img src="https://upload-images.jianshu.io/upload_images/3426615-5c63d619a6d6712e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
 
-<p>然后就会发现表中的第一条记录已被更改：</p>
+<p>按住Alt + Enter 修正错误，会看见提示：</p>
 
-<p><img src="https://upload-images.jianshu.io/upload_images/3426615-d1f6d157239253fa.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-4b63db8e4d3d88fe.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
 
-<h6 id="4-查询记录">4. 查询记录</h6>
+<p>官方推荐使用构造器注入</p>
 
-<p>我们用一个列表来存放表中的所有数据，这里没有用到参数，只要定义返回类型就可以了：</p>
+<p>到此为止，后台工作就结束了</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    &lt;select id="findAllProducts"  resultType="bean.Product"&gt;
-        SELECT * FROM product
-    &lt;/select&gt;
+<ol>
+  <li>页面</li>
+</ol>
+
+<p>接下来是JSP的编写：</p>
+
+<p>首先是用户输入的页面 (ProductForm.jsp)</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;body&gt;
+    &lt;div&gt;
+        &lt;form action="product_save" method="post"&gt;
+            &lt;fieldset&gt;
+                &lt;legend&gt;Add a product&lt;/legend&gt;
+                &lt;p&gt;
+                    &lt;label for="name"&gt;Product Name: &lt;/label&gt;
+                    &lt;input type="text" id="name" name="name"&gt;
+                &lt;/p&gt;
+                &lt;p&gt;
+                    &lt;label for="price"&gt;Price: &lt;/label&gt;
+                    &lt;input type="text" id="price" name="price"&gt;
+                &lt;/p&gt;
+                &lt;p&gt;
+                    &lt;label for="inventory"&gt;Inventory: &lt;/label&gt;
+                    &lt;input type="text" id="inventory" name="inventory"&gt;
+                &lt;/p&gt;
+                &lt;p&gt;
+                    &lt;input id="reset" type="reset" tabindex="4"&gt;
+                    &lt;input id="submit" type="submit" tabindex="5" value="Add Product"&gt;
+                &lt;/p&gt;
+            &lt;/fieldset&gt;
+        &lt;/form&gt;
+    &lt;/div&gt;
+&lt;/body&gt;
 </code></pre></div></div>
+<p>比较表单中的<strong>&lt;form action="product_save"&gt;</strong>
+和控制器中的<strong>@RequestMapping(value = “/product_save”)</strong>就能够知道，通过@RequestMapping注解，任何<strong>“/product_save”</strong>开头的路径都会被映射到控制器中，并采用saveProduct()方法</p>
 
-<p>这里不需要 commit，我们并没有提交至数据库中，只是查询：</p>
+<p>然后是显示用户输入的页面 (ProductView.jsp)</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>        List&lt;Product&gt; list = sqlSession.selectList("ProductMapper.findAllProducts");
-        for (Product p :
-                list) {
-            System.out.println(p);
-        }
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;body&gt;
+    &lt;div&gt;
+        &lt;h3&gt;${message}&lt;/h3&gt;
+        &lt;h4&gt;Details:&lt;/h4&gt;
+        Product Name: ${product.name}&lt;br&gt;
+        Price: ${product.price}&lt;br&gt;
+        Inventory: ${product.inventory}&lt;br&gt;
+    &lt;/div&gt;
+&lt;/body&gt;
 </code></pre></div></div>
+<p>${message}就是刚才在控制器中重定向页面的属性，它会在页面头部输出”Add product Successfully”</p>
 
-<p>然后就能看到 5 条记录：</p>
+<h5 id="项目构建完毕">项目构建完毕</h5>
 
-<p><img src="https://upload-images.jianshu.io/upload_images/3426615-d0db12a07b6213b4.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
+<p>最终的目录结构是这样：</p>
 
-<h4 id="总结">总结</h4>
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-3c9d0a81f74d2c04.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
 
-<p>若想要成功地使用 Mybatis，总共有三个要点：</p>
+<p>然后我们运行， 输入：</p>
 
-<h6 id="1-sqlmapconfigxmlmybatis-配置文件">1. SqlMapConfig.xml（Mybatis 配置文件）</h6>
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-70edad81b60fb0a7.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
 
-<p>这是 Mybatis 的核心，这里面配置了数据库的基本信息以及映射文件的加载信息等</p>
+<p>页面难看，主要是用Spring MVC做出来的就可以了</p>
 
-<h6 id="2-实体类接口">2. 实体类、接口</h6>
+<p>结果是这样的：</p>
 
-<p>也就是 POJO（Plain Old Java Objects,普通的 Java对象），我们这篇文章中的 Product 实体类，关于接口，我们这一篇文章中没有说明，接口是对应映射文件存在的，接口的命名和映射文件同名，这个在之后将 Mybatis 逆向工程的时候会说到</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-97cced76b8bcbbe2.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
 
-<h6 id="3-映射文件">3. 映射文件</h6>
+<p>目光移至URL，填写信息提交后，页面重定向至 <strong>product_view/{id}</strong> 处，当前id = 1</p>
 
-<p>映射文件就是我们上面写到的 ProductMapper.xml，它的作用不仅仅是带有 SQL 语句，还能将 POJO 映射成为数据库中的记录，所以我们刚才才能够使用占位符进行增删改查操作或将查询结果映射为POJO</p>
+<p>到处，我们的这个练手的小项目就结束了，有什么问题都可以私信我</p>
+
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-79919768b5365766.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" width="40%" height="40%" /></p>
 
 
                 <hr>
@@ -491,12 +496,12 @@ mysql-connector-java-5.1.46</p>
                 <ul class="pager">
                     
                     <li class="previous">
-                        <a href="/2018/06/18/Vector-%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" data-toggle="tooltip" data-placement="top" title="Vector源码分析">&larr; Previous Post</a>
+                        <a href="/2018/04/17/IDEA%E5%A6%82%E4%BD%95%E5%88%9B%E5%BB%BA%E5%8F%8A%E9%85%8D%E7%BD%AEWeb%E9%A1%B9%E7%9B%AE-%E5%A4%9A%E5%9B%BE/" data-toggle="tooltip" data-placement="top" title="IDEA如何创建及配置Web项目（多图）">&larr; Previous Post</a>
                     </li>
                     
                     
                     <li class="next">
-                        <a href="/2018/07/02/%E5%88%9D%E5%A7%8B-Mybatis-%E4%BA%8C-%E5%8A%A8%E6%80%81-SQL/" data-toggle="tooltip" data-placement="top" title="初始 Mybatis（二）—— 动态 SQL">Next Post &rarr;</a>
+                        <a href="/2018/04/18/%E5%8D%9A%E5%AE%A2%E4%BB%8B%E7%BB%8D/" data-toggle="tooltip" data-placement="top" title="博客介绍">Next Post &rarr;</a>
                     </li>
                     
                 </ul>
@@ -609,8 +614,8 @@ mysql-connector-java-5.1.46</p>
 <script type="text/javascript">
     /* * * CONFIGURATION VARIABLES * * */
     var disqus_shortname = "http-hxblog-site";
-    var disqus_identifier = "/2018/06/21/初始 Mybatis（一） —— 基本配置及用法";
-    var disqus_url = "http://localhost:4000/2018/06/21/%E5%88%9D%E5%A7%8B-Mybatis-%E4%B8%80-%E5%9F%BA%E6%9C%AC%E9%85%8D%E7%BD%AE%E5%8F%8A%E7%94%A8%E6%B3%95/";
+    var disqus_identifier = "/2018/04/17/初识Spring MVC——练手小项目";
+    var disqus_url = "http://localhost:4000/2018/04/17/%E5%88%9D%E8%AF%86Spring-MVC-%E7%BB%83%E6%89%8B%E5%B0%8F%E9%A1%B9%E7%9B%AE/";
 
     (function() {
         var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;

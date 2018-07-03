@@ -6,7 +6,7 @@ layout:		post
 
 
 
-title:		初始 Mybatis（二）—— 动态 SQL
+title:		初识 Mybatis（二）—— 动态 SQL
 
 
 

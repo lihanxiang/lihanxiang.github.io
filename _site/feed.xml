@@ -5,12 +5,12 @@
     <description>你问我什么咖啡最好，我当然觉得是 Java</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Mon, 02 Jul 2018 16:43:05 -0700</pubDate>
-    <lastBuildDate>Mon, 02 Jul 2018 16:43:05 -0700</lastBuildDate>
+    <pubDate>Mon, 02 Jul 2018 23:04:11 -0700</pubDate>
+    <lastBuildDate>Mon, 02 Jul 2018 23:04:11 -0700</lastBuildDate>
     <generator>Jekyll v3.8.0</generator>
     
       <item>
-        <title>初始 Mybatis（二）—— 动态 SQL</title>
+        <title>初识 Mybatis（二）—— 动态 SQL</title>
         <description>&lt;h3 id=&quot;正文之前&quot;&gt;正文之前&lt;/h3&gt;
 
 &lt;blockquote&gt;
@@ -173,8 +173,8 @@
 &lt;p&gt;总而言之，使用动态 SQL 能够避免 SQL 拼接时可能会发生的种种错误&lt;/p&gt;
 </description>
         <pubDate>Mon, 02 Jul 2018 00:00:00 -0700</pubDate>
-        <link>http://localhost:4000/2018/07/02/%E5%88%9D%E5%A7%8B-Mybatis-%E4%BA%8C-%E5%8A%A8%E6%80%81-SQL/</link>
-        <guid isPermaLink="true">http://localhost:4000/2018/07/02/%E5%88%9D%E5%A7%8B-Mybatis-%E4%BA%8C-%E5%8A%A8%E6%80%81-SQL/</guid>
+        <link>http://localhost:4000/2018/07/02/%E5%88%9D%E8%AF%86-Mybatis-%E4%BA%8C-%E5%8A%A8%E6%80%81-SQL/</link>
+        <guid isPermaLink="true">http://localhost:4000/2018/07/02/%E5%88%9D%E8%AF%86-Mybatis-%E4%BA%8C-%E5%8A%A8%E6%80%81-SQL/</guid>
         
         <category>Mybatis</category>
         
@@ -182,7 +182,7 @@
       </item>
     
       <item>
-        <title>初始 Mybatis（一） —— 基本配置及用法</title>
+        <title>初识 Mybatis（一） —— 基本配置及用法</title>
         <description>&lt;h3 id=&quot;正文之前&quot;&gt;正文之前&lt;/h3&gt;
 
 &lt;blockquote&gt;
@@ -483,8 +483,8 @@ mysql-connector-java-5.1.46&lt;/p&gt;
 &lt;p&gt;映射文件就是我们上面写到的 ProductMapper.xml，它的作用不仅仅是带有 SQL 语句，还能将 POJO 映射成为数据库中的记录，所以我们刚才才能够使用占位符进行增删改查操作或将查询结果映射为POJO&lt;/p&gt;
 </description>
         <pubDate>Thu, 21 Jun 2018 00:00:00 -0700</pubDate>
-        <link>http://localhost:4000/2018/06/21/%E5%88%9D%E5%A7%8B-Mybatis-%E4%B8%80-%E5%9F%BA%E6%9C%AC%E9%85%8D%E7%BD%AE%E5%8F%8A%E7%94%A8%E6%B3%95/</link>
-        <guid isPermaLink="true">http://localhost:4000/2018/06/21/%E5%88%9D%E5%A7%8B-Mybatis-%E4%B8%80-%E5%9F%BA%E6%9C%AC%E9%85%8D%E7%BD%AE%E5%8F%8A%E7%94%A8%E6%B3%95/</guid>
+        <link>http://localhost:4000/2018/06/21/%E5%88%9D%E8%AF%86-Mybatis-%E4%B8%80-%E5%9F%BA%E6%9C%AC%E9%85%8D%E7%BD%AE%E5%8F%8A%E7%94%A8%E6%B3%95/</link>
+        <guid isPermaLink="true">http://localhost:4000/2018/06/21/%E5%88%9D%E8%AF%86-Mybatis-%E4%B8%80-%E5%9F%BA%E6%9C%AC%E9%85%8D%E7%BD%AE%E5%8F%8A%E7%94%A8%E6%B3%95/</guid>
         
         <category>Mybatis</category>
         

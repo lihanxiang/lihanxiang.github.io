@@ -1,6 +1,6 @@
 ---
 layout:     post
-title:      初始Spring MVC——练手小项目
+title:      初识 Spring MVC——练手小项目
 subtitle:   练手项目
 date:	    2018-04-17
 author:	    L
