@@ -19,9 +19,9 @@
     <meta name="keyword"  content="Java">
     <link rel="shortcut icon" href="/img/favicon.ico">
 
-    <title>ArrayList源码分析（三） - 李汉祥的博客 | L Blog</title>
+    <title>LeetCode —— 深搜水题记录 - 李汉祥的博客 | L Blog</title>
 
-    <link rel="canonical" href="http://localhost:4000/2018/05/15/ArrayList%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E4%B8%89/">
+    <link rel="canonical" href="http://localhost:4000/2018/07/30/LeetCode-%E6%B7%B1%E6%90%9C%E6%B0%B4%E9%A2%98%E8%AE%B0%E5%BD%95/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -142,12 +142,12 @@
 
 
     <!-- Image to hack wechat -->
-<!-- <img src="/img/post/2018-05/15.jpg" width="0" height="0"> -->
+<!-- <img src="/img/post/2018-07/30.jpg" width="0" height="0"> -->
 
 <!-- Post Header -->
 <style type="text/css">
     header.intro-header{
-        background-image: url('/img/post/2018-05/15.jpg')
+        background-image: url('/img/post/2018-07/30.jpg')
     }
 </style>
 <header class="intro-header" >
@@ -157,15 +157,15 @@
                 <div class="post-heading">
                     <div class="tags">
                         
-                        <a class="tag" href="/tags/#Java源码解析" title="Java源码解析">Java源码解析</a>
+                        <a class="tag" href="/tags/#LeetCode" title="LeetCode">LeetCode</a>
                         
                     </div>
-                    <h1>ArrayList源码分析（三）</h1>
+                    <h1>LeetCode —— 深搜水题记录</h1>
                     
                     
-                    <h2 class="subheading">读读源码</h2>
+                    <h2 class="subheading">刷水题</h2>
                     
-                    <span class="meta">Posted by L on May 15, 2018</span>
+                    <span class="meta">Posted by L on July 30, 2018</span>
                 </div>
             </div>
         </div>
@@ -185,400 +185,19 @@
 
 				<h3 id="正文之前">正文之前</h3>
 
-<blockquote>
-  <p>在先前的<a href="http://hxblog.site/2018/05/04/ArrayList%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E4%B8%80/">第一篇文章</a>以及<a href="http://hxblog.site/2018/05/09/ArrayList%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E4%BA%8C/">第二篇文章</a>中已经讲述了ArrayList的常用方法，但是没有使用迭代器，这一篇文章就来讲讲使用迭代器操作ArrayList的基本方法</p>
-
-  <p>主要内容:</p>
-  <ol>
-    <li>迭代器的构造</li>
-    <li>使用迭代器进行增删改查</li>
-  </ol>
-</blockquote>
+<p>好长一段时间没有更新博客了，是因为放假了都是一整个白天地去学车，然后晚上看看书，做一做题就过去了，好在已经完成驾照考试，但是最近又没有研究什么技术，所以就只好拿这几天做的 LeetCode 的记录来假装是一篇博客吧</p>
 
 <h3 id="正文">正文</h3>
 
-<h4 id="1-构造迭代器所需的类">1. 构造迭代器所需的类</h4>
+<p>去年就注册了 LeetCode，但一直没去做，现在放假刚好找点题，就先下手 LeetCode 上的深搜了，因为相当于重新学一遍算法，所以都先做的 Easy 的题</p>
 
-<p>在源码中，有两个私有类：<strong>Itr</strong>以及<strong>ListItr</strong>，第一个是单向操作，第二个能够支持双向操作</p>
+<p>在 GitHub 上有个库，放了我 AC 的答案，有一些是很耗时的答案，接下来解完深搜的其他题之后会返回去看看有没有快一些的解法，同时会放上我针对一类题（目前只有深搜）所做的笔记</p>
 
-<p>需要先看一下这两个类的源码，它们对于迭代器的构造必不可少：</p>
+<p>目前虽然把 Easy 的深搜做完了，但是归纳出来的只有<strong>树结构</strong>和<strong>树深度</strong>相关的题目，还在不断努力中</p>
 
-<h5 id="itr类">Itr类</h5>
+<p>相关信息就来看看 GitHub 的仓库吧：<a href="https://github.com/lihanxiang/LeetCode-solution">LeetCode-solution</a>，如果觉得不错就请点个 Star 吧</p>
 
-<ol>
-  <li>实现接口</li>
-</ol>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>//实现了Iterator接口
-private class Itr implements Iterator&lt;E&gt; {}
-</code></pre></div></div>
-<p><br /></p>
-
-<ol>
-  <li>变量</li>
-</ol>
-
-<p>在这里，关于迭代器的操作，我觉得用指针来形容十分恰当，指针移动到哪一个位置，就表示迭代器操作的位置在哪，在源码中有这么两个变量：</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>        int cursor;       // index of next element to return
-        int lastRet = -1; // index of last element returned; -1 if no such
-</code></pre></div></div>
-
-<p>那我们就把第一个变量称为指针1，指向下一个要返回的元素，把第二个变量称为指针2，指向刚返回的元素，这里的指向，其实就是一个位置的关系，下面慢慢会讲到</p>
-
-<ol>
-  <li>判断后一个元素</li>
-</ol>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>        //判断是否还有下一个元素
-        public boolean hasNext() {
-            return cursor != size;
-        }
-</code></pre></div></div>
-<p><br /></p>
-
-<ol>
-  <li>向后移动</li>
-</ol>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>        public E next() {
-            //这一语句涉及并发，不参与讨论
-            checkForComodification();
-            //i = 指针1的位置
-            int i = cursor;
-            //超出数组长度
-            if (i &gt;= size)
-                throw new NoSuchElementException();
-            //复制
-            Object[] elementData = ArrayList.this.elementData;
-            if (i &gt;= elementData.length)
-                throw new ConcurrentModificationException();
-            //指针后移一位，也就是说，指针1的位置在下一个元素的位置
-            cursor = i + 1;
-            //设置lastRet = i，然后返回这个位置的值，指针2的位置就在这了
-            return (E) elementData[lastRet = i];
-        }
-</code></pre></div></div>
-<p><br /></p>
-
-<ol>
-  <li>删除</li>
-</ol>
-
-<p>如果删除了一个，指针2就会重置，这时候如果再删除指针就会报错</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>        public void remove() {
-            //如果下标不符合
-            if (lastRet &lt; 0)
-                throw new IllegalStateException();
-            checkForComodification();
-
-            try {
-                ArrayList.this.remove(lastRet);
-                //指针1移动到指针2的位置
-                cursor = lastRet;
-                //重置指针2的位置
-                lastRet = -1;
-                expectedModCount = modCount;
-            } catch (IndexOutOfBoundsException ex) {
-                throw new ConcurrentModificationException();
-            }
-        }
-</code></pre></div></div>
-
-<p>做个测试</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>        ArrayList&lt;Integer&gt; list1 = new ArrayList&lt;&gt;();
-
-        for (int i = 0; i &lt; 10; i++) {
-            list1.add(i);
-        }
-
-        Iterator iterator1 = list1.iterator();
-
-        iterator1.next();
-        iterator1.remove();
-        System.out.println("进行删除之后的数据：");
-        for (int i:
-                list1) {
-            System.out.print(i + " ");
-        }
-        System.out.println();
-        System.out.println("再次进行删除操作：");
-        try {
-            iterator1.remove();
-        } catch (IllegalStateException e){
-            System.out.println("操作失败");
-        }
-</code></pre></div></div>
-
-<p>结果是：</p>
-
-<p><img src="https://upload-images.jianshu.io/upload_images/3426615-6f6361dae4f01a6d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
-
-<p><br /></p>
-
-<h5 id="listitr">ListItr</h5>
-
-<ol>
-  <li>实现接口</li>
-</ol>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>//这个类继承自上面的**Itr**类，实现**ListIterator**接口，这个接口是继承自**Iterator**接口的
-private class ListItr extends Itr implements ListIterator&lt;E&gt; {}
-
-public interface ListIterator&lt;E&gt; extends Iterator&lt;E&gt; {}
-</code></pre></div></div>
-<p><br /></p>
-
-<ol>
-  <li>构造器</li>
-</ol>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>        ListItr(int index) {
-            super();
-            cursor = index;
-        }
-</code></pre></div></div>
-<p><br /></p>
-
-<ol>
-  <li>判断前一个元素</li>
-</ol>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>        //如果不是第一个元素，就有前一个元素
-	    public boolean hasPrevious() {
-            return cursor != 0;
-        }
-</code></pre></div></div>
-<p><br /></p>
-
-<ol>
-  <li>判断前后位置</li>
-</ol>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    public int nextIndex() {
-            return cursor;
-        }
-
-        public int previousIndex() {
-            return cursor - 1;
-        }
-</code></pre></div></div>
-<p><br /></p>
-
-<ol>
-  <li>获得前一个元素</li>
-</ol>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>        public E previous() {
-            checkForComodification();
-            int i = cursor - 1;
-            if (i &lt; 0)
-                throw new NoSuchElementException();
-            Object[] elementData = ArrayList.this.elementData;
-            if (i &gt;= elementData.length)
-                throw new ConcurrentModificationException();
-            //指针1向前移一位
-            cursor = i;
-            //指针2指向这个元素
-            return (E) elementData[lastRet = i];
-        }
-</code></pre></div></div>
-<p><br /></p>
-
-<ol>
-  <li>修改元素</li>
-</ol>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>        public void set(E e) {
-            if (lastRet &lt; 0)
-                throw new IllegalStateException();
-            checkForComodification();
-    
-            try {
-                //将指针2指向的位置的值修改
-                ArrayList.this.set(lastRet, e);
-            } catch (IndexOutOfBoundsException ex) {
-                throw new ConcurrentModificationException();
-            }
-        }
-</code></pre></div></div>
-<p><br /></p>
-
-<ol>
-  <li>添加元素</li>
-</ol>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>        public void add(E e) {
-            checkForComodification();
-
-            try {
-                int i = cursor;
-                //在指针1指向的位置添加元素
-                ArrayList.this.add(i, e);
-                //指针1向后移一位
-                cursor = i + 1;
-                //重置指针2
-                lastRet = -1;
-                expectedModCount = modCount;
-            } catch (IndexOutOfBoundsException ex) {
-                throw new ConcurrentModificationException();
-            }
-        }
-</code></pre></div></div>
-<p><br /></p>
-
-<h4 id="2-迭代器的构造">2. 迭代器的构造</h4>
-
-<p><strong>Itr</strong>和<strong>ListItr</strong>这两个类都是私有的，他们是为了迭代器的构造而准备的</p>
-
-<h5 id="1-itr-类的使用">1. Itr 类的使用</h5>
-
-<p>调用iterator()方法就会得到：</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    public Iterator&lt;E&gt; iterator() {
-        return new Itr();
-    }
-</code></pre></div></div>
-<p><br /></p>
-
-<h5 id="2-listitr-类的使用">2. ListItr 类的使用</h5>
-
-<p>分为两种，指定迭代器初始位置或使用默认位置</p>
-
-<ol>
-  <li>指定初始位置</li>
-</ol>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    public ListIterator&lt;E&gt; listIterator(int index) {
-        if (index &lt; 0 || index &gt; size)
-            throw new IndexOutOfBoundsException("Index: "+index);
-        //指针1指向输入的index，设定为初始位置
-        return new ListItr(index);
-    }
-</code></pre></div></div>
-<p><br /></p>
-
-<ol>
-  <li>使用默认位置</li>
-</ol>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    public ListIterator&lt;E&gt; listIterator() {
-        //默认位置为首部
-        return new ListItr(0);
-    }
-</code></pre></div></div>
-<p><br /></p>
-
-<h4 id="3-使用迭代器进行增删改查">3. 使用迭代器进行增删改查</h4>
-
-<p>每一次测试都初始化一次，保证每次测试的列表元素都是相同的</p>
-
-<ol>
-  <li>初始化</li>
-</ol>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>        ArrayList&lt;Integer&gt; list1 = new ArrayList&lt;&gt;();
-        ArrayList&lt;Integer&gt; list2 = new ArrayList&lt;&gt;();
-
-        for (int i = 0; i &lt; 10; i++) {
-            list1.add(i);
-            list2.add(i);
-        }
-
-        ListIterator&lt;Integer&gt; iterator1 = list1.listIterator();
-        ListIterator&lt;Integer&gt; iterator2 = list2.listIterator(5);
-</code></pre></div></div>
-<p><br /></p>
-
-<ol>
-  <li>增加数据</li>
-</ol>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>         //增加数据
-        iterator1.add(100);
-        for (int i :
-                list1) {
-            System.out.print(i + " ");
-        }
-        System.out.println();
-        iterator2.add(200);
-        for (int i :
-                list2) {
-            System.out.print(i + " ");
-        }
-</code></pre></div></div>
-
-<p><img src="https://upload-images.jianshu.io/upload_images/3426615-76b6488edb5b0f7b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" />
-<br /></p>
-
-<ol>
-  <li>删除数据</li>
-</ol>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>        //删除数据
-        iterator1.next();
-        iterator1.remove();
-        for (int i :
-                list1) {
-            System.out.print(i + " ");
-        }
-        System.out.println();
-        iterator2.next();
-        iterator2.remove();
-        for (int i :
-                list2) {
-            System.out.print(i + " ");
-        }
-</code></pre></div></div>
-
-<p><img src="https://upload-images.jianshu.io/upload_images/3426615-8ed2720c12e1cf2f.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" />
-<br /></p>
-
-<ol>
-  <li>修改数据</li>
-</ol>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>        //修改数据
-        iterator1.next();
-        iterator1.set(100);
-        for (int i :
-                list1) {
-            System.out.print(i + " ");
-        }
-        System.out.println();
-        iterator2.next();
-        iterator2.set(200);
-        for (int i :
-                list2) {
-            System.out.print(i + " ");
-        }
-</code></pre></div></div>
-
-<p><img src="https://upload-images.jianshu.io/upload_images/3426615-5973d494503f9669.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
-
-<ol>
-  <li>查看数据</li>
-</ol>
-
-<p>使用迭代器遍历数组并输出</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>        //查看数据
-        while (iterator1.hasNext()){
-            System.out.print(iterator1.next() + " ");
-        }
-        System.out.println();
-        while (iterator2.hasNext()){
-            System.out.print(iterator2.next() + " ");
-        }
-</code></pre></div></div>
-
-<p><img src="https://upload-images.jianshu.io/upload_images/3426615-8efaae0d3d9302c8.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
-
-<p>到此，ArrayList的基本用法的源码解读就告一段落了，接下来会是LinkedList的源码解析</p>
-
-<p><img src="https://upload-images.jianshu.io/upload_images/3426615-79919768b5365766.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" width="40%" height="40%" /></p>
+<p>我会一直更新的，直到刷到吐血</p>
 
 
                 <hr>
@@ -589,13 +208,9 @@ public interface ListIterator&lt;E&gt; extends Iterator&lt;E&gt; {}
                 <ul class="pager">
                     
                     <li class="previous">
-                        <a href="/2018/05/09/ArrayList%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E4%BA%8C/" data-toggle="tooltip" data-placement="top" title="ArrayList源码分析（二）">&larr; Previous Post</a>
+                        <a href="/2018/07/02/%E5%88%9D%E8%AF%86-Mybatis-%E4%BA%8C-%E5%8A%A8%E6%80%81-SQL/" data-toggle="tooltip" data-placement="top" title="初识 Mybatis（二）—— 动态 SQL">&larr; Previous Post</a>
                     </li>
                     
-                    
-                    <li class="next">
-                        <a href="/2018/05/22/LinkedList%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E4%B8%80/" data-toggle="tooltip" data-placement="top" title="LinkedList源码分析（一）">Next Post &rarr;</a>
-                    </li>
                     
                 </ul>
 
@@ -713,8 +328,8 @@ public interface ListIterator&lt;E&gt; extends Iterator&lt;E&gt; {}
 <script type="text/javascript">
     /* * * CONFIGURATION VARIABLES * * */
     var disqus_shortname = "http-hxblog-site";
-    var disqus_identifier = "/2018/05/15/ArrayList源码分析（三）";
-    var disqus_url = "http://localhost:4000/2018/05/15/ArrayList%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E4%B8%89/";
+    var disqus_identifier = "/2018/07/30/LeetCode —— 深搜水题记录";
+    var disqus_url = "http://localhost:4000/2018/07/30/LeetCode-%E6%B7%B1%E6%90%9C%E6%B0%B4%E9%A2%98%E8%AE%B0%E5%BD%95/";
 
     (function() {
         var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
