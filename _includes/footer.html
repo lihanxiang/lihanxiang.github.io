@@ -15,7 +15,7 @@
                     </li>
                     {% endif %}
 
-		    {% if site.juejin_username %}
+		    	    {% if site.juejin_username %}
                             <li>
                                 <a target="_blank" href="https://juejin.im/user/{{ site.juejin_username }}">
                                     <span class="fa-stack fa-lg">
@@ -25,42 +25,39 @@
                                 </a>
                             </li>
                             {% endif %}
-                   
-		    {% if site.jianshu_username %}
+                           
+			    {% if site.jianshu_username %}
                             <li>
                                 <a target="_blank" href="https://www.jianshu.com/u/{{ site.jianshu_username }}">
                                     <span class="fa-stack fa-lg">
                                         <i class="fa fa-circle fa-stack-2x"></i>
-                                        <i class="fa fa-stack-1x fa-inverse">简书</i>
+                                        <i class="fa  fa-stack-1x fa-inverse">简书</i>
                                     </span>
                                 </a>
                             </li>
                             {% endif %}
-                   
-                    {% if site.zhihu_username %}
-                    <li>
-                        <a target="_blank" href="https://www.zhihu.com/people/{{ site.zhihu_username }}">
-                            <span class="fa-stack fa-lg">
-                                <i class="fa fa-circle fa-stack-2x"></i>
-                                <i class="fa fa-stack-1x fa-inverse">知乎</i>
-                            </span>
-                        </a>
-                    </li>
-                    {% endif %}
-                    
-
-
-                    
-                    {% if site.github_username %}
-                    <li>
-                        <a target="_blank" href="https://github.com/{{ site.github_username }}">
-                            <span class="fa-stack fa-lg">
-                                <i class="fa fa-circle fa-stack-2x"></i>
-                                <i class="fa fa-stack-1x fa-inverse">GitHub</i>
-                            </span>
-                        </a>
-                    </li>
-                    {% endif %}
+				
+                            {% if site.zhihu_username %}
+                            <li>
+                                <a target="_blank" href="https://www.zhihu.com/people/{{ site.zhihu_username }}">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fa fa-circle fa-stack-2x"></i>
+                                        <i class="fa  fa-stack-1x fa-inverse">知乎</i>
+                                    </span>
+                                </a>
+                            </li>
+                            {% endif %}
+                            
+                            {% if site.github_username %}
+                            <li>
+                                <a target="_blank" href="https://github.com/{{ site.github_username }}">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fa fa-circle fa-stack-2x"></i>
+                                        <i class="fa  fa-stack-1x fa-inverse">G</i>
+                                    </span>
+                                </a>
+                            </li>
+                            {% endif %}
                 </ul>
                 <p class="copyright text-muted">
                     Copyright &copy; {{ site.title }} {{ site.time | date: '%Y' }}
