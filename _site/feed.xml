@@ -5,9 +5,275 @@
     <description>你问我什么咖啡最好，我当然觉得是 Java</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Mon, 30 Jul 2018 17:06:51 -0700</pubDate>
-    <lastBuildDate>Mon, 30 Jul 2018 17:06:51 -0700</lastBuildDate>
+    <pubDate>Thu, 09 Aug 2018 01:37:10 -0700</pubDate>
+    <lastBuildDate>Thu, 09 Aug 2018 01:37:10 -0700</lastBuildDate>
     <generator>Jekyll v3.8.0</generator>
+    
+      <item>
+        <title>Git 系列文章（二）</title>
+        <description>&lt;h3 id=&quot;正文之前&quot;&gt;正文之前&lt;/h3&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;上一篇文章简单介绍了 Git 和 GitHub，这一篇文章用一个仓库来作为例子介绍 Git 的基本用法，而不是单纯地列出每一条 Git 命令&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h3 id=&quot;正文&quot;&gt;正文&lt;/h3&gt;
+
+&lt;h4 id=&quot;1-仓库的初始操作&quot;&gt;1. 仓库的初始操作&lt;/h4&gt;
+
+&lt;h5 id=&quot;初始化&quot;&gt;初始化&lt;/h5&gt;
+
+&lt;p&gt;首先我先在本地存放 GitHub 仓库的文件夹里新建一个文件夹，叫 “Git-test”&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-3690cb8edf457270.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;现在这还只是一个普通的空文件夹，所以在这个文件夹里开启 Git Bash：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-d1b080489b18a3f8.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;要想把一个空的文件夹变为 GitHub 的仓库，首先我们要用 Git 初始化这个仓库：&lt;/p&gt;
+
+&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;git init&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-c50c98fcbb278817.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;虽然在初始化完仓库之后，文件夹内看上去没有变化，但是这个文件夹里有一个 .git 目录，默认是隐藏的，打开隐藏文件之后就可以看见：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-7cf538acb9003c93.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;h5 id=&quot;查看仓库状态&quot;&gt;查看仓库状态&lt;/h5&gt;
+
+&lt;p&gt;查看一下这个仓库的状态：&lt;/p&gt;
+
+&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;git status&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-96f3e57fc5597d4a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;h5 id=&quot;添加文件&quot;&gt;添加文件&lt;/h5&gt;
+
+&lt;p&gt;首先我先在仓库里创建一个带有一个词 “test” 的 README.md&lt;/p&gt;
+
+&lt;p&gt;然后查看仓库状态会发现有了变化：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-8dbe09d06574170b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;处于未提交状态的文件都被归为 &lt;code class=&quot;highlighter-rouge&quot;&gt;Untracked files&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;提交的过程有两步，先向暂存区中添加文件，然后提交&lt;/p&gt;
+
+&lt;p&gt;首先我们将 README.md 文件提交到暂存区：&lt;/p&gt;
+
+&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;git add README.md&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;如果你想要向暂存区添加所有变动的文件，那就用：&lt;/p&gt;
+
+&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;git add .&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;然后我们查看一下仓库状态：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-a8acde54fe4f19ab.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Changes to be committed 中的文件都是已经暂存，但是没有提交的文件&lt;/p&gt;
+
+&lt;p&gt;接下来我们提交文件：&lt;/p&gt;
+
+&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;git commit -m 'Update README.md'&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;-m 后面跟的是这次提交的信息，相当于概述&lt;/p&gt;
+
+&lt;p&gt;有的人会想问，README.md 在提交之前就已经在我的仓库里了，为什么还要提交呢？&lt;/p&gt;
+
+&lt;p&gt;因为仓库的最终目的是对外开放，你自己的本地仓库的改动如果不提交，不推送，GitHub 上的远程仓库里是不会有变化的，其他人看不到你所做的改动，关于提交到远程仓库，下文会说明&lt;/p&gt;
+
+&lt;h5 id=&quot;查看日志&quot;&gt;查看日志&lt;/h5&gt;
+
+&lt;p&gt;在多人协作时，通常需要查看日志来看看有谁对进行了提交：&lt;/p&gt;
+
+&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;git log&lt;/code&gt; 就会发现我刚才提交了 README.md 文件&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-098b65a93a975387.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;2-仓库的分支&quot;&gt;2. 仓库的分支&lt;/h4&gt;
+
+&lt;p&gt;接下来的分支是一个重要的概念，在多人协作开发时，都要用到分支&lt;/p&gt;
+
+&lt;p&gt;首先，在我们初始化仓库时，有一个默认的主分支 &lt;code class=&quot;highlighter-rouge&quot;&gt;master&lt;/code&gt;，如果没有创建其他分支，那么所有的工作都是在 &lt;code class=&quot;highlighter-rouge&quot;&gt;master&lt;/code&gt; 分支上进行的，如果要创建分支：&lt;/p&gt;
+
+&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;git checkout -b newBranch&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-f3c955ef594441c2.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;这时候会发现已经切换到我新建的分支 &lt;code class=&quot;highlighter-rouge&quot;&gt;newBranch&lt;/code&gt; 了&lt;/p&gt;
+
+&lt;p&gt;-b 后面跟着分支的的名字，如果分支存在，就转到那个分支，不存在就新建&lt;/p&gt;
+
+&lt;p&gt;假设要创建新的分支，那么上面那条语句可以分成两步来做：&lt;/p&gt;
+
+&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;git branch newBranch&lt;/code&gt;
+&lt;code class=&quot;highlighter-rouge&quot;&gt;git checkout newBranch&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;先创建分支，再切换到分支&lt;/p&gt;
+
+&lt;h4 id=&quot;3-远程仓库&quot;&gt;3. 远程仓库&lt;/h4&gt;
+
+&lt;p&gt;到现在为止，我们对仓库的操作都是在本地进行的，接下来说一下远程仓库：&lt;/p&gt;
+
+&lt;p&gt;首先是在 GitHub 上创建一个仓库，名字与上面的本地仓库一样：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-678dade2aab4747a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;为了写博客用，这个 Git-test 仓库是私有仓库（用学生邮箱开的）&lt;/p&gt;
+
+&lt;p&gt;在你创建完之后，会有提示页面：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-c23df5952450a9f5.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;我们要在这个仓库作为本地仓库的远程仓库，简单地说，就是把我们本地的 Git-test 仓库和 GitHub 上的远程仓库 Git-test 关联起来&lt;/p&gt;
+
+&lt;h5 id=&quot;推送内容至远程仓库&quot;&gt;推送内容至远程仓库&lt;/h5&gt;
+
+&lt;p&gt;我们选择第一种方式，初始化、添加 README.md 和 提交更改都已经完成了，现在我们添加远程仓库，复制 SSH，在命令行使用：&lt;/p&gt;
+
+&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;git remote add origin git@github.com:lihanxiang/Git.test.git&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;执行完这个命令之后，Git 就会根据 &lt;code class=&quot;highlighter-rouge&quot;&gt;git@github.com:lihanxiang/Git.test.git&lt;/code&gt; 来将我们刚才创建的仓库设置为本地仓库的远程仓库，名称为 &lt;code class=&quot;highlighter-rouge&quot;&gt;origin&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;这个名称 &lt;code class=&quot;highlighter-rouge&quot;&gt;origin&lt;/code&gt; 和我们在 GitHub 上的仓库名不一样，我们在推送内容时，填写的名称是我们在设置远程仓库时指定的名字&lt;/p&gt;
+
+&lt;p&gt;然后将本地仓库的内容推送至远程仓库的 master 分支：&lt;/p&gt;
+
+&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;git push -u origin master&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-f95756ba7e6ec811.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;然后在 GitHub 上刷新一下仓库的页面：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-f4c606efad7c2bb7.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;这时候我们已经将本地仓库的内容推送至远程仓库了&lt;/p&gt;
+
+&lt;h5 id=&quot;从远程仓库获取内容&quot;&gt;从远程仓库获取内容&lt;/h5&gt;
+
+&lt;p&gt;如果我直接在远程仓库的 master 分支新建一个文件，在对本地仓库进行操作时，就需要先获取远程仓库的新的内容：&lt;/p&gt;
+
+&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;git pull origin master&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-1b8cd8cd561c4f56.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;4-总结&quot;&gt;4. 总结&lt;/h4&gt;
+
+&lt;p&gt;上面说的是 Git 的基本操作，在这些方法中，有几个是最常用的：&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;git init&lt;br /&gt;
+git status&lt;br /&gt;
+git checkout&lt;br /&gt;
+git add&lt;br /&gt;
+git commit&lt;br /&gt;
+git pull&lt;br /&gt;
+git push&lt;br /&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;后四步一般是连在一起的&lt;/p&gt;
+
+&lt;p&gt;这只是简单介绍了一下 Git，下一篇文章将讲述分支的相关操作&lt;/p&gt;
+</description>
+        <pubDate>Thu, 09 Aug 2018 00:00:00 -0700</pubDate>
+        <link>http://localhost:4000/2018/08/09/Git-%E7%B3%BB%E5%88%97%E6%96%87%E7%AB%A0-%E4%BA%8C-Git-%E5%9F%BA%E6%9C%AC%E7%94%A8%E6%B3%95/</link>
+        <guid isPermaLink="true">http://localhost:4000/2018/08/09/Git-%E7%B3%BB%E5%88%97%E6%96%87%E7%AB%A0-%E4%BA%8C-Git-%E5%9F%BA%E6%9C%AC%E7%94%A8%E6%B3%95/</guid>
+        
+        <category>Git</category>
+        
+        
+      </item>
+    
+      <item>
+        <title>Git 系列文章（一）</title>
+        <description>&lt;h3 id=&quot;正文之前&quot;&gt;正文之前&lt;/h3&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;相信大部分都人都知道 GitHub，对，就是被微软收购的全球最大交友网站。目前博主还处于学生阶段，所以一直处于这样的循环中：&lt;/p&gt;
+
+  &lt;p&gt;git add&lt;br /&gt;
+git commit&lt;br /&gt;
+git pull&lt;br /&gt;
+git push&lt;br /&gt;&lt;/p&gt;
+
+  &lt;p&gt;但是本着要深入学习的心态，以及目前参加&lt;a href=&quot;https://github.com/xitu/gold-miner&quot;&gt;掘金翻译计划&lt;/a&gt;，翻译的工作都是在 GitHub 上进行的，所以打算从头开始写 Git 系列文章来温故知新一下&lt;/p&gt;
+
+  &lt;p&gt;那么这第一篇文章就是介绍一下 Git 和 GitHub，下一篇会用一个例子来讲述 GitHub 上进行协同开发的基本流程&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h3 id=&quot;正文之前-1&quot;&gt;正文之前&lt;/h3&gt;
+
+&lt;h4 id=&quot;git&quot;&gt;Git&lt;/h4&gt;
+
+&lt;p&gt;先介绍一下什么是 Git，引用维基百科的介绍：&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Git 是一个分布式版本控制软件，最初由 Linus Torvalds 创作（对，就是那个英语不是他母语的林纳斯），于 2005 年以 GPL 发布。最初是为了更好地管理 Linux 内核开发而设计。&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;在上面的一段话中，有一个需要解释一下的概念 —— 分布式版本控制：&lt;/p&gt;
+
+&lt;p&gt;分布式版本控制是版本控制的方式之一，顾名思义，分布式就代表协同开发者不需要连接同一个网络，一个项目可以由许多国家的程序员来完成&lt;/p&gt;
+
+&lt;p&gt;关于 Git 这个名字，来自英国俚语，意思大约是“混账”&lt;/p&gt;
+
+&lt;p&gt;具体的 Git 操作等到下一篇讲到协作开发时会说明&lt;/p&gt;
+
+&lt;h4 id=&quot;github&quot;&gt;GitHub&lt;/h4&gt;
+
+&lt;p&gt;GitHub 是一个通过 Git 进行版本控制的软件源代码托管服务网站，说白了，就是一个网站，里面放着许多用 Git 进行版本控制的项目。因为它有着社交网站的功能 —— watch, star, fork, follow 等功能，也被戏称作“全球最大（同性）交友网站。不过我更喜欢把它当作一个社区，在 GitHub 里有一些很有意思的项目，也有一些很好用的开源软件。&lt;/p&gt;
+
+&lt;p&gt;关于 GitHub 账户的创建过程不讲述，付费用户能够拥有私有 (private) 仓库的使用权，学生可以免费使用私有仓库&lt;/p&gt;
+
+&lt;p&gt;这里有几个关于 GitHub 的功能是需要了解一下的：&lt;/p&gt;
+
+&lt;h5 id=&quot;1-fork&quot;&gt;1. fork&lt;/h5&gt;
+&lt;p&gt;这里拿 spring 的仓库来截图说明一下：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-31bccd70465091bb.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;fork 就表示在你的名下创建一个项目的副本，如果你想要学习一下某一个项目，或者想对别人的项目做一些改动时，都需要先将项目 fork 到自己的账户中，然后再进行进一步的操作&lt;/p&gt;
+
+&lt;h5 id=&quot;2--issues-和-pull-requests&quot;&gt;2.  Issues 和 Pull requests&lt;/h5&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-48bd341e3737a835.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Issue 的目的是为了给开发者提供意见或建议的，开发者可以根据 Issues 中出现的内容来对项目进行改动。但是现在的 Issues 好像变成了讨论区，尤其是前一段事件的 Issues 出现“求不要更新了，老子学不动了”，真是丢脸&lt;/p&gt;
+
+&lt;p&gt;Pull requests（简称 PR）是你在 fork 别人的仓库之后，如果有改动想要通知开发者，就发起一个 PR，开发者审核之后，如果开发者同意了这个 PR，就会将 PR 合并到项目中去，你也算为这个项目做了贡献&lt;/p&gt;
+
+&lt;h5 id=&quot;3-wiki&quot;&gt;3. Wiki&lt;/h5&gt;
+
+&lt;p&gt;Wiki 是一种在网络上开放且可供多人协同创作的超文本系统，支持那些面向社群的协作式写作，为协作式写作提供了必要的帮助&lt;/p&gt;
+
+&lt;h5 id=&quot;4-gists&quot;&gt;4. Gists&lt;/h5&gt;
+
+&lt;p&gt;上面讲述的都是基于仓库的，这里说的 Gist 是 GitHub 的一个子服务，用于小型代码片段的分享，比如说你有一些不错的代码片段，但是又没必要创建一个仓库来存放，就可以用 Gist 来存放&lt;/p&gt;
+
+&lt;h5 id=&quot;5-contributions&quot;&gt;5. Contributions&lt;/h5&gt;
+
+&lt;p&gt;在你的公有仓库中进行代码提交，就会在个人信息页面的 Contribution 栏中出现标记，拿我自己的来做个示范：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-9754f66f95061748.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;两三个 Java Web 项目、掘金翻译计划、个人博客和 LeetCode 记录基本构成了我的 GitHub 的全部贡献，几乎在某一段时间内都有每天做一些&lt;/p&gt;
+
+&lt;h4 id=&quot;中国人在-github&quot;&gt;中国人在 GitHub&lt;/h4&gt;
+
+&lt;p&gt;在最后说明一下，听说现在国内的培训机构有包装 GitHub 的行为，中国人还真是什么都敢干，先是大闹 Issues，然后是抄袭行为和可以包装行为。在这里强烈鄙视那些在 GitHub 上抄袭的人。就个人而言，它只是一个有着开发功能的社区，即使包装的再好，连基本的协同开发流程都不知道是怎样的，不就是衣着光鲜亮丽的原始人吗？GitHub 带给我们这些普通开发者的最明显的好处就是十分便利的分布式协作开发流程，以及发现一些有趣项目的机会。目光短浅的人往往会走偏，去刻意包装一下，是太没自信了吗？&lt;/p&gt;
+
+</description>
+        <pubDate>Thu, 02 Aug 2018 00:00:00 -0700</pubDate>
+        <link>http://localhost:4000/2018/08/02/Git-%E7%B3%BB%E5%88%97%E6%96%87%E7%AB%A0-%E4%B8%80-GitHub-%E4%BB%8B%E7%BB%8D/</link>
+        <guid isPermaLink="true">http://localhost:4000/2018/08/02/Git-%E7%B3%BB%E5%88%97%E6%96%87%E7%AB%A0-%E4%B8%80-GitHub-%E4%BB%8B%E7%BB%8D/</guid>
+        
+        <category>Git</category>
+        
+        
+      </item>
     
       <item>
         <title>LeetCode —— 深搜水题记录</title>
@@ -27,9 +293,9 @@
 
 &lt;p&gt;我会一直更新的，直到刷到吐血&lt;/p&gt;
 </description>
-        <pubDate>Mon, 30 Jul 2018 00:00:00 -0700</pubDate>
-        <link>http://localhost:4000/2018/07/30/LeetCode-%E6%B7%B1%E6%90%9C%E6%B0%B4%E9%A2%98%E8%AE%B0%E5%BD%95/</link>
-        <guid isPermaLink="true">http://localhost:4000/2018/07/30/LeetCode-%E6%B7%B1%E6%90%9C%E6%B0%B4%E9%A2%98%E8%AE%B0%E5%BD%95/</guid>
+        <pubDate>Sat, 28 Jul 2018 00:00:00 -0700</pubDate>
+        <link>http://localhost:4000/2018/07/28/LeetCode-%E6%B7%B1%E6%90%9C%E6%B0%B4%E9%A2%98%E8%AE%B0%E5%BD%95/</link>
+        <guid isPermaLink="true">http://localhost:4000/2018/07/28/LeetCode-%E6%B7%B1%E6%90%9C%E6%B0%B4%E9%A2%98%E8%AE%B0%E5%BD%95/</guid>
         
         <category>LeetCode</category>
         
@@ -2043,1023 +2309,6 @@ git push&lt;/p&gt;
         <guid isPermaLink="true">http://localhost:4000/2018/05/29/Github-Pages-+-Jekyll-%E5%88%9B%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/</guid>
         
         <category>随笔</category>
-        
-        
-      </item>
-    
-      <item>
-        <title>LinkedList源码分析（二）</title>
-        <description>&lt;h3 id=&quot;正文之前&quot;&gt;正文之前&lt;/h3&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;在上一篇文章中已经讲述了&lt;a href=&quot;http://hxblog.site/2018/05/22/LinkedList%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E4%B8%80/&quot;&gt;链表基于列表的基本用法&lt;/a&gt;，所以，这一篇文章要讲述链表基于队列的基本用法&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;主要内容&lt;/p&gt;
-
-&lt;blockquote&gt;
-  &lt;ol&gt;
-    &lt;li&gt;基本概念&lt;/li&gt;
-    &lt;li&gt;基于单向队列的操作&lt;/li&gt;
-    &lt;li&gt;基于双向队列的操作&lt;/li&gt;
-  &lt;/ol&gt;
-&lt;/blockquote&gt;
-
-&lt;h3 id=&quot;正文&quot;&gt;正文&lt;/h3&gt;
-
-&lt;h4 id=&quot;1-基本概念&quot;&gt;1. 基本概念&lt;/h4&gt;
-
-&lt;p&gt;既然是基于队列的操作，就要介绍一下队列的概念：&lt;/p&gt;
-
-&lt;p&gt;单向队列(Queue)是先进先出(First-In-First-Out)的线性结构，就好比我们生活中的排队，先来排队的人先办理事务，队列只支持在队尾添加元素，在队首删除元素&lt;/p&gt;
-
-&lt;p&gt;双向队列(Deque，double-ended queue)，也叫做双端队列，是基于队列和栈的结构，可以在队列两边进行添加和删除操作&lt;/p&gt;
-
-&lt;p&gt;在链表中使用基于队列的方法时，其实是调用上一篇文章中定义的方法，只不过在不同的位置使用来达到模拟的效果
-&lt;br /&gt;&lt;/p&gt;
-
-&lt;h4 id=&quot;2-基于单向队列的操作&quot;&gt;2. 基于单向队列的操作&lt;/h4&gt;
-
-&lt;p&gt;主要内容：&lt;/p&gt;
-
-&lt;blockquote&gt;
-  &lt;ul&gt;
-    &lt;li&gt;添加节点
-      &lt;ul&gt;
-        &lt;li&gt;offer()&lt;/li&gt;
-      &lt;/ul&gt;
-    &lt;/li&gt;
-    &lt;li&gt;删除节点
-      &lt;ul&gt;
-        &lt;li&gt;poll()&lt;/li&gt;
-        &lt;li&gt;remove()&lt;/li&gt;
-      &lt;/ul&gt;
-    &lt;/li&gt;
-    &lt;li&gt;查找元素
-      &lt;ul&gt;
-        &lt;li&gt;peek()&lt;/li&gt;
-        &lt;li&gt;element()&lt;/li&gt;
-      &lt;/ul&gt;
-    &lt;/li&gt;
-  &lt;/ul&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;在这几个基本的操作中，添加和删除是针对节点而言，而查找虽然是针对节点，但是查询的结果是返回节点中的元素的&lt;/p&gt;
-
-&lt;h5 id=&quot;1-添加节点&quot;&gt;1. 添加节点&lt;/h5&gt;
-
-&lt;p&gt;使用add()，在add()中又有linkLast()，结果就是在末尾添加节点：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    /**
-     * Adds the specified element as the tail (last element) of this list.
-     *
-     * @param e the element to add
-     * @return {@code true} (as specified by {@link Queue#offer})
-     * @since 1.5
-     */
-    public boolean offer(E e) {
-        return add(e);
-    }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h5 id=&quot;2-删除节点&quot;&gt;2. 删除节点&lt;/h5&gt;
-
-&lt;p&gt;删除元素有两种方法，区别就是，一个先判断元素是否为null，而另一个不进行判断：&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;poll()&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;先判断元素是否存在，然后调用unlinkFirst()，删除第一个节点：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    /**
-     * Retrieves and removes the head (first element) of this list.
-     *
-     * @return the head of this list, or {@code null} if this list is empty
-     * @since 1.5
-     */
-    public E poll() {
-        final Node&amp;lt;E&amp;gt; f = first;
-        return (f == null) ? null : unlinkFirst(f);
-    }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;remove()&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;调用removeFirst()，最终也是调用unlinkFirst()，删除第一个节点：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    /**
-     * Retrieves and removes the head (first element) of this list.
-     *
-     * @return the head of this list
-     * @throws NoSuchElementException if this list is empty
-     * @since 1.5
-     */
-    public E remove() {
-        return removeFirst();
-    }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h5 id=&quot;3-修改元素&quot;&gt;3. 修改元素&lt;/h5&gt;
-
-&lt;p&gt;在基于队列的操作中是没有修改元素的方法的，不管是单向还是双向队列：&lt;/p&gt;
-
-&lt;h5 id=&quot;4-查找元素&quot;&gt;4. 查找元素&lt;/h5&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;peek()&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;先检查节点是否为空，若不为空就返回第一个节点的元素：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    /**
-     * Retrieves, but does not remove, the head (first element) of this list.
-     *
-     * @return the head of this list, or {@code null} if this list is empty
-     * @since 1.5
-     */
-    public E peek() {
-        final Node&amp;lt;E&amp;gt; f = first;
-        return (f == null) ? null : f.item;
-    }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;element()&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;直接返回第一个节点的元素，可能会抛出异常：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    /**
-     * Retrieves, but does not remove, the head (first element) of this list.
-     *
-     * @return the head of this list
-     * @throws NoSuchElementException if this list is empty
-     * @since 1.5
-     */
-    public E element() {
-        return getFirst();
-    }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
-
-&lt;h4 id=&quot;3-基于双向队列的操作&quot;&gt;3. 基于双向队列的操作&lt;/h4&gt;
-
-&lt;p&gt;主要内容：&lt;/p&gt;
-
-&lt;blockquote&gt;
-  &lt;ul&gt;
-    &lt;li&gt;添加节点
-      &lt;ul&gt;
-        &lt;li&gt;offerFirst()&lt;/li&gt;
-        &lt;li&gt;offerLast()&lt;/li&gt;
-        &lt;li&gt;push()&lt;/li&gt;
-      &lt;/ul&gt;
-    &lt;/li&gt;
-    &lt;li&gt;删除节点
-      &lt;ul&gt;
-        &lt;li&gt;pollFirst()&lt;/li&gt;
-        &lt;li&gt;pollLast()&lt;/li&gt;
-        &lt;li&gt;pop()&lt;/li&gt;
-        &lt;li&gt;removeFirstOccurrence()&lt;/li&gt;
-        &lt;li&gt;removeLastOccurrence()&lt;/li&gt;
-      &lt;/ul&gt;
-    &lt;/li&gt;
-    &lt;li&gt;查找元素
-      &lt;ul&gt;
-        &lt;li&gt;peekFirst()&lt;/li&gt;
-        &lt;li&gt;peekLast()&lt;/li&gt;
-      &lt;/ul&gt;
-    &lt;/li&gt;
-  &lt;/ul&gt;
-&lt;/blockquote&gt;
-
-&lt;h5 id=&quot;1-添加节点-1&quot;&gt;1. 添加节点&lt;/h5&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;添加节点至队首&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;调用addFirst()，然后是linkFirst()，添加节点至队首：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    public boolean offerFirst(E e) {
-        addFirst(e);
-        return true;
-    }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;添加节点至队尾&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;和上述一样，都是连着再次调用其他方法来达到效果：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    public boolean offerLast(E e) {
-        addLast(e);
-        return true;
-    }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;模拟栈操作的添加一个节点至队首，最终还是调用linkFirst()：&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    public void push(E e) {
-        addFirst(e);
-    }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h5 id=&quot;2-删除节点-1&quot;&gt;2. 删除节点&lt;/h5&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;删除第一个节点，调用unlinkFirst()：&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    public E pollFirst() {
-        final Node&amp;lt;E&amp;gt; f = first;
-        return (f == null) ? null : unlinkFirst(f);
-    }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;删除最后一个节点， 调用unlinkLast()：&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    public E pollLast() {
-        final Node&amp;lt;E&amp;gt; l = last;
-        return (l == null) ? null : unlinkLast(l);
-    }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;模拟栈操作的删除第一个节点，最终还是调用unlinkFirst()：&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    public E pop() {
-        return removeFirst();
-    }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;删除某个节点的元素，在它第一次出现的位置&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;remove()方法是从队首还是进行遍历，如果找到与指定元素相同的节点元素，就返回，所以是在元素第一次出现的位置将其删除：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;   public boolean removeFirstOccurrence(Object o) {
-        return remove(o);
-    }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;删除某个节点的元素，在它最后一次出现的位置&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;其实这个方法的写法和remove()是类似的，只不过是从队尾开始遍历：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    public boolean removeLastOccurrence(Object o) {
-        if (o == null) {
-            for (Node&amp;lt;E&amp;gt; x = last; x != null; x = x.prev) {
-                if (x.item == null) {
-                    unlink(x);
-                    return true;
-                }
-            }
-        } else {
-            for (Node&amp;lt;E&amp;gt; x = last; x != null; x = x.prev) {
-                if (o.equals(x.item)) {
-                    unlink(x);
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h5 id=&quot;3-查找元素&quot;&gt;3. 查找元素&lt;/h5&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;得到队首、队尾的节点的元素&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    public E peekFirst() {
-        final Node&amp;lt;E&amp;gt; f = first;
-        return (f == null) ? null : f.item;
-    }
-
-    public E peekLast() {
-        final Node&amp;lt;E&amp;gt; l = last;
-        return (l == null) ? null : l.item;
-    }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;这一篇文章就结束了，接下来会是迭代器的分析，作为链表系列文章的最后一篇，然后会有一个关于&lt;strong&gt;ArrayList&lt;/strong&gt;和&lt;strong&gt;LinkedList&lt;/strong&gt;的对比分析&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-79919768b5365766.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; width=&quot;40%&quot; height=&quot;40%&quot; /&gt;&lt;/p&gt;
-</description>
-        <pubDate>Mon, 28 May 2018 00:00:00 -0700</pubDate>
-        <link>http://localhost:4000/2018/05/28/LinkedList%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E4%BA%8C/</link>
-        <guid isPermaLink="true">http://localhost:4000/2018/05/28/LinkedList%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E4%BA%8C/</guid>
-        
-        <category>Java源码解析</category>
-        
-        
-      </item>
-    
-      <item>
-        <title>LinkedList源码分析（一）</title>
-        <description>&lt;h3 id=&quot;正文之前&quot;&gt;正文之前&lt;/h3&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;之前介绍过了&lt;strong&gt;ArrayList&lt;/strong&gt;的源码了，在刚学Java的时候，书籍中就经常拿&lt;strong&gt;ArrayList&lt;/strong&gt;和&lt;strong&gt;LinkedList&lt;/strong&gt;来举例子，学完了&lt;strong&gt;ArrayList&lt;/strong&gt;最常用部分的源码后，就打算把&lt;strong&gt;LinkedList&lt;/strong&gt;也学完，源码中有两种操作，一种是列表操作，一种是队列操作，分两篇文章来讲，今天先讲列表操作&lt;/p&gt;
-
-  &lt;p&gt;今天的内容有这些：&lt;/p&gt;
-  &lt;ol&gt;
-    &lt;li&gt;LinkedList 概念介绍&lt;/li&gt;
-    &lt;li&gt;结点&lt;/li&gt;
-    &lt;li&gt;类的基本信息&lt;/li&gt;
-    &lt;li&gt;构造&lt;/li&gt;
-    &lt;li&gt;增删改查&lt;/li&gt;
-  &lt;/ol&gt;
-&lt;/blockquote&gt;
-
-&lt;h3 id=&quot;正文&quot;&gt;正文&lt;/h3&gt;
-
-&lt;h4 id=&quot;1-概念介绍&quot;&gt;1. 概念介绍&lt;/h4&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; * Doubly-linked list implementation of the {@code List} and {@code Deque}
- * interfaces.  Implements all optional list operations, and permits all
- * elements (including {@code null}).
- *
- * &amp;lt;p&amp;gt;All of the operations perform as could be expected for a doubly-linked
- * list.  Operations that index into the list will traverse the list from
- * the beginning or the end, whichever is closer to the specified index.
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;按照注释给出的，&lt;strong&gt;LinkedList&lt;/strong&gt;叫做“双向链表”，实现了&lt;strong&gt;List&lt;/strong&gt;（列表）接口和&lt;strong&gt;Deque&lt;/strong&gt;（双向队列）接口，支持队列的操作&lt;/p&gt;
-
-&lt;p&gt;对特定的元素的操作，可以从列表的首或者尾开始，哪边离得近就从哪边开始&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; * &amp;lt;p&amp;gt;&amp;lt;strong&amp;gt;Note that this implementation is not synchronized.&amp;lt;/strong&amp;gt;
- * If multiple threads access a linked list concurrently, and at least
- * one of the threads modifies the list structurally, it &amp;lt;i&amp;gt;must&amp;lt;/i&amp;gt; be
- * synchronized externally.  (A structural modification is any operation
- * that adds or deletes one or more elements; merely setting the value of
- * an element is not a structural modification.)  This is typically
- * accomplished by synchronizing on some object that naturally
- * encapsulates the list.
- *
- * If no such object exists, the list should be &quot;wrapped&quot; using the
- * {@link Collections#synchronizedList Collections.synchronizedList}
- * method.  This is best done at creation time, to prevent accidental
- * unsynchronized access to the list:&amp;lt;pre&amp;gt;
- *   List list = Collections.synchronizedList(new LinkedList(...));&amp;lt;/pre&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;和&lt;strong&gt;ArrayList&lt;/strong&gt;一样，这个容器也是非线程安全的，如果要在多线程环境下使用，也要使用&lt;strong&gt;synchronizedList&lt;/strong&gt;包装起来&lt;/p&gt;
-
-&lt;p&gt;在源码中还有一些注释是关于迭代器的，等到以后的文章中再说明
-&lt;br /&gt;&lt;/p&gt;
-
-&lt;h4 id=&quot;2-节点&quot;&gt;2. 节点&lt;/h4&gt;
-
-&lt;h6 id=&quot;节点的表示&quot;&gt;节点的表示&lt;/h6&gt;
-
-&lt;p&gt;需要先统一以下说法，Node叫做&lt;strong&gt;节点&lt;/strong&gt;，Node.item叫做&lt;strong&gt;元素&lt;/strong&gt;&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    //当前节点的类型是泛型
-    private static class Node&amp;lt;E&amp;gt; {
-        E item;
-        //前后节点都是Node类型，其中又包括了其当前节点和前后节点
-        Node&amp;lt;E&amp;gt; next;
-        Node&amp;lt;E&amp;gt; prev;
-
-        Node(Node&amp;lt;E&amp;gt; prev, E element, Node&amp;lt;E&amp;gt; next) {
-            this.item = element;
-            this.next = next;
-            this.prev = prev;
-        }
-    }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h6 id=&quot;根据索引寻找节点&quot;&gt;根据索引寻找节点&lt;/h6&gt;
-
-&lt;p&gt;在查找的过程要一个一个节点的迭代，所以&lt;strong&gt;LinkedList&lt;/strong&gt;随机读取的开销要比&lt;strong&gt;ArrayList&lt;/strong&gt;大&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    /**
-     * Returns the (non-null) Node at the specified element index.
-     */
-    Node&amp;lt;E&amp;gt; node(int index) {
-        // assert isElementIndex(index);
-        //if-else来判断从头部还是尾部开始查找
-        if (index &amp;lt; (size &amp;gt;&amp;gt; 1)) {
-            Node&amp;lt;E&amp;gt; x = first;
-            //一直迭代然后得到特定节点
-            for (int i = 0; i &amp;lt; index; i++)
-                x = x.next;
-            return x;
-        } else {
-            Node&amp;lt;E&amp;gt; x = last;
-            for (int i = size - 1; i &amp;gt; index; i--)
-                x = x.prev;
-            return x;
-        }
-    }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
-
-&lt;h4 id=&quot;3-类的基本信息&quot;&gt;3. 类的基本信息&lt;/h4&gt;
-
-&lt;p&gt;先来看看这个类继承了什么类，实现了什么接口&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public class LinkedList&amp;lt;E&amp;gt;
-    extends AbstractSequentialList&amp;lt;E&amp;gt;
-    implements List&amp;lt;E&amp;gt;, Deque&amp;lt;E&amp;gt;, Cloneable, java.io.Serializable{
-}
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;继承了**AbstractSequentialList&lt;E&gt;**（AbstractList&lt;E&gt;的子类），多实现了一个**Deque&lt;E&gt;**接口，其他的和**ArrayList**是一样的&lt;/E&gt;&lt;/E&gt;&lt;/E&gt;&lt;/p&gt;
-
-&lt;p&gt;变量：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    //大小
-    transient int size = 0;
-
-    /**
-     * Pointer to first node.
-     * Invariant: (first == null &amp;amp;&amp;amp; last == null) ||
-     *            (first.prev == null &amp;amp;&amp;amp; first.item != null)
-     */ 
-    //第一个节点，满足上面这两个条件之一
-    transient Node&amp;lt;E&amp;gt; first;
-
-    /**
-     * Pointer to last node.
-     * Invariant: (first == null &amp;amp;&amp;amp; last == null) ||
-     *            (last.next == null &amp;amp;&amp;amp; last.item != null)
-     */
-    //最后一个节点，满足上面这两个条件之一
-    transient Node&amp;lt;E&amp;gt; last;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
-
-&lt;h4 id=&quot;4-构造&quot;&gt;4. 构造&lt;/h4&gt;
-
-&lt;h6 id=&quot;空链表&quot;&gt;空链表&lt;/h6&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    /**
-     * Constructs an empty list.
-     */
-    public LinkedList() {
-    }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h6 id=&quot;带有其他容器元素的链表&quot;&gt;带有其他容器元素的链表&lt;/h6&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    /**
-     * Constructs a list containing the elements of the specified
-     * collection, in the order they are returned by the collection's
-     * iterator.
-     *
-     * @param  c the collection whose elements are to be placed into this list
-     * @throws NullPointerException if the specified collection is null
-     */
-    public LinkedList(Collection&amp;lt;? extends E&amp;gt; c) {
-        //先构造一个空链表
-        this();
-        //添加指定容器的元素的方法，下文讲述
-        addAll(c);
-    }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
-
-&lt;h4 id=&quot;5-增删改查&quot;&gt;5. 增删改查&lt;/h4&gt;
-
-&lt;h5 id=&quot;增&quot;&gt;增&lt;/h5&gt;
-
-&lt;p&gt;因为链表是双向的，所以在增加元素的时候，要设置节点两边的指向，接下来说明指向的时候，会说明是&lt;strong&gt;向前指向&lt;/strong&gt;还是&lt;strong&gt;向后指向&lt;/strong&gt;，下文说的删除指向，就是把指向设为null&lt;/p&gt;
-
-&lt;h6 id=&quot;主要内容&quot;&gt;主要内容&lt;/h6&gt;
-
-&lt;blockquote&gt;
-  &lt;ul&gt;
-    &lt;li&gt;addFirst()
-      &lt;ul&gt;
-        &lt;li&gt;linkFirst()&lt;/li&gt;
-      &lt;/ul&gt;
-    &lt;/li&gt;
-    &lt;li&gt;addLast()
-      &lt;ul&gt;
-        &lt;li&gt;linkLast()&lt;/li&gt;
-      &lt;/ul&gt;
-    &lt;/li&gt;
-    &lt;li&gt;add()
-      &lt;ul&gt;
-        &lt;li&gt;linkLast()&lt;/li&gt;
-        &lt;li&gt;linkBefore()&lt;/li&gt;
-      &lt;/ul&gt;
-    &lt;/li&gt;
-    &lt;li&gt;addAll()&lt;/li&gt;
-  &lt;/ul&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;从内往外，先将内部方法，再讲公用方法：&lt;/p&gt;
-
-&lt;h6 id=&quot;增加至表头&quot;&gt;增加至表头&lt;/h6&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-328d501b8db4f6ce.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    /**
-     * Links e as first element.
-     */
-    //将元素添加至链表头
-    private void linkFirst(E e) {
-        //先定义一个节点
-        final Node&amp;lt;E&amp;gt; f = first;
-        //newNode向后指向f
-        final Node&amp;lt;E&amp;gt; newNode = new Node&amp;lt;&amp;gt;(null, e, f);
-        //新的节点作为第一个节点
-        first = newNode;
-        //如果f为null，表示链表里只有一个元素，这时候第一个和最后一个都是newNode
-        if (f == null)
-            last = newNode;
-        else
-            //f向前指向newNode
-            f.prev = newNode;
-        //大小加1
-        size++;
-        modCount++;
-    }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h6 id=&quot;增加至表尾&quot;&gt;增加至表尾&lt;/h6&gt;
-
-&lt;p&gt;原理是一样的，就不画图了&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    /**
-     * Links e as last element.
-     */
-    //基本套路是一样的
-    void linkLast(E e) {
-        final Node&amp;lt;E&amp;gt; l = last;
-        //newNode向前指向l
-        final Node&amp;lt;E&amp;gt; newNode = new Node&amp;lt;&amp;gt;(l, e, null);
-        last = newNode;
-        if (l == null)
-            first = newNode;
-        else
-            //l向后指向newNode
-            l.next = newNode;
-        size++;
-        modCount++;
-    }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h6 id=&quot;增加至指定位置&quot;&gt;增加至指定位置&lt;/h6&gt;
-
-&lt;p&gt;插入到指定位置，涉及三个元素，两两之间有关联，所有需要有四条指向&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-1fa23914082ab911.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    /**
-     * Inserts element e before non-null Node succ.
-     */
-    void linkBefore(E e, Node&amp;lt;E&amp;gt; succ) {
-        // assert succ != null;
-        //把指定位置的前一个节点拿出来
-        final Node&amp;lt;E&amp;gt; pred = succ.prev;
-        //在创建节点的时候就有两条指向了
-        final Node&amp;lt;E&amp;gt; newNode = new Node&amp;lt;&amp;gt;(pred, e, succ);
-        //succ向前指向newNode
-        succ.prev = newNode;
-        if (pred == null)
-            //如果插入的位置前面没有节点，则插入的节点作为第一个
-            first = newNode;
-        else
-            //刚才创建的pred节点，向后指向newNode
-            pred.next = newNode;
-        size++;
-        modCount++;
-    }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
-
-&lt;h6 id=&quot;刚才上面的三个方法都是为下面这些方法服务的&quot;&gt;刚才上面的三个方法都是为下面这些方法服务的：&lt;/h6&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    //添加至头部
-    public void addFirst(E e) {
-        linkFirst(e);
-    }
-  
-  //添加至尾部
-  public void addLast(E e) {
-        linkLast(e);
-    }
-
-    //和上面加至队尾是等价的，除了有返回值
-    public boolean add(E e) {
-        linkLast(e);
-        return true;
-    }
-
-    //在指定位置添加节点
-    public void add(int index, E element) {
-            //检查元素是否越界
-            checkPositionIndex(index);
-
-            /**
-             *  private void checkPositionIndex(int index) {
-             *      if (!isPositionIndex(index))
-             *          throw new IndexOutOfBoundsException(outOfBoundsMsg(index));
-             *  }
-             */
-            //如果索引在最后，直接加至队尾
-            if (index == size)
-                linkLast(element);
-            else
-                //调用node()方法寻找节点
-                linkBefore(element, node(index));
-    }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
-
-&lt;h6 id=&quot;还有直接添加另一个容器的元素至链表的方法&quot;&gt;还有直接添加另一个容器的元素至链表的方法：&lt;/h6&gt;
-
-&lt;p&gt;将指定容器的元素添加至指定位置，插入的位置在index元素之前（若index = 1，表示第2个元素，则插入第1个和第2个元素之间）&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-e2ee83cac0cb9011.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    public boolean addAll(int index, Collection&amp;lt;? extends E&amp;gt; c) {
-        //检查是否越界
-        checkPositionIndex(index);
-        //先用数组存放
-        Object[] a = c.toArray();
-        int numNew = a.length;
-        if (numNew == 0)
-            return false;
-
-        //前一个节点和当前节点
-        Node&amp;lt;E&amp;gt; pred, succ;
-        if (index == size) {
-            succ = null;
-            //将容器内元素元素添加到表尾
-            pred = last;
-        } else {
-            //查找指定添加位置
-            succ = node(index);
-            pred = succ.prev;
-        }
-
-        for (Object o : a) {
-            @SuppressWarnings(&quot;unchecked&quot;) E e = (E) o;
-            Node&amp;lt;E&amp;gt; newNode = new Node&amp;lt;&amp;gt;(pred, e, null);
-            //如果是第一个节点
-            if (pred == null)
-                first = newNode;
-            else
-                //把前一个节点向后指向newNode
-                pred.next = newNode;
-            //这个在if-else之外，如果没有这语句，pred节点就固定是那一个节点，所以需要在每一次循环内更换节点
-            pred = newNode;
-        }
-        //如果是最后节点
-        if (succ == null) {
-            last = pred;
-        } else {
-            //两个节点之间进行连接
-            pred.next = succ;
-            succ.prev = pred;
-        }
-
-        size += numNew;
-        modCount++;
-        return true;
-    }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;将指定容器的元素添加至链表尾：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    public boolean addAll(Collection&amp;lt;? extends E&amp;gt; c) {
-        return addAll(size, c);
-    }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
-
-&lt;h5 id=&quot;删&quot;&gt;删&lt;/h5&gt;
-
-&lt;p&gt;删除节点的方式，就是把节点的元素和两边的指向设为null，让GC来收集&lt;/p&gt;
-
-&lt;h6 id=&quot;主要内容-1&quot;&gt;主要内容&lt;/h6&gt;
-
-&lt;blockquote&gt;
-  &lt;ul&gt;
-    &lt;li&gt;removeFirst()
-      &lt;ul&gt;
-        &lt;li&gt;unlinkFirst()&lt;/li&gt;
-      &lt;/ul&gt;
-    &lt;/li&gt;
-    &lt;li&gt;removeLast()
-      &lt;ul&gt;
-        &lt;li&gt;unlinkLast()&lt;/li&gt;
-      &lt;/ul&gt;
-    &lt;/li&gt;
-    &lt;li&gt;remove()
-      &lt;ul&gt;
-        &lt;li&gt;unlink()&lt;/li&gt;
-      &lt;/ul&gt;
-    &lt;/li&gt;
-    &lt;li&gt;clear()&lt;/li&gt;
-  &lt;/ul&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;还是按照相同的顺序来：&lt;/p&gt;
-
-&lt;h6 id=&quot;删除第一个节点&quot;&gt;删除第一个节点&lt;/h6&gt;
-
-&lt;p&gt;删除节点内容，删除指向&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-c209c8234b344f59.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    private E unlinkFirst(Node&amp;lt;E&amp;gt; f) {
-        // assert f == first &amp;amp;&amp;amp; f != null;
-        //把指定节点的内容拿出来，最后返回
-        final E element = f.item;
-        final Node&amp;lt;E&amp;gt; next = f.next;
-        //节点内容设为空
-        f.item = null;
-        //清空节点的向后指向
-        f.next = null; // help GC
-        //指定节点的下一个节点作为第一个节点
-        first = next;
-        //如果没有下一个节点
-        if (next == null)
-            last = null;
-        else
-            //删除指向
-            next.prev = null;
-        //改变大小
-        size--;
-        modCount++;
-        return element;
-    }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h6 id=&quot;删除最后一个节点&quot;&gt;删除最后一个节点&lt;/h6&gt;
-
-&lt;p&gt;步骤是类似的，就画个图，代码就不解释了&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-349e0ee65d5e9831.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    /**
-     * Unlinks non-null last node l.
-     */
-    private E unlinkLast(Node&amp;lt;E&amp;gt; l) {
-        // assert l == last &amp;amp;&amp;amp; l != null;
-        final E element = l.item;
-        final Node&amp;lt;E&amp;gt; prev = l.prev;
-        l.item = null;
-        l.prev = null; // help GC
-        last = prev;
-        if (prev == null)
-            first = null;
-        else
-            prev.next = null;
-        size--;
-        modCount++;
-        return element;
-    }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h6 id=&quot;删除指定节点&quot;&gt;删除指定节点&lt;/h6&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-b22bded49c313f03.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    /**
-     * Unlinks non-null node x.
-     */
-    E unlink(Node&amp;lt;E&amp;gt; x) {
-        // assert x != null;
-        final E element = x.item;
-        final Node&amp;lt;E&amp;gt; next = x.next;
-        final Node&amp;lt;E&amp;gt; prev = x.prev;
-        
-        // 如果x是第一个节点，则设置下一个节点为第一节点
-        if (prev == null) {
-            first = next;
-        } else {
-            //x的前一个节点直接向后指向后一个节点
-            prev.next = next;
-            //删除x的前指向
-            x.prev = null;
-        }
-        
-        //如果x是最后一个节点
-        if (next == null) {
-            //向前指向last节点
-            last = prev;
-        } else {
-            //把后一个节点直接向前指向前一个节点，打个比方，就是1和3节点相连，跳过节点2
-            next.prev = prev;
-            //删除指向
-            x.next = null;
-        }
-        //删除节点内容
-        x.item = null;
-        //改变大小
-        size--;
-        modCount++;
-        return element;
-    }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
-
-&lt;h6 id=&quot;这三个删除的方法写来是被以下这些方法调用的&quot;&gt;这三个删除的方法写来是被以下这些方法调用的：&lt;/h6&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    //移除第一个节点
-    public E removeFirst() {
-        final Node&amp;lt;E&amp;gt; f = first;
-        if (f == null)
-            throw new NoSuchElementException();
-        return unlinkFirst(f);
-    }
-    
-    //移除最后节点
-    public E removeLast() {
-        final Node&amp;lt;E&amp;gt; l = last;
-        if (l == null)
-            throw new NoSuchElementException();
-        return unlinkLast(l);
-    }
-
-    //删除特定元素
-    public boolean remove(Object o) {
-        if (o == null) {
-            for (Node&amp;lt;E&amp;gt; x = first; x != null; x = x.next) {
-                if (x.item == null) {
-                    unlink(x);
-                    return true;
-                }
-            }
-        } else {
-            //遍历链表，删去拥有和指定元素相同的内容的节点
-            for (Node&amp;lt;E&amp;gt; x = first; x != null; x = x.next) {
-                if (o.equals(x.item)) {
-                    unlink(x);
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    //删除指定位置元素
-    public E remove(int index) {
-        checkElementIndex(index);
-        return unlink(node(index));
-    }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
-
-&lt;h6 id=&quot;清空链表&quot;&gt;清空链表&lt;/h6&gt;
-
-&lt;p&gt;没有用到上面的方法，直接将所有的设为null&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;  public void clear() {
-        // Clearing all of the links between nodes is &quot;unnecessary&quot;, but:
-        // - helps a generational GC if the discarded nodes inhabit
-        //   more than one generation
-        // - is sure to free memory even if there is a reachable Iterator
-        //不断迭代，把节点的三个属性设为null
-        for (Node&amp;lt;E&amp;gt; x = first; x != null; ) {
-            Node&amp;lt;E&amp;gt; next = x.next;
-            x.item = null;
-            x.next = null;
-            x.prev = null;
-            x = next;
-        }
-        //把首尾设为null，改变大小
-        first = last = null;
-        size = 0;
-        modCount++;
-    }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
-
-&lt;h5 id=&quot;改&quot;&gt;改&lt;/h5&gt;
-
-&lt;p&gt;链表中改变节点的方式就一个：set()方法&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    public E set(int index, E element) {
-        //检查是否越界
-        checkElementIndex(index);
-        //根据索引查找节点
-        Node&amp;lt;E&amp;gt; x = node(index);
-        //oldVal存放需要改变的内容
-        E oldVal = x.item;
-        x.item = element;
-        //返回改变前的值
-        return oldVal;
-    }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
-
-&lt;h5 id=&quot;查&quot;&gt;查&lt;/h5&gt;
-
-&lt;h6 id=&quot;查找首尾元素&quot;&gt;查找首尾元素：&lt;/h6&gt;
-
-&lt;p&gt;这个没什么好说的，直接上代码&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    public E getFirst() {
-        final Node&amp;lt;E&amp;gt; f = first;
-        if (f == null)
-            throw new NoSuchElementException();
-        return f.item;
-    }
-
-    public E getLast() {
-        final Node&amp;lt;E&amp;gt; l = last;
-        if (l == null)
-            throw new NoSuchElementException();
-        return l.item;
-    }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h6 id=&quot;判断是否含有某个元素&quot;&gt;判断是否含有某个元素&lt;/h6&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    public boolean contains(Object o) {
-        //indexOf()方法在下面讲述
-        return indexOf(o) != -1;
-    }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h6 id=&quot;根据索引查找&quot;&gt;根据索引查找&lt;/h6&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    public E get(int index) {
-        checkElementIndex(index);
-        //node()方法根据索引来找到节点，在用 .item 来返回节点内容
-        return node(index).item;
-    }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h6 id=&quot;根据元素得出索引&quot;&gt;根据元素得出索引&lt;/h6&gt;
-
-&lt;p&gt;得到特定元素第一次出现的位置：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    public int indexOf(Object o) {
-        int index = 0;
-        //如果对象为null，则也可以查找出内容为null的节点的位置
-        if (o == null) {
-            for (Node&amp;lt;E&amp;gt; x = first; x != null; x = x.next) {
-                if (x.item == null)
-                    return index;
-                index++;
-            }
-        } else {
-            //迭代寻找元素
-            for (Node&amp;lt;E&amp;gt; x = first; x != null; x = x.next) {
-                if (o.equals(x.item))
-                    return index;
-                index++;
-            }
-        }
-        return -1;
-    }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;得到特定元素最后一次出现的位置，也就是把上面的反过来找：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    public int lastIndexOf(Object o) {
-        int index = size;
-        if (o == null) {
-            for (Node&amp;lt;E&amp;gt; x = last; x != null; x = x.prev) {
-                index--;
-                if (x.item == null)
-                    return index;
-            }
-        } else {
-            for (Node&amp;lt;E&amp;gt; x = last; x != null; x = x.prev) {
-                index--;
-                if (o.equals(x.item))
-                    return index;
-            }
-        }
-        return -1;
-    }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;LinkedList基于列表的操作到这里就介绍完了，下一篇会是基于队列的操作&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-79919768b5365766.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; width=&quot;40%&quot; height=&quot;40%&quot; /&gt;&lt;/p&gt;
-</description>
-        <pubDate>Tue, 22 May 2018 00:00:00 -0700</pubDate>
-        <link>http://localhost:4000/2018/05/22/LinkedList%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E4%B8%80/</link>
-        <guid isPermaLink="true">http://localhost:4000/2018/05/22/LinkedList%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E4%B8%80/</guid>
-        
-        <category>Java源码解析</category>
         
         
       </item>

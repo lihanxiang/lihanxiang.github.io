@@ -19,9 +19,9 @@
     <meta name="keyword"  content="Java">
     <link rel="shortcut icon" href="/img/favicon.ico">
 
-    <title>初识 Spring MVC——练手小项目 - 李汉祥的博客 | L Blog</title>
+    <title>Git 系列文章（二） - 李汉祥的博客 | L Blog</title>
 
-    <link rel="canonical" href="http://localhost:4000/2018/04/17/%E5%88%9D%E8%AF%86Spring-MVC-%E7%BB%83%E6%89%8B%E5%B0%8F%E9%A1%B9%E7%9B%AE/">
+    <link rel="canonical" href="http://localhost:4000/2018/08/09/Git-%E7%B3%BB%E5%88%97%E6%96%87%E7%AB%A0-%E4%BA%8C-Git-%E5%9F%BA%E6%9C%AC%E7%94%A8%E6%B3%95/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -142,12 +142,12 @@
 
 
     <!-- Image to hack wechat -->
-<!-- <img src="/img/post/2018-04/17(2).jpg" width="0" height="0"> -->
+<!-- <img src="/img/post/2018-08/09.jpg" width="0" height="0"> -->
 
 <!-- Post Header -->
 <style type="text/css">
     header.intro-header{
-        background-image: url('/img/post/2018-04/17(2).jpg')
+        background-image: url('/img/post/2018-08/09.jpg')
     }
 </style>
 <header class="intro-header" >
@@ -157,17 +157,15 @@
                 <div class="post-heading">
                     <div class="tags">
                         
-                        <a class="tag" href="/tags/#Spring MVC" title="Spring MVC">Spring MVC</a>
-                        
-                        <a class="tag" href="/tags/#Java Web" title="Java Web">Java Web</a>
+                        <a class="tag" href="/tags/#Git" title="Git">Git</a>
                         
                     </div>
-                    <h1>初识 Spring MVC——练手小项目</h1>
+                    <h1>Git 系列文章（二）</h1>
                     
                     
-                    <h2 class="subheading">练手项目</h2>
+                    <h2 class="subheading">Git 基本用法</h2>
                     
-                    <span class="meta">Posted by L on April 17, 2018</span>
+                    <span class="meta">Posted by L on August 9, 2018</span>
                 </div>
             </div>
         </div>
@@ -185,307 +183,172 @@
                 col-md-10 col-md-offset-1
                 post-container">
 
-				<h3 id="初始spring-mvc">初始Spring MVC</h3>
+				<h3 id="正文之前">正文之前</h3>
 
 <blockquote>
-  <p>前几天开始了我的spring学习之旅，由于之前使用过MVC模式来做项目，所以我先下手的是 Spring MVC，做个练手项目，非常简单</p>
+  <p>上一篇文章简单介绍了 Git 和 GitHub，这一篇文章用一个仓库来作为例子介绍 Git 的基本用法，而不是单纯地列出每一条 Git 命令</p>
 </blockquote>
 
-<h5 id="项目介绍">项目介绍：</h5>
+<h3 id="正文">正文</h3>
 
-<p>用户输入信息 -&gt; 后台处理 -&gt; 输出信息</p>
+<h4 id="1-仓库的初始操作">1. 仓库的初始操作</h4>
 
-<h5 id="开始">开始</h5>
+<h5 id="初始化">初始化</h5>
 
-<ol>
-  <li>创建Spring MVC 项目（创建时下载所需文件）</li>
-</ol>
+<p>首先我先在本地存放 GitHub 仓库的文件夹里新建一个文件夹，叫 “Git-test”</p>
 
-<p><img src="https://upload-images.jianshu.io/upload_images/3426615-d084130830d4db65.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" />
-<br />
-2.创建完的项目目录是这样的</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-3690cb8edf457270.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
 
-<p><img src="https://upload-images.jianshu.io/upload_images/3426615-78e04adbbf1a2c54.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" />
-<br /></p>
-<ol>
-  <li>配置Web项目结构</li>
-</ol>
+<p>现在这还只是一个普通的空文件夹，所以在这个文件夹里开启 Git Bash：</p>
 
-<p>参考另一篇文章<a href="https://www.jianshu.com/p/8d49d36a3c7e">IDEA如何创建及配置Web项目（多图）</a></p>
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-d1b080489b18a3f8.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
 
-<p>有变化的是： 不需要自己创建 <strong>lib</strong> 文件夹，在创建项目时已经建立，另外在 <strong>WEB-INF</strong> 建立 <strong>jsp</strong> 用于存放 <strong>.jsp</strong> 文件，其他的都没什么区别</p>
+<p>要想把一个空的文件夹变为 GitHub 的仓库，首先我们要用 Git 初始化这个仓库：</p>
 
-<p>配置完的样子（文件夹旁有箭头是因为我在做完项目才截图，具体的类以及其他文件都已在内）：</p>
+<p><code class="highlighter-rouge">git init</code></p>
 
-<p><img src="https://upload-images.jianshu.io/upload_images/3426615-e4e64f432bfe4d12.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" />
-<br /></p>
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-c50c98fcbb278817.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
 
-<ol>
-  <li>配置Spring MVC的核心 —— <strong>dispatcher-servlet.xml</strong>
-    <blockquote>
-      <p>Spring MVC provides an annotation-based programming model where <strong>@Controller</strong> and <strong>@RestController</strong> components use annotations to express request mappings, request input, exception handling, and more. Annotated controllers have flexible method signatures and do not have to extend base classes nor implement specific interfaces.</p>
-    </blockquote>
-  </li>
-</ol>
+<p>虽然在初始化完仓库之后，文件夹内看上去没有变化，但是这个文件夹里有一个 .git 目录，默认是隐藏的，打开隐藏文件之后就可以看见：</p>
 
-<p>如官方文档所说，我也使用了注解来定义控制器（Controller）和服务（Service）.</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-7cf538acb9003c93.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
 
-<p>首先需要添加的是</p>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;context:component-scan base-package="controller"/&gt;
-&lt;context:component-scan base-package="service"/&gt;
-</code></pre></div></div>
-<p>这样我们就能通过注解来定义<strong>Controller</strong>以及<strong>Service</strong>.</p>
+<h5 id="查看仓库状态">查看仓库状态</h5>
 
-<p>然后，我们需要配置视图解析器，在具体操作时只要写出视图的名称(xxx)，就可以采用URL拼接的方式，达到这种效果：/WEB-INF/jsp/xxx.jsp</p>
+<p>查看一下这个仓库的状态：</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;bean class="org.springframework.web.servlet.view.InternalResourceViewResolver"&gt;
-    &lt;property name="prefix" value="/WEB-INF/jsp/"/&gt;
-    &lt;property name="suffix" value=".jsp"/&gt;
-&lt;/bean&gt;
-</code></pre></div></div>
+<p><code class="highlighter-rouge">git status</code></p>
 
-<ol>
-  <li>开始进行具体的操作</li>
-</ol>
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-96f3e57fc5597d4a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
 
-<p>首先是基本数据类：</p>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public class Product {
-    private long id;
-    private String name;
-    private String price;
-    private String inventory;
+<h5 id="添加文件">添加文件</h5>
 
-    public void setId(long id) {
-        this.id = id;
-    }
-    public long getId() {
-        return id;
-    }
+<p>首先我先在仓库里创建一个带有一个词 “test” 的 README.md</p>
 
-    public void setName(String name) {
-        this.name = name;
-    }
-    public String getName() { return name; }
-    public void setPrice(String price) {
-        this.price = price;
-    }
-    public String getPrice() { return price; }
-    public void setInventory(String inventory) {
-        this.inventory = inventory;
-    }
-    public String getInventory() { return inventory; }
-}
-</code></pre></div></div>
-<p><br /></p>
+<p>然后查看仓库状态会发现有了变化：</p>
 
-<p>接下来是收集用户输入所需要的表单类：</p>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public class ProductForm {
-    private String name;
-    private String price;
-    private String inventory;
-    public void setName(String name) {
-        this.name = name;
-    }
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-8dbe09d06574170b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
 
-    public void setPrice(String price) {
-        this.price = price;
-    }
+<p>处于未提交状态的文件都被归为 <code class="highlighter-rouge">Untracked files</code></p>
 
-    public void setInventory(String inventory) {
-        this.inventory = inventory;
-    }
+<p>提交的过程有两步，先向暂存区中添加文件，然后提交</p>
 
-    public String getName() {
-        return name;
-    }
-    public String getPrice() {
-        return price;
-    }
-    public String getInventory() {
-        return inventory;
-    }
-}
-</code></pre></div></div>
-<p><br /></p>
+<p>首先我们将 README.md 文件提交到暂存区：</p>
 
-<p>然后编写服务接口，以及它的实现类</p>
+<p><code class="highlighter-rouge">git add README.md</code></p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>import domain.Product;
+<p>如果你想要向暂存区添加所有变动的文件，那就用：</p>
 
-public interface ProductService {
-    Product add(Product product);
-    Product get(long id);
-}
+<p><code class="highlighter-rouge">git add .</code></p>
 
-</code></pre></div></div>
+<p>然后我们查看一下仓库状态：</p>
 
-<p><strong>ProductServiceImpl</strong>就是刚才配置的服务（Service）</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-a8acde54fe4f19ab.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>import domain.Product;
-import org.springframework.stereotype.Service;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicLong;
+<p>Changes to be committed 中的文件都是已经暂存，但是没有提交的文件</p>
 
-@Service
-public class ProductServiceImpl implements ProductService{
-    private Map&lt;Long, Product&gt; productMap = new HashMap&lt;&gt;();
-    private AtomicLong atomicLong = new AtomicLong();
+<p>接下来我们提交文件：</p>
 
-    @Override
-    public Product add(Product product){
-        long id = atomicLong.incrementAndGet();
-        product.setId(id);
-        productMap.put(id, product);
-        return product;
-    }
+<p><code class="highlighter-rouge">git commit -m 'Update README.md'</code></p>
 
-    @Override
-    public Product get(long id){
-        return productMap.get(id);
-    }
-}
-</code></pre></div></div>
-<p><br /></p>
+<p>-m 后面跟的是这次提交的信息，相当于概述</p>
 
-<p>最重要的是<strong>控制器</strong>：</p>
+<p>有的人会想问，README.md 在提交之前就已经在我的仓库里了，为什么还要提交呢？</p>
 
-<p>采用<strong>@Autowired</strong>注解的方式自动装配Service，
-使用<strong>@RequestMapping</strong>注解的方式，将注解中的路径映射到控制器：</p>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>import domain.Product;
-import form.ProductForm;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import service.ProductService;
+<p>因为仓库的最终目的是对外开放，你自己的本地仓库的改动如果不提交，不推送，GitHub 上的远程仓库里是不会有变化的，其他人看不到你所做的改动，关于提交到远程仓库，下文会说明</p>
 
-@Controller
-public class ProductController {
-    //日志记录具体操作
-    private static final Log logger = LogFactory.getLog(ProductController.class);
+<h5 id="查看日志">查看日志</h5>
 
-    @Autowired
-    private  ProductService productService;
+<p>在多人协作时，通常需要查看日志来看看有谁对进行了提交：</p>
 
-    //method = RequestMethod.POST表示只接受POST形式的请求
-    @RequestMapping(value = "/product_save", method = RequestMethod.POST)
-    //采用POST的方式发送请求
-    public String saveProduct(ProductForm productForm, RedirectAttributes redirectAttributes){
-        logger.info("saveProduct called");
+<p><code class="highlighter-rouge">git log</code> 就会发现我刚才提交了 README.md 文件</p>
 
-        //获得用户输入
-        Product product = new Product();
-        product.setName(productForm.getName());
-        product.setPrice(productForm.getPrice());
-        product.setInventory(productForm.getInventory());
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-098b65a93a975387.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
 
-        //添加有记录的产品，并且根据ID进行重定向
-        Product savedProduct = productService.add(product);
-        redirectAttributes.addFlashAttribute("message", "Add product Successfully");
-        return "redirect:/product_view/" + savedProduct.getId();
-    }
+<h4 id="2-仓库的分支">2. 仓库的分支</h4>
 
-    //根据ID，将用户输入展示在ProductView中
-    @RequestMapping(value = "product_view/{id}")
-    public String viewProduct(@PathVariable Long id, Model model){
-        //根据ID得到信息
-        Product product = productService.get(id);
-        model.addAttribute("product", product);
-        //ProductView.jsp
-        return "ProductView";
-    }
-}
-</code></pre></div></div>
-<p><br />
-需要注意的是，在现在的Spring版本中，如果直接对Service进行注解，将会有产生警告：
-<img src="https://upload-images.jianshu.io/upload_images/3426615-5c63d619a6d6712e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
+<p>接下来的分支是一个重要的概念，在多人协作开发时，都要用到分支</p>
 
-<p>按住Alt + Enter 修正错误，会看见提示：</p>
+<p>首先，在我们初始化仓库时，有一个默认的主分支 <code class="highlighter-rouge">master</code>，如果没有创建其他分支，那么所有的工作都是在 <code class="highlighter-rouge">master</code> 分支上进行的，如果要创建分支：</p>
 
-<p><img src="https://upload-images.jianshu.io/upload_images/3426615-4b63db8e4d3d88fe.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
+<p><code class="highlighter-rouge">git checkout -b newBranch</code></p>
 
-<p>官方推荐使用构造器注入</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-f3c955ef594441c2.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
 
-<p>到此为止，后台工作就结束了</p>
+<p>这时候会发现已经切换到我新建的分支 <code class="highlighter-rouge">newBranch</code> 了</p>
 
-<ol>
-  <li>页面</li>
-</ol>
+<p>-b 后面跟着分支的的名字，如果分支存在，就转到那个分支，不存在就新建</p>
 
-<p>接下来是JSP的编写：</p>
+<p>假设要创建新的分支，那么上面那条语句可以分成两步来做：</p>
 
-<p>首先是用户输入的页面 (ProductForm.jsp)</p>
+<p><code class="highlighter-rouge">git branch newBranch</code>
+<code class="highlighter-rouge">git checkout newBranch</code></p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;body&gt;
-    &lt;div&gt;
-        &lt;form action="product_save" method="post"&gt;
-            &lt;fieldset&gt;
-                &lt;legend&gt;Add a product&lt;/legend&gt;
-                &lt;p&gt;
-                    &lt;label for="name"&gt;Product Name: &lt;/label&gt;
-                    &lt;input type="text" id="name" name="name"&gt;
-                &lt;/p&gt;
-                &lt;p&gt;
-                    &lt;label for="price"&gt;Price: &lt;/label&gt;
-                    &lt;input type="text" id="price" name="price"&gt;
-                &lt;/p&gt;
-                &lt;p&gt;
-                    &lt;label for="inventory"&gt;Inventory: &lt;/label&gt;
-                    &lt;input type="text" id="inventory" name="inventory"&gt;
-                &lt;/p&gt;
-                &lt;p&gt;
-                    &lt;input id="reset" type="reset" tabindex="4"&gt;
-                    &lt;input id="submit" type="submit" tabindex="5" value="Add Product"&gt;
-                &lt;/p&gt;
-            &lt;/fieldset&gt;
-        &lt;/form&gt;
-    &lt;/div&gt;
-&lt;/body&gt;
-</code></pre></div></div>
-<p>比较表单中的<strong>&lt;form action="product_save"&gt;</strong>
-和控制器中的<strong>@RequestMapping(value = “/product_save”)</strong>就能够知道，通过@RequestMapping注解，任何<strong>“/product_save”</strong>开头的路径都会被映射到控制器中，并采用saveProduct()方法</p>
+<p>先创建分支，再切换到分支</p>
 
-<p>然后是显示用户输入的页面 (ProductView.jsp)</p>
+<h4 id="3-远程仓库">3. 远程仓库</h4>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;body&gt;
-    &lt;div&gt;
-        &lt;h3&gt;${message}&lt;/h3&gt;
-        &lt;h4&gt;Details:&lt;/h4&gt;
-        Product Name: ${product.name}&lt;br&gt;
-        Price: ${product.price}&lt;br&gt;
-        Inventory: ${product.inventory}&lt;br&gt;
-    &lt;/div&gt;
-&lt;/body&gt;
-</code></pre></div></div>
-<p>${message}就是刚才在控制器中重定向页面的属性，它会在页面头部输出”Add product Successfully”</p>
+<p>到现在为止，我们对仓库的操作都是在本地进行的，接下来说一下远程仓库：</p>
 
-<h5 id="项目构建完毕">项目构建完毕</h5>
+<p>首先是在 GitHub 上创建一个仓库，名字与上面的本地仓库一样：</p>
 
-<p>最终的目录结构是这样：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-678dade2aab4747a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
 
-<p><img src="https://upload-images.jianshu.io/upload_images/3426615-3c9d0a81f74d2c04.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
+<p>为了写博客用，这个 Git-test 仓库是私有仓库（用学生邮箱开的）</p>
 
-<p>然后我们运行， 输入：</p>
+<p>在你创建完之后，会有提示页面：</p>
 
-<p><img src="https://upload-images.jianshu.io/upload_images/3426615-70edad81b60fb0a7.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-c23df5952450a9f5.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
 
-<p>页面难看，主要是用Spring MVC做出来的就可以了</p>
+<p>我们要在这个仓库作为本地仓库的远程仓库，简单地说，就是把我们本地的 Git-test 仓库和 GitHub 上的远程仓库 Git-test 关联起来</p>
 
-<p>结果是这样的：</p>
+<h5 id="推送内容至远程仓库">推送内容至远程仓库</h5>
 
-<p><img src="https://upload-images.jianshu.io/upload_images/3426615-97cced76b8bcbbe2.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
+<p>我们选择第一种方式，初始化、添加 README.md 和 提交更改都已经完成了，现在我们添加远程仓库，复制 SSH，在命令行使用：</p>
 
-<p>目光移至URL，填写信息提交后，页面重定向至 <strong>product_view/{id}</strong> 处，当前id = 1</p>
+<p><code class="highlighter-rouge">git remote add origin git@github.com:lihanxiang/Git.test.git</code></p>
 
-<p>到处，我们的这个练手的小项目就结束了，有什么问题都可以私信我</p>
+<p>执行完这个命令之后，Git 就会根据 <code class="highlighter-rouge">git@github.com:lihanxiang/Git.test.git</code> 来将我们刚才创建的仓库设置为本地仓库的远程仓库，名称为 <code class="highlighter-rouge">origin</code></p>
 
-<p><img src="https://upload-images.jianshu.io/upload_images/3426615-79919768b5365766.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" width="40%" height="40%" /></p>
+<p>这个名称 <code class="highlighter-rouge">origin</code> 和我们在 GitHub 上的仓库名不一样，我们在推送内容时，填写的名称是我们在设置远程仓库时指定的名字</p>
+
+<p>然后将本地仓库的内容推送至远程仓库的 master 分支：</p>
+
+<p><code class="highlighter-rouge">git push -u origin master</code></p>
+
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-f95756ba7e6ec811.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
+
+<p>然后在 GitHub 上刷新一下仓库的页面：</p>
+
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-f4c606efad7c2bb7.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
+
+<p>这时候我们已经将本地仓库的内容推送至远程仓库了</p>
+
+<h5 id="从远程仓库获取内容">从远程仓库获取内容</h5>
+
+<p>如果我直接在远程仓库的 master 分支新建一个文件，在对本地仓库进行操作时，就需要先获取远程仓库的新的内容：</p>
+
+<p><code class="highlighter-rouge">git pull origin master</code></p>
+
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-1b8cd8cd561c4f56.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
+
+<h4 id="4-总结">4. 总结</h4>
+
+<p>上面说的是 Git 的基本操作，在这些方法中，有几个是最常用的：</p>
+
+<blockquote>
+  <p>git init<br />
+git status<br />
+git checkout<br />
+git add<br />
+git commit<br />
+git pull<br />
+git push<br /></p>
+</blockquote>
+
+<p>后四步一般是连在一起的</p>
+
+<p>这只是简单介绍了一下 Git，下一篇文章将讲述分支的相关操作</p>
 
 
                 <hr>
@@ -496,13 +359,9 @@ public class ProductController {
                 <ul class="pager">
                     
                     <li class="previous">
-                        <a href="/2018/04/17/IDEA%E5%A6%82%E4%BD%95%E5%88%9B%E5%BB%BA%E5%8F%8A%E9%85%8D%E7%BD%AEWeb%E9%A1%B9%E7%9B%AE-%E5%A4%9A%E5%9B%BE/" data-toggle="tooltip" data-placement="top" title="IDEA如何创建及配置Web项目（多图）">&larr; Previous Post</a>
+                        <a href="/2018/08/02/Git-%E7%B3%BB%E5%88%97%E6%96%87%E7%AB%A0-%E4%B8%80-GitHub-%E4%BB%8B%E7%BB%8D/" data-toggle="tooltip" data-placement="top" title="Git 系列文章（一）">&larr; Previous Post</a>
                     </li>
                     
-                    
-                    <li class="next">
-                        <a href="/2018/04/18/%E5%8D%9A%E5%AE%A2%E4%BB%8B%E7%BB%8D/" data-toggle="tooltip" data-placement="top" title="博客介绍">Next Post &rarr;</a>
-                    </li>
                     
                 </ul>
 
@@ -626,8 +485,8 @@ public class ProductController {
 <script type="text/javascript">
     /* * * CONFIGURATION VARIABLES * * */
     var disqus_shortname = "http-hxblog-site";
-    var disqus_identifier = "/2018/04/17/初识Spring MVC——练手小项目";
-    var disqus_url = "http://localhost:4000/2018/04/17/%E5%88%9D%E8%AF%86Spring-MVC-%E7%BB%83%E6%89%8B%E5%B0%8F%E9%A1%B9%E7%9B%AE/";
+    var disqus_identifier = "/2018/08/09/Git 系列文章（二）—— Git 基本用法";
+    var disqus_url = "http://localhost:4000/2018/08/09/Git-%E7%B3%BB%E5%88%97%E6%96%87%E7%AB%A0-%E4%BA%8C-Git-%E5%9F%BA%E6%9C%AC%E7%94%A8%E6%B3%95/";
 
     (function() {
         var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
