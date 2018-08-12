@@ -5,9 +5,122 @@
     <description>你问我什么咖啡最好，我当然觉得是 Java</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Thu, 09 Aug 2018 19:11:34 -0700</pubDate>
-    <lastBuildDate>Thu, 09 Aug 2018 19:11:34 -0700</lastBuildDate>
+    <pubDate>Sat, 11 Aug 2018 19:22:53 -0700</pubDate>
+    <lastBuildDate>Sat, 11 Aug 2018 19:22:53 -0700</lastBuildDate>
     <generator>Jekyll v3.8.0</generator>
+    
+      <item>
+        <title>Git 系列文章（三）</title>
+        <description>&lt;h3 id=&quot;正文之前&quot;&gt;正文之前&lt;/h3&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;上一篇文章中讲述了 Git 的基本操作，这一篇文章着重将其中的分支相关的操作&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h3 id=&quot;正文&quot;&gt;正文&lt;/h3&gt;
+
+&lt;p&gt;在 GitHub 的仓库中，展现给世人的仓库内容都是 master 主分支的，在团队成员对仓库进行改动时，需要将此仓库 fork 至自己的账户中，并创建分支，在自己创建的分支中对仓库进行修改，然后对源仓库的 master 进行 pull request&lt;/p&gt;
+
+&lt;p&gt;一句话，对仓库做贡献就三个步骤：&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;
+    &lt;p&gt;fork 到自己仓库&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;做改动&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;pull request&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;&lt;strong&gt;注意的是&lt;/strong&gt;，在创建了 pull request，在拥有者还没确认之前，如果还有改动，就别再创建 pull request，直接在你自己的分支上提交就可以（下文会验证），之前没有这个概念，在自己的项目里，一项功能用了 3 个 PR，汗颜：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-345bd6188d258c13.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;实战演练&quot;&gt;实战演练&lt;/h4&gt;
+
+&lt;h5 id=&quot;创建分支&quot;&gt;创建分支&lt;/h5&gt;
+
+&lt;p&gt;还是用上次创建的 Git-test 仓库来做演示：&lt;/p&gt;
+
+&lt;p&gt;首先我们先看到本地仓库和远程仓库都只有 master 分支：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-536c77d06e4eece7.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;然后我们在本地仓库新建一个分支：&lt;/p&gt;
+
+&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;git checkout -b A&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;推送至远程仓库：&lt;/p&gt;
+
+&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;git push origin A&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;就会发现远程仓库有了分支 A：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-93627ab5f4429538.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;h5 id=&quot;创建-pr&quot;&gt;创建 PR&lt;/h5&gt;
+
+&lt;p&gt;这时候我们切换到分支 A 中，将 README.md 的内容修改为：test from branch A&lt;/p&gt;
+
+&lt;p&gt;修改完之后回到仓库界面，会发现有个提示，我们按照提示创建 pull request：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-49f1afb818bfd7c8.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;填写信息，并观察此次合并有哪些文件改动，在最下方发现了 README.md 文档的改动：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-19b380200f4a1b76.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;然后创建 pull request：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-677f56e9692b864f.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;h5 id=&quot;需要说明的是&quot;&gt;需要说明的是&lt;/h5&gt;
+
+&lt;p&gt;因为这里是我一个人操作的，所以拥有者和贡献者都是我，但是在其他情况下，贡献者一般不是本人，所以在这里需要说明一点，贡献完了之后，需要拥有者来点击 &lt;code class=&quot;highlighter-rouge&quot;&gt;Merge pull request&lt;/code&gt; 这个按钮，才能将分支合并，贡献者是看不见这个按钮的&lt;/p&gt;
+
+&lt;p&gt;这里先不急着合并，来验证一下上面的说法，在创建 pull request 之后，如果有更新怎么办：&lt;/p&gt;
+
+&lt;p&gt;将 README.md 中添加一行：Git-test，然后提交至分支 A：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-507e46d61448ee68.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;然后我们再到刚才创建的 pull request 中查看一下：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-15b1ad0ccfa6b3d9.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;点击 &lt;code class=&quot;highlighter-rouge&quot;&gt;Files changed&lt;/code&gt; 就会发现创建 pull request 之前的文件和现在的文件有什么区别：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-7af89c0a5e79cb63.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;h5 id=&quot;合并&quot;&gt;合并&lt;/h5&gt;
+
+&lt;p&gt;点击合并之后，PR 就处于关闭状态，仓库的文件也改变了：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-e45f063adc3acf6a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;从远程仓库拉取分支&quot;&gt;从远程仓库拉取分支&lt;/h4&gt;
+
+&lt;p&gt;我们在远程仓库创建一个分支 B，然后用 &lt;code class=&quot;highlighter-rouge&quot;&gt;git checkout -b B origin/B&lt;/code&gt; 从远程仓库拉取分支并切换到该分支：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-c04f232d56f0c03d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;其他的操作都是一样的，本地改文件，提交，GitHub 上 PR&lt;/p&gt;
+
+&lt;p&gt;到此，分支的基本操作就结束了&lt;/p&gt;
+
+&lt;p&gt;GitHub 就是用来进行版本控制的，所以版本的概念需要掌握，关于版本的回溯和推进等操作，留到下一篇文章讲述&lt;/p&gt;
+</description>
+        <pubDate>Sat, 11 Aug 2018 00:00:00 -0700</pubDate>
+        <link>http://localhost:4000/2018/08/11/Git-%E7%B3%BB%E5%88%97%E6%96%87%E7%AB%A0-%E4%B8%89-%E5%88%86%E6%94%AF/</link>
+        <guid isPermaLink="true">http://localhost:4000/2018/08/11/Git-%E7%B3%BB%E5%88%97%E6%96%87%E7%AB%A0-%E4%B8%89-%E5%88%86%E6%94%AF/</guid>
+        
+        <category>Git</category>
+        
+        
+      </item>
     
       <item>
         <title>Git 系列文章（二）</title>
@@ -2146,169 +2259,6 @@ hamcrest-all-1.3.jar&lt;/p&gt;
         <guid isPermaLink="true">http://localhost:4000/2018/06/08/LinkedList%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E4%B8%89/</guid>
         
         <category>Java源码解析</category>
-        
-        
-      </item>
-    
-      <item>
-        <title>Github Pages + Jekyll 创建个人博客</title>
-        <description>&lt;h3 id=&quot;正文之前&quot;&gt;正文之前&lt;/h3&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;在去年的时候接触到了Github，同时也了解到了Github Pages，这是Github为每位用户提供的一个能够作为个人主页的仓库，上个月才开始搭建个人仓库，应网友的请求，写一篇搭建个人博客的过程，最后当然要打一波&lt;a href=&quot;http://lihanxiang.github.io&quot;&gt;我的博客&lt;/a&gt;的广告了&lt;/p&gt;
-
-  &lt;p&gt;关于题目中说到的Jekyll，是一个&lt;strong&gt;静态博客网站生成器&lt;/strong&gt;，也就是说，用MarkDown写完的文章，经过你选定的Jekyll模板的转换，就能够生成面向公众的静态网页了，而且Jekyll集成了服务器，支持本地预览&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;h3 id=&quot;正文&quot;&gt;正文&lt;/h3&gt;
-
-&lt;p&gt;接下来说重点：&lt;/p&gt;
-
-&lt;h4 id=&quot;1-创建仓库&quot;&gt;1. 创建仓库&lt;/h4&gt;
-
-&lt;p&gt;既然是每个用户只能有一个主页，所以仓库的名字肯定是要特殊化的：&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;用户名.github.io&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;我创建了一个小号来做这个示范：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-e5467e8c90dd40fd.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;
-&lt;br /&gt;&lt;/p&gt;
-
-&lt;h4 id=&quot;2-jekyll工具&quot;&gt;2. Jekyll工具&lt;/h4&gt;
-
-&lt;p&gt;准备一个Linux系统，来使用Jekyll工具，我用的是虚拟机里的Ubuntu系统&lt;/p&gt;
-
-&lt;p&gt;具体的Jekyll下载过程：&lt;/p&gt;
-
-&lt;ol&gt;
-  &lt;li&gt;需要配置按照官网给出的环境：&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-66ffcbe2e43e423f.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;ol&gt;
-  &lt;li&gt;安装Jekyll：&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;p&gt;Ubuntu镜像应该自带上述环境，我直接进行了jekyll的安装：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;gem install jekyll
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-1d32d8018bbac443.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;ol&gt;
-  &lt;li&gt;挑选模板&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;p&gt;在jekyll的&lt;a href=&quot;http://jekyllthemes.org/&quot;&gt;模板目录&lt;/a&gt;中挑选自己喜欢的，并找到模板的GitHub地址，这里要将一点，推荐选用那些有空白模板的，免得有很多需要修改的信息&lt;/p&gt;
-
-&lt;p&gt;我们以模板中的第一个模板为例&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-f844cd7e83e470a8.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;找到模板的源码位置：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-9256e30599245e31.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;
-&lt;br /&gt;&lt;/p&gt;
-
-&lt;h4 id=&quot;3-本地编辑&quot;&gt;3. 本地编辑&lt;/h4&gt;
-
-&lt;p&gt;把这个模板仓库和你刚才创建的博客仓库下载到本地，并且认真阅读模板项目中的README文档，文档里有关于模板的基础配置，一些特点以及博客文章的规范等信息&lt;/p&gt;
-
-&lt;p&gt;具体的操作试模板而定，我是直接把模板里的所有文件（除了README文档）全部复制到我的仓库里，简单粗暴，然后push
-&lt;br /&gt;&lt;/p&gt;
-
-&lt;h4 id=&quot;4-jekyll目录&quot;&gt;4. Jekyll目录&lt;/h4&gt;
-
-&lt;p&gt;官网给出的基本的目录是这样的：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-b10e1e6cb5f80e02.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;然后我以我的博客目录来解释一下这些文件夹：&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;_config.yml&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;是核心的配置文件，里面包含了你的博客的基本信息，网页的地址，其他的链接以及MarkDown格式等信息&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;_includes&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;是一些可重用的组件，比如Github、知乎和简书的链接，谷歌分析的代码等等&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;_layouts&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;是你博客网页的布局&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;_posts&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;这里存放要发表的文章，也就是需要被转换成&lt;strong&gt;.html&lt;/strong&gt;的&lt;strong&gt;.md&lt;/strong&gt;文件&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;_site&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;这个文件夹是存放Jekyll转换完成的页面，官方推荐最好放入.gitignore 文件中，以免被他人查看&lt;/p&gt;
-
-&lt;p&gt;其他没有提到的是我没有使用到的，当然我使用的博客模板中还有一些如&lt;strong&gt;css&lt;/strong&gt;, &lt;strong&gt;js&lt;/strong&gt;, &lt;strong&gt;img&lt;/strong&gt;, &lt;strong&gt;font&lt;/strong&gt;之类的目录，这些都视模板而定
-&lt;br /&gt;&lt;/p&gt;
-
-&lt;h4 id=&quot;5-发布文章&quot;&gt;5. 发布文章&lt;/h4&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;文章标题&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;年-月-日-标题.MARKUP，比如当前这篇文章就是：&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;2018-05-28-Github Pages + Jekyll 创建个人博客.md&lt;/strong&gt;&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;YAML头信息&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;每篇文章都需要YAML头信息，具体的信息是由你的模板决定的&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;Jekyll转换&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;把添加了头信息和修改了标题的文章放至_posts文件夹中，然后在博客仓库内使用 &lt;strong&gt;jekyll serve&lt;/strong&gt; 命令：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-82e2bd8f8ed4cf47.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;运行之后可以在本地预览博客内容，端口为&lt;strong&gt;http://localhost:4000&lt;/strong&gt;：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-9dd037396fef0e4c.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;预览完成之后，用git命令来进行add和commit，并且push本地仓库，过几分钟登陆博客地址，就能够看到内容更新了：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-d68cdbe54832bfbd.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;git add
-git commit
-git pull
-git push&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;这四条命令就够了，博客的基础搭建就这样结束了，祝大家都能挑选到心仪的模板，最后再次抛出&lt;a href=&quot;http://lihanxiang.github.io&quot;&gt;我的博客&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-79919768b5365766.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; width=&quot;40%&quot; height=&quot;40%&quot; /&gt;&lt;/p&gt;
-</description>
-        <pubDate>Tue, 29 May 2018 00:00:00 -0700</pubDate>
-        <link>http://localhost:4000/2018/05/29/Github-Pages-+-Jekyll-%E5%88%9B%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/</link>
-        <guid isPermaLink="true">http://localhost:4000/2018/05/29/Github-Pages-+-Jekyll-%E5%88%9B%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/</guid>
-        
-        <category>随笔</category>
         
         
       </item>

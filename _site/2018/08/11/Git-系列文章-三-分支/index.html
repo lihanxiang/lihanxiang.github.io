@@ -19,9 +19,9 @@
     <meta name="keyword"  content="Java">
     <link rel="shortcut icon" href="/img/favicon.ico">
 
-    <title>Java基础知识梳理（三）异常处理基础知识 - 李汉祥的博客 | L Blog</title>
+    <title>Git 系列文章（三） - 李汉祥的博客 | L Blog</title>
 
-    <link rel="canonical" href="http://localhost:4000/2018/04/24/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E4%B8%89-%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/">
+    <link rel="canonical" href="http://localhost:4000/2018/08/11/Git-%E7%B3%BB%E5%88%97%E6%96%87%E7%AB%A0-%E4%B8%89-%E5%88%86%E6%94%AF/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -142,12 +142,12 @@
 
 
     <!-- Image to hack wechat -->
-<!-- <img src="/img/post/2018-04/24.jpg" width="0" height="0"> -->
+<!-- <img src="/img/post/2018-08/11.jpg" width="0" height="0"> -->
 
 <!-- Post Header -->
 <style type="text/css">
     header.intro-header{
-        background-image: url('/img/post/2018-04/24.jpg')
+        background-image: url('/img/post/2018-08/11.jpg')
     }
 </style>
 <header class="intro-header" >
@@ -157,15 +157,15 @@
                 <div class="post-heading">
                     <div class="tags">
                         
-                        <a class="tag" href="/tags/#Java基础" title="Java基础">Java基础</a>
+                        <a class="tag" href="/tags/#Git" title="Git">Git</a>
                         
                     </div>
-                    <h1>Java基础知识梳理（三）异常处理基础知识</h1>
+                    <h1>Git 系列文章（三）</h1>
                     
                     
-                    <h2 class="subheading">知识点回顾</h2>
+                    <h2 class="subheading">分支</h2>
                     
-                    <span class="meta">Posted by L on April 24, 2018</span>
+                    <span class="meta">Posted by L on August 11, 2018</span>
                 </div>
             </div>
         </div>
@@ -185,158 +185,105 @@
 
 				<h3 id="正文之前">正文之前</h3>
 
-<p>有句话说的不错，来自《Java核心技术 卷一》：</p>
-
 <blockquote>
-  <p>在理想状态下，用户输入数据的格式永远都是正确的，选择打开的文件也一定存在，并且永远不会出现bug</p>
+  <p>上一篇文章中讲述了 Git 的基本操作，这一篇文章着重将其中的分支相关的操作</p>
 </blockquote>
-
-<p>相信这个，你就天真了，这次我们来介绍以下Java异常处理的基本知识：</p>
-
-<blockquote>
-  <ol>
-    <li>异常分类</li>
-    <li>抛出异常</li>
-    <li>捕获异常</li>
-    <li>处理异常</li>
-    <li>异常说明</li>
-    <li>throw 和 throws的区别</li>
-  </ol>
-</blockquote>
-
-<hr />
 
 <h3 id="正文">正文</h3>
 
-<h4 id="1-异常分类">1. 异常分类</h4>
+<p>在 GitHub 的仓库中，展现给世人的仓库内容都是 master 主分支的，在团队成员对仓库进行改动时，需要将此仓库 fork 至自己的账户中，并创建分支，在自己创建的分支中对仓库进行修改，然后对源仓库的 master 进行 pull request</p>
 
-<p>在Java中，每个异常都是一个名叫<strong>Throwable</strong>的类的一个实例</p>
+<p>一句话，对仓库做贡献就三个步骤：</p>
 
-<p><img src="http://upload-images.jianshu.io/upload_images/3426615-5482653285cf17fa.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
+<ol>
+  <li>
+    <p>fork 到自己仓库</p>
+  </li>
+  <li>
+    <p>做改动</p>
+  </li>
+  <li>
+    <p>pull request</p>
+  </li>
+</ol>
 
-<p>在《Java核心技术 卷一》有这么一句话：“如果出现runtime exception异常,那么就一定是你的问题”，具体都有哪些异常，这里就不赘述</p>
+<p><strong>注意的是</strong>，在创建了 pull request，在拥有者还没确认之前，如果还有改动，就别再创建 pull request，直接在你自己的分支上提交就可以（下文会验证），之前没有这个概念，在自己的项目里，一项功能用了 3 个 PR，汗颜：</p>
 
-<h4 id="2-抛出异常">2. 抛出异常</h4>
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-345bd6188d258c13.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
 
-<p>在抛出异常之前，要先确定异常的类型，举个例子：</p>
+<h4 id="实战演练">实战演练</h4>
 
-<p><strong>EOFException</strong>：在输入过程，遇到了预期之外的EOF之后的信号</p>
+<h5 id="创建分支">创建分支</h5>
 
-<p><img src="http://upload-images.jianshu.io/upload_images/3426615-44b796cb99af6c76.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
+<p>还是用上次创建的 Git-test 仓库来做演示：</p>
 
-<h4 id="3-捕获异常">3. 捕获异常</h4>
+<p>首先我们先看到本地仓库和远程仓库都只有 master 分支：</p>
 
-<p>使用 try-catch 语句来进行异常的捕获：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-536c77d06e4eece7.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
 
-<p>基本格式：</p>
+<p>然后我们在本地仓库新建一个分支：</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>try{
-    //一段代码
-}
-catch(Exception Type){
-    //另一段代码
-}
-</code></pre></div></div>
+<p><code class="highlighter-rouge">git checkout -b A</code></p>
 
-<p>这个语句块的意思就是，尝试去执行<strong>try</strong>语句块里的内容，如果没有异常当然是最好的，如果有异常，将其捕获，并执行<strong>catch</strong>语句块中的代码</p>
+<p>推送至远程仓库：</p>
 
-<p>以打开文件的操作来举个例子：</p>
+<p><code class="highlighter-rouge">git push origin A</code></p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+<p>就会发现远程仓库有了分支 A：</p>
 
-public class Test {
-    public static void main(String[] args){
-        try{
-            FileInputStream in = new FileInputStream("text.txt");
-        }catch(FileNotFoundException e){
-            System.out.println("未找到文件");
-        }
-    }
-}
-</code></pre></div></div>
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-93627ab5f4429538.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
 
-<p>在这个源文件的同级目录下，没有文件”text.txt”，所以如果不适用try-catch语句就会提示可能产生异常，我们来运行一下：</p>
+<h5 id="创建-pr">创建 PR</h5>
 
-<p><img src="https://upload-images.jianshu.io/upload_images/3426615-3b4d182c4e201ee3.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
+<p>这时候我们切换到分支 A 中，将 README.md 的内容修改为：test from branch A</p>
 
-<p>运行了catch语句中的代码</p>
+<p>修改完之后回到仓库界面，会发现有个提示，我们按照提示创建 pull request：</p>
 
-<p>在catch语句的参数中我们定义了具体的异常类型，但是这些具体的异常都是Exception的子类，所以我们可以通过将参数改为<strong>Exception e</strong> 来捕获所有异常<strong>（但是不建议这么做，或者把捕获异常基类放到最后，因为有的时候你需要针对不同的异常做出一些不同的动作）</strong>：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-49f1afb818bfd7c8.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
 
-<p><img src="https://upload-images.jianshu.io/upload_images/3426615-89231daa5fb26d69.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
+<p>填写信息，并观察此次合并有哪些文件改动，在最下方发现了 README.md 文档的改动：</p>
 
-<h4 id="4-处理异常">4. 处理异常</h4>
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-19b380200f4a1b76.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
 
-<p>在捕获了异常之后，我们还需要处理这些异常，我们可以将这些异常的消息输出，或者在捕获之后再抛出另外的异常：</p>
+<p>然后创建 pull request：</p>
 
-<p>常用的消息输出方式就是<strong>getMessage()</strong>以及<strong>printStackTrace()</strong></p>
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-677f56e9692b864f.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
 
-<p>我们来做个实验：</p>
+<h5 id="需要说明的是">需要说明的是</h5>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+<p>因为这里是我一个人操作的，所以拥有者和贡献者都是我，但是在其他情况下，贡献者一般不是本人，所以在这里需要说明一点，贡献完了之后，需要拥有者来点击 <code class="highlighter-rouge">Merge pull request</code> 这个按钮，才能将分支合并，贡献者是看不见这个按钮的</p>
 
-public class Test {
-    public static void main(String[] args) throws FileNotFoundException {
-        try{
-            FileInputStream in = new FileInputStream("test.txt");
-        }catch (FileNotFoundException e){
-            System.out.println(e.getMessage());
-            e.printStackTrace();
-        }
+<p>这里先不急着合并，来验证一下上面的说法，在创建 pull request 之后，如果有更新怎么办：</p>
 
-    }
-}
-</code></pre></div></div>
+<p>将 README.md 中添加一行：Git-test，然后提交至分支 A：</p>
 
-<p>打印出来结果是这样的：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-507e46d61448ee68.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
 
-<p><img src="https://upload-images.jianshu.io/upload_images/3426615-f040d1cbd3eb25ed.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
+<p>然后我们再到刚才创建的 pull request 中查看一下：</p>
 
-<p>异常所输出的信息是<strong>test.txt (系统找不到指定的文件。)</strong></p>
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-15b1ad0ccfa6b3d9.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
 
-<p><strong>printStackTrace()</strong>的目的是打印栈轨迹，也就是将抛出异常的位置到诉你，包括输出了异常信息，就像如图所示，Main()函数的第七行有问题，在程序调试的时候经常用<strong>printStackTrace()</strong></p>
+<p>点击 <code class="highlighter-rouge">Files changed</code> 就会发现创建 pull request 之前的文件和现在的文件有什么区别：</p>
 
-<h4 id="5-异常说明">5. 异常说明</h4>
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-7af89c0a5e79cb63.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
 
-<p>如果有别人需要阅读你的代码，就需要知道你的代码会抛出什么异常，那么你就要写异常说明，形式通常为：</p>
+<h5 id="合并">合并</h5>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>void method() throws ....{
+<p>点击合并之后，PR 就处于关闭状态，仓库的文件也改变了：</p>
 
-}
-</code></pre></div></div>
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-e45f063adc3acf6a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
 
-<p>首先，我们在原先的代码的方法名后加上可能会出现的异常：</p>
+<h4 id="从远程仓库拉取分支">从远程仓库拉取分支</h4>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+<p>我们在远程仓库创建一个分支 B，然后用 <code class="highlighter-rouge">git checkout -b B origin/B</code> 从远程仓库拉取分支并切换到该分支：</p>
 
-public class Test {
-    public void input() throws FileNotFoundException {
-            //不需要try-catch语句块，因为我们没有在此处捕获异常
-            FileInputStream in = new FileInputStream("test.txt");
-    }
-}
-</code></pre></div></div>
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-c04f232d56f0c03d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
 
-<p>然后，我们新建一个类，创建Test类的实例，会发现有提示：</p>
+<p>其他的操作都是一样的，本地改文件，提交，GitHub 上 PR</p>
 
-<p><img src="https://upload-images.jianshu.io/upload_images/3426615-1fb40d6ea2bf8eab.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
+<p>到此，分支的基本操作就结束了</p>
 
-<p>因为我们写方法时，告诉外界可能会产生什么样的异常了，其他人在调用的时候就能够发现</p>
-
-<h4 id="6-throw-和-throws的区别">6. throw 和 throws的区别</h4>
-
-<p>关于这两个的区别，其实在于究竟在哪个地方处理异常，举个例子来说：</p>
-
-<p>在方法A中，如果在产生异常的时候，不需要马上捕获，在方法B调用方法A的时候再进行捕获，那么就在A的方法名后添加<strong>throws</strong>，如果需要在方法A中进行捕获，则直接使用<strong>throw</strong></p>
-
-<p>看捕获异常的对象是谁，再决定应该如何来使用</p>
-
-<p>那么，关于Java异常处理的基本介绍就结束了，接下来会有针对异常信息的专题文章会发布</p>
-
-<p><img src="https://upload-images.jianshu.io/upload_images/3426615-79919768b5365766.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" width="40%" height="40%" /></p>
+<p>GitHub 就是用来进行版本控制的，所以版本的概念需要掌握，关于版本的回溯和推进等操作，留到下一篇文章讲述</p>
 
 
                 <hr>
@@ -347,13 +294,9 @@ public class Test {
                 <ul class="pager">
                     
                     <li class="previous">
-                        <a href="/2018/04/23/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E4%BA%8C-%E5%AD%97%E7%AC%A6%E4%B8%B2/" data-toggle="tooltip" data-placement="top" title="Java基础知识梳理（二）字符串">&larr; Previous Post</a>
+                        <a href="/2018/08/09/Git-%E7%B3%BB%E5%88%97%E6%96%87%E7%AB%A0-%E4%BA%8C-Git-%E5%9F%BA%E6%9C%AC%E7%94%A8%E6%B3%95/" data-toggle="tooltip" data-placement="top" title="Git 系列文章（二）">&larr; Previous Post</a>
                     </li>
                     
-                    
-                    <li class="next">
-                        <a href="/2018/04/25/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E5%9B%9B-%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86%E8%BF%9B%E9%98%B6/" data-toggle="tooltip" data-placement="top" title="Java基础知识梳理（四）异常处理进阶">Next Post &rarr;</a>
-                    </li>
                     
                 </ul>
 
@@ -477,8 +420,8 @@ public class Test {
 <script type="text/javascript">
     /* * * CONFIGURATION VARIABLES * * */
     var disqus_shortname = "http-hxblog-site";
-    var disqus_identifier = "/2018/04/24/Java基础知识梳理（三）异常处理基础知识";
-    var disqus_url = "http://localhost:4000/2018/04/24/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E4%B8%89-%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/";
+    var disqus_identifier = "/2018/08/11/Git 系列文章（三）—— 分支";
+    var disqus_url = "http://localhost:4000/2018/08/11/Git-%E7%B3%BB%E5%88%97%E6%96%87%E7%AB%A0-%E4%B8%89-%E5%88%86%E6%94%AF/";
 
     (function() {
         var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
