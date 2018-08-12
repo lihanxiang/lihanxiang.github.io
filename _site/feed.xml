@@ -5,8 +5,8 @@
     <description>你问我什么咖啡最好，我当然觉得是 Java</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Sat, 11 Aug 2018 20:07:42 -0700</pubDate>
-    <lastBuildDate>Sat, 11 Aug 2018 20:07:42 -0700</lastBuildDate>
+    <pubDate>Sat, 11 Aug 2018 20:37:40 -0700</pubDate>
+    <lastBuildDate>Sat, 11 Aug 2018 20:37:40 -0700</lastBuildDate>
     <generator>Jekyll v3.8.0</generator>
     
       <item>
@@ -14,7 +14,7 @@
         <description>&lt;h3 id=&quot;正文之前&quot;&gt;正文之前&lt;/h3&gt;
 
 &lt;blockquote&gt;
-  &lt;p&gt;上一篇文章中讲述了 Git 的基本操作，这一篇文章着重将其中的分支相关的操作&lt;/p&gt;
+  &lt;p&gt;上一篇文章中讲述了 Git 的基本操作，这一篇文章着重讲其中的分支相关的操作&lt;/p&gt;
 &lt;/blockquote&gt;
 
 &lt;h3 id=&quot;正文&quot;&gt;正文&lt;/h3&gt;
@@ -112,6 +112,8 @@
 &lt;p&gt;到此，分支的基本操作就结束了&lt;/p&gt;
 
 &lt;p&gt;GitHub 就是用来进行团队合作开发的，所以在团队使用 GitHub 时有一些注意事项，下一篇文章会讲述&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-79919768b5365766.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; width=&quot;40%&quot; height=&quot;40%&quot; /&gt;&lt;/p&gt;
 </description>
         <pubDate>Sat, 11 Aug 2018 00:00:00 -0700</pubDate>
         <link>http://localhost:4000/2018/08/11/Git-%E7%B3%BB%E5%88%97%E6%96%87%E7%AB%A0-%E4%B8%89-%E5%88%86%E6%94%AF/</link>
@@ -290,6 +292,8 @@ git push&lt;br /&gt;&lt;/p&gt;
 &lt;p&gt;后四步一般是连在一起的&lt;/p&gt;
 
 &lt;p&gt;这只是简单介绍了一下 Git，下一篇文章将讲述分支的相关操作&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-79919768b5365766.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; width=&quot;40%&quot; height=&quot;40%&quot; /&gt;&lt;/p&gt;
 </description>
         <pubDate>Thu, 09 Aug 2018 00:00:00 -0700</pubDate>
         <link>http://localhost:4000/2018/08/09/Git-%E7%B3%BB%E5%88%97%E6%96%87%E7%AB%A0-%E4%BA%8C-Git-%E5%9F%BA%E6%9C%AC%E7%94%A8%E6%B3%95/</link>
@@ -378,6 +382,7 @@ git push&lt;br /&gt;&lt;/p&gt;
 
 &lt;p&gt;在最后说明一下，听说现在国内的培训机构有包装 GitHub 的行为，中国人还真是什么都敢干，先是大闹 Issues，然后是抄袭行为和可以包装行为。在这里强烈鄙视那些在 GitHub 上抄袭的人。就个人而言，它只是一个有着开发功能的社区，即使包装的再好，连基本的协同开发流程都不知道是怎样的，不就是衣着光鲜亮丽的原始人吗？GitHub 带给我们这些普通开发者的最明显的好处就是十分便利的分布式协作开发流程，以及发现一些有趣项目的机会。目光短浅的人往往会走偏，去刻意包装一下，是太没自信了吗？&lt;/p&gt;
 
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-79919768b5365766.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; width=&quot;40%&quot; height=&quot;40%&quot; /&gt;&lt;/p&gt;
 </description>
         <pubDate>Thu, 02 Aug 2018 00:00:00 -0700</pubDate>
         <link>http://localhost:4000/2018/08/02/Git-%E7%B3%BB%E5%88%97%E6%96%87%E7%AB%A0-%E4%B8%80-GitHub-%E4%BB%8B%E7%BB%8D/</link>
@@ -577,6 +582,8 @@ git push&lt;br /&gt;&lt;/p&gt;
 &lt;p&gt;这个标签表示，去掉多余的逗号，并在前面加上 SET，使其成为语法正确的语句&lt;/p&gt;
 
 &lt;p&gt;总而言之，使用动态 SQL 能够避免 SQL 拼接时可能会发生的种种错误&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-79919768b5365766.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; width=&quot;40%&quot; height=&quot;40%&quot; /&gt;&lt;/p&gt;
 </description>
         <pubDate>Mon, 02 Jul 2018 00:00:00 -0700</pubDate>
         <link>http://localhost:4000/2018/07/02/%E5%88%9D%E8%AF%86-Mybatis-%E4%BA%8C-%E5%8A%A8%E6%80%81-SQL/</link>
@@ -887,6 +894,8 @@ mysql-connector-java-5.1.46&lt;/p&gt;
 &lt;h6 id=&quot;3-映射文件&quot;&gt;3. 映射文件&lt;/h6&gt;
 
 &lt;p&gt;映射文件就是我们上面写到的 ProductMapper.xml，它的作用不仅仅是带有 SQL 语句，还能将 POJO 映射成为数据库中的记录，所以我们刚才才能够使用占位符进行增删改查操作或将查询结果映射为POJO&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-79919768b5365766.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; width=&quot;40%&quot; height=&quot;40%&quot; /&gt;&lt;/p&gt;
 </description>
         <pubDate>Thu, 21 Jun 2018 00:00:00 -0700</pubDate>
         <link>http://localhost:4000/2018/06/21/%E5%88%9D%E8%AF%86-Mybatis-%E4%B8%80-%E5%9F%BA%E6%9C%AC%E9%85%8D%E7%BD%AE%E5%8F%8A%E7%94%A8%E6%B3%95/</link>
