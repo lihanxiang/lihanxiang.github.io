@@ -19,9 +19,9 @@
     <meta name="keyword"  content="Java">
     <link rel="shortcut icon" href="/img/favicon.ico">
 
-    <title>Git 系列文章（一） - 李汉祥的博客 | L Blog</title>
+    <title>李汉祥的博客 | L Blog</title>
 
-    <link rel="canonical" href="http://localhost:4000/2018/08/02/Git-%E7%B3%BB%E5%88%97%E6%96%87%E7%AB%A0-%E4%B8%80-GitHub-%E4%BB%8B%E7%BB%8D/">
+    <link rel="canonical" href="http://localhost:4000/page4/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -141,285 +141,263 @@
 </script>
 
 
-    <!-- Image to hack wechat -->
-<!-- <img src="/img/post/2018-08/02.jpg" width="0" height="0"> -->
-
-<!-- Post Header -->
-<style type="text/css">
-    header.intro-header{
-        background-image: url('/img/post/2018-08/02.jpg')
-    }
-</style>
-<header class="intro-header" >
+    <!-- Page Header -->
+<header class="intro-header" style="background-image: url('/img/top.jpg')">
     <div class="container">
         <div class="row">
-            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
-                <div class="post-heading">
-                    <div class="tags">
-                        
-                        <a class="tag" href="/tags/#Git" title="Git">Git</a>
-                        
-                    </div>
-                    <h1>Git 系列文章（一）</h1>
-                    
-                    
-                    <h2 class="subheading">GitHub 介绍</h2>
-                    
-                    <span class="meta">Posted by L on August 2, 2018</span>
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 ">
+                <div class="site-heading">
+                    <h1>L Blog</h1>
+                    <!--<hr class="small">-->
+                    <span class="subheading"></span>
                 </div>
             </div>
         </div>
     </div>
 </header>
 
-<!-- Post Content -->
-<article>
-    <div class="container">
-        <div class="row">
+<!-- Main Content -->
+<div class="container">
+	<div class="row">
+        
 
+<!-- USE SIDEBAR -->
     <!-- Post Container -->
-            <div class="
-                col-lg-8 col-lg-offset-2
-                col-md-10 col-md-offset-1
-                post-container">
+    		<div class="
+                col-lg-8 col-lg-offset-1
+                col-md-8 col-md-offset-1
+                col-sm-12
+                col-xs-12
+                post-container
+            ">
+    			
+<div class="post-preview">
+    <a href="/2018/04/16/%E7%AE%80%E6%98%93%E5%95%86%E5%93%81%E4%BF%A1%E6%81%AF%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F-%E9%A6%96%E4%B8%AAWeb%E9%A1%B9%E7%9B%AE/">
+        <h2 class="post-title">
+            简易商品信息管理系统——首个Web项目
+        </h2>
+        
+        <h3 class="post-subtitle">
+            练手项目
+        </h3>
+        
+        <div class="post-content-preview">
+            这篇文章转载自我的简书
 
-				<h3 id="正文之前">正文之前</h3>
-
-<blockquote>
-  <p>相信大部分都人都知道 GitHub，对，就是被微软收购的全球最大交友网站。目前博主还处于学生阶段，所以一直处于这样的循环中：</p>
-
-  <p>git add<br />
-git commit<br />
-git pull<br />
-git push<br /></p>
-
-  <p>但是本着要深入学习的心态，以及目前参加<a href="https://github.com/xitu/gold-miner">掘金翻译计划</a>，翻译的工作都是在 GitHub 上进行的，所以打算从头开始写 Git 系列文章来温故知新一下</p>
-
-  <p>那么这第一篇文章就是介绍一下 Git 和 GitHub，下一篇会用一个例子来讲述 GitHub 上进行协同开发的基本流程</p>
-</blockquote>
-
-<h3 id="正文之前-1">正文之前</h3>
-
-<h4 id="git">Git</h4>
-
-<p>先介绍一下什么是 Git，引用维基百科的介绍：</p>
-
-<blockquote>
-  <p>Git 是一个分布式版本控制软件，最初由 Linus Torvalds 创作（对，就是那个英语不是他母语的林纳斯），于 2005 年以 GPL 发布。最初是为了更好地管理 Linux 内核开发而设计。</p>
-</blockquote>
-
-<p>在上面的一段话中，有一个需要解释一下的概念 —— 分布式版本控制：</p>
-
-<p>分布式版本控制是版本控制的方式之一，顾名思义，分布式就代表协同开发者不需要连接同一个网络，一个项目可以由许多国家的程序员来完成</p>
-
-<p>关于 Git 这个名字，来自英国俚语，意思大约是“混账”</p>
-
-<p>具体的 Git 操作等到下一篇讲到协作开发时会说明</p>
-
-<h4 id="github">GitHub</h4>
-
-<p>GitHub 是一个通过 Git 进行版本控制的软件源代码托管服务网站，说白了，就是一个网站，里面放着许多用 Git 进行版本控制的项目。因为它有着社交网站的功能 —— watch, star, fork, follow 等功能，也被戏称作“全球最大（同性）交友网站。不过我更喜欢把它当作一个社区，在 GitHub 里有一些很有意思的项目，也有一些很好用的开源软件。</p>
-
-<p>关于 GitHub 账户的创建过程不讲述，付费用户能够拥有私有 (private) 仓库的使用权，学生可以免费使用私有仓库</p>
-
-<p>这里有几个关于 GitHub 的功能是需要了解一下的：</p>
-
-<h5 id="1-fork">1. fork</h5>
-<p>这里拿 spring 的仓库来截图说明一下：</p>
-
-<p><img src="https://upload-images.jianshu.io/upload_images/3426615-31bccd70465091bb.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
-
-<p>fork 就表示在你的名下创建一个项目的副本，如果你想要学习一下某一个项目，或者想对别人的项目做一些改动时，都需要先将项目 fork 到自己的账户中，然后再进行进一步的操作</p>
-
-<h5 id="2--issues-和-pull-requests">2.  Issues 和 Pull requests</h5>
-
-<p><img src="https://upload-images.jianshu.io/upload_images/3426615-48bd341e3737a835.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
-
-<p>Issue 的目的是为了给开发者提供意见或建议的，开发者可以根据 Issues 中出现的内容来对项目进行改动。但是现在的 Issues 好像变成了讨论区，尤其是前一段事件的 Issues 出现“求不要更新了，老子学不动了”，真是丢脸</p>
-
-<p>Pull requests（简称 PR）是你在 fork 别人的仓库之后，如果有改动想要通知开发者，就发起一个 PR，开发者审核之后，如果开发者同意了这个 PR，就会将 PR 合并到项目中去，你也算为这个项目做了贡献</p>
-
-<h5 id="3-wiki">3. Wiki</h5>
-
-<p>Wiki 是一种在网络上开放且可供多人协同创作的超文本系统，支持那些面向社群的协作式写作，为协作式写作提供了必要的帮助</p>
-
-<h5 id="4-gists">4. Gists</h5>
-
-<p>上面讲述的都是基于仓库的，这里说的 Gist 是 GitHub 的一个子服务，用于小型代码片段的分享，比如说你有一些不错的代码片段，但是又没必要创建一个仓库来存放，就可以用 Gist 来存放</p>
-
-<h5 id="5-contributions">5. Contributions</h5>
-
-<p>在你的公有仓库中进行代码提交，就会在个人信息页面的 Contribution 栏中出现标记，拿我自己的来做个示范：</p>
-
-<p><img src="https://upload-images.jianshu.io/upload_images/3426615-9754f66f95061748.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
-
-<p>两三个 Java Web 项目、掘金翻译计划、个人博客和 LeetCode 记录基本构成了我的 GitHub 的全部贡献，几乎在某一段时间内都有每天做一些</p>
-
-<h4 id="中国人在-github">中国人在 GitHub</h4>
-
-<p>在最后说明一下，听说现在国内的培训机构有包装 GitHub 的行为，中国人还真是什么都敢干，先是大闹 Issues，然后是抄袭行为和可以包装行为。在这里强烈鄙视那些在 GitHub 上抄袭的人。就个人而言，它只是一个有着开发功能的社区，即使包装的再好，连基本的协同开发流程都不知道是怎样的，不就是衣着光鲜亮丽的原始人吗？GitHub 带给我们这些普通开发者的最明显的好处就是十分便利的分布式协作开发流程，以及发现一些有趣项目的机会。目光短浅的人往往会走偏，去刻意包装一下，是太没自信了吗？</p>
-
-<p><img src="https://upload-images.jianshu.io/upload_images/3426615-79919768b5365766.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" width="40%" height="40%" /></p>
+正文之前
 
 
-                <hr>
+  在学习了一段时间的Java Web的内容之后，当然需要有个项目来练练手，我相信大多数人的首选项目都是信息管理系统吧，所以我选择了商品信息管理系统
 
-               
-
-
-                <ul class="pager">
-                    
-                    <li class="previous">
-                        <a href="/2018/07/28/LeetCode-%E6%B7%B1%E6%90%9C%E6%B0%B4%E9%A2%98%E8%AE%B0%E5%BD%95/" data-toggle="tooltip" data-placement="top" title="LeetCode —— 深搜水题记录">&larr; Previous Post</a>
-                    </li>
-                    
-                    
-                    <li class="next">
-                        <a href="/2018/08/09/Git-%E7%B3%BB%E5%88%97%E6%96%87%E7%AB%A0-%E4%BA%8C-Git-%E5%9F%BA%E6%9C%AC%E7%94%A8%E6%B3%95/" data-toggle="tooltip" data-placement="top" title="Git 系列文章（二）">Next Post &rarr;</a>
-                    </li>
-                    
-                </ul>
-
-		
-                <!-- disqus 评论框 start -->
-                <div class="comment">
-                    <div id="disqus_thread" class="disqus-thread"></div>
-                </div>
-                <!-- disqus 评论框 end -->
-                
+  目前项目源码已全部上传至GitHub，欢迎大家来fork —— 商品信息管理系统
 
 
 
-            </div>
 
+正文
+
+项目构思
+
+简易的管理系统，结构为 Servlet + JSP + MySQL，使用IntelliJ...
+        </div>
+    </a>
+    <p class="post-meta">
+        Posted by L on April 16, 2018
+    </p>
+</div>
+<hr>
+
+
+<!-- Pager -->
+
+<ul class="pager">
+    
+    <li class="previous">
+        <a href="/page3">&larr; Newer Posts</a>
+    </li>
+    
+    
+</ul>
+
+
+    		</div>
     <!-- Sidebar Container -->
             <div class="
-                col-lg-8 col-lg-offset-2
-                col-md-10 col-md-offset-1
-                sidebar-container">
-
+                col-lg-3 col-lg-offset-0
+                col-md-3 col-md-offset-0
+                col-sm-12
+                col-xs-12
+                sidebar-container
+            ">
                 <!-- Featured Tags -->
                 
                 <section>
                     <hr class="hidden-sm hidden-xs">
                     <h5><a href="/tags/">FEATURED TAGS</a></h5>
                     <div class="tags">
-        				
+                        
                             
-                				<a href="/tags/#Java Web" title="Java Web" rel="3">
+                                <a href="/tags/#Java Web" title="Java Web" rel="3">
                                     Java Web
                                 </a>
                             
-        				
+                        
                             
-                				<a href="/tags/#IntelliJ IDEA" title="IntelliJ IDEA" rel="1">
+                                <a href="/tags/#IntelliJ IDEA" title="IntelliJ IDEA" rel="1">
                                     IntelliJ IDEA
                                 </a>
                             
-        				
+                        
                             
-                				<a href="/tags/#Spring MVC" title="Spring MVC" rel="1">
+                                <a href="/tags/#Spring MVC" title="Spring MVC" rel="1">
                                     Spring MVC
                                 </a>
                             
-        				
+                        
                             
-                				<a href="/tags/#随笔" title="随笔" rel="2">
+                                <a href="/tags/#随笔" title="随笔" rel="2">
                                     随笔
                                 </a>
                             
-        				
+                        
                             
-                				<a href="/tags/#树莓派" title="树莓派" rel="3">
+                                <a href="/tags/#树莓派" title="树莓派" rel="3">
                                     树莓派
                                 </a>
                             
-        				
+                        
                             
-                				<a href="/tags/#Java基础" title="Java基础" rel="4">
+                                <a href="/tags/#Java基础" title="Java基础" rel="4">
                                     Java基础
                                 </a>
                             
-        				
+                        
                             
-                				<a href="/tags/#MySQL" title="MySQL" rel="1">
+                                <a href="/tags/#MySQL" title="MySQL" rel="1">
                                     MySQL
                                 </a>
                             
-        				
+                        
                             
-                				<a href="/tags/#项目模块" title="项目模块" rel="2">
+                                <a href="/tags/#项目模块" title="项目模块" rel="2">
                                     项目模块
                                 </a>
                             
-        				
+                        
                             
-                				<a href="/tags/#Java源码解析" title="Java源码解析" rel="7">
+                                <a href="/tags/#Java源码解析" title="Java源码解析" rel="7">
                                     Java源码解析
                                 </a>
                             
-        				
+                        
                             
-                				<a href="/tags/#Spring" title="Spring" rel="2">
+                                <a href="/tags/#Spring" title="Spring" rel="2">
                                     Spring
                                 </a>
                             
-        				
+                        
                             
-                				<a href="/tags/#Mybatis" title="Mybatis" rel="2">
+                                <a href="/tags/#Mybatis" title="Mybatis" rel="2">
                                     Mybatis
                                 </a>
                             
-        				
+                        
                             
-                				<a href="/tags/#LeetCode" title="LeetCode" rel="1">
+                                <a href="/tags/#LeetCode" title="LeetCode" rel="1">
                                     LeetCode
                                 </a>
                             
-        				
+                        
                             
-                				<a href="/tags/#Git" title="Git" rel="4">
+                                <a href="/tags/#Git" title="Git" rel="4">
                                     Git
                                 </a>
                             
-        				
+                        
                             
-                				<a href="/tags/#掘金翻译计划" title="掘金翻译计划" rel="1">
+                                <a href="/tags/#掘金翻译计划" title="掘金翻译计划" rel="1">
                                     掘金翻译计划
                                 </a>
                             
-        				
-        			</div>
+                        
+                    </div>
                 </section>
                 
 
+                <!-- Short About -->
+                <section class="visible-md visible-lg">
+                    <hr><h5><a href="/about/">ABOUT ME</a></h5>
+                    <div class="short-about">
+                        
+                            <img src="/img/Hank.jpg" />
+                        
+                        
+                            <p>你问我什么咖啡最好，我当然觉得是 Java</p>
+                        
+                        <!-- SNS Link -->
+                        <ul class="list-inline">
+                            
+
+			    
+                            <li>
+                                <a target="_blank" href="https://juejin.im/user/58e48dc38d6d810061654870">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fa fa-circle fa-stack-2x"></i>
+                                        <i class="fa fa-stack-1x fa-inverse">掘金</i>
+                                    </span>
+                                </a>
+                            </li>
+                            
+                           
+			    
+                            <li>
+                                <a target="_blank" href="https://www.jianshu.com/u/fbc9284d5523">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fa fa-circle fa-stack-2x"></i>
+                                        <i class="fa  fa-stack-1x fa-inverse">简书</i>
+                                    </span>
+                                </a>
+                            </li>
+                            
+				
+                            
+                            <li>
+                                <a target="_blank" href="https://www.zhihu.com/people/li-han-xiang-54-15">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fa fa-circle fa-stack-2x"></i>
+                                        <i class="fa  fa-stack-1x fa-inverse">知乎</i>
+                                    </span>
+                                </a>
+                            </li>
+                            
+                            
+                            
+                            <li>
+                                <a target="_blank" href="https://github.com/lihanxiang">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fa fa-circle fa-stack-2x"></i>
+                                        <i class="fa  fa-stack-1x fa-inverse">GitHub</i>
+                                    </span>
+                                </a>
+                            </li>
+                            
+                        </ul>
+                    </div>
+                </section>
                 <!-- Something else -->
                 
-            </div>
-        </div>
-    </div>
-</article>
-
-<!-- disqus 公共JS代码 end -->
-
-<!-- disqus 公共JS代码 start (一个网页只需插入一次) -->
-<script type="text/javascript">
-    /* * * CONFIGURATION VARIABLES * * */
-    var disqus_shortname = "http-hxblog-site";
-    var disqus_identifier = "/2018/08/02/Git 系列文章（一）——GitHub 介绍";
-    var disqus_url = "http://localhost:4000/2018/08/02/Git-%E7%B3%BB%E5%88%97%E6%96%87%E7%AB%A0-%E4%B8%80-GitHub-%E4%BB%8B%E7%BB%8D/";
-
-    (function() {
-        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
-        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-    })();
-</script>
-<!-- disqus 公共JS代码 end -->
-
-
-
-
+                <hr>
+                <h5>Something else</h5>
+                <ul class="list-inline">
+                    
+                        <li><a href="http://www.cnblogs.com/lihanxiang">博客园</a></li>
+                    
+                </ul>
+                
+    		</div>
+        
+	</div>
+</div>
 
 
     <!-- Footer -->
