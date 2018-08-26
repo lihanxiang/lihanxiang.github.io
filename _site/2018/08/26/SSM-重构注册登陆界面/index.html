@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- Global site tag (gtag.js) - Google Analytics -->
+	<script async src="https://www.googletagmanager.com/gtag/js?id=UA-117570649-1"></script>
+	<script>
+	  window.dataLayer = window.dataLayer || [];
+	  function gtag(){dataLayer.push(arguments);}
+	  gtag('js', new Date());
+
+	  gtag('config', 'UA-117570649-1');
+	</script>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="你问我什么咖啡最好，我当然觉得是 Java">
+    <meta name="keyword"  content="Java">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>SSM 重构注册登陆界面 - 李汉祥的博客 | L Blog</title>
+
+    <link rel="canonical" href="http://localhost:4000/2018/08/26/SSM-%E9%87%8D%E6%9E%84%E6%B3%A8%E5%86%8C%E7%99%BB%E9%99%86%E7%95%8C%E9%9D%A2/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/hux-blog.min.css">
+
+    <!-- Pygments Github CSS -->
+    <link rel="stylesheet" href="/css/syntax.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="http://cdn.staticfile.org/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+	<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-117570649-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-117570649-1');
+</script>
+
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">L Blog</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+                    
+                    <li>
+                        <a href="/about/">About</a>
+                    </li>
+                    
+                    <li>
+                        <a href="/tags/">Tags</a>
+                    </li>
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Image to hack wechat -->
+<!-- <img src="/img/post/2018-08/26.jpg" width="0" height="0"> -->
+
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        background-image: url('/img/post/2018-08/26.jpg')
+    }
+</style>
+<header class="intro-header" >
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                        <a class="tag" href="/tags/#Spring MVC" title="Spring MVC">Spring MVC</a>
+                        
+                        <a class="tag" href="/tags/#Java Web" title="Java Web">Java Web</a>
+                        
+                        <a class="tag" href="/tags/#Spring" title="Spring">Spring</a>
+                        
+                    </div>
+                    <h1>SSM 重构注册登陆界面</h1>
+                    
+                    
+                    <h2 class="subheading">练手项目</h2>
+                    
+                    <span class="meta">Posted by L on August 26, 2018</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+				<h3 id="正文之前">正文之前</h3>
+
+<blockquote>
+  <p>之前有做过一个练手的<a href="https://github.com/lihanxiang/p-m">商品管理的小项目</a>，然后用 <a href="https://github.com/lihanxiang/new-p-m">SSM 重构</a>了，接下来又做了一个<a href="https://github.com/lihanxiang/Registration-login-interface">模拟注册登录的界面</a>，然后前两天用 <a href="https://github.com/lihanxiang/Registration-login-interface2">SSM 重构</a>了这个项目的后台代码，修改了一点前端页面，后台功能不变</p>
+
+  <p>接下来还有在此基础上做新的功能：保持登陆状态，查看个人信息等，然后把注册登陆界面整合至商品管理的项目，一步一步扩大</p>
+</blockquote>
+
+<h3 id="正文">正文</h3>
+
+<h4 id="1-项目截图">1. 项目截图</h4>
+
+<p>下面的文档中有给出截图</p>
+
+<h4 id="2-功能实现">2. 功能实现</h4>
+
+<ul>
+  <li>注册、登陆</li>
+</ul>
+
+<p>常规的注册登陆操作</p>
+
+<ul>
+  <li>验证码</li>
+</ul>
+
+<p>输出验证码，单击验证码图片可刷新</p>
+
+<ul>
+  <li>验证用户</li>
+</ul>
+
+<p>注册是验证用户名、电话号码和邮箱是否已被注册，登陆时验证用户是否已注册以及密码是否正确，两个过程中都有检测验证码的准确性</p>
+
+<h4 id="3-具体说明">3. 具体说明</h4>
+
+<p>我还是放上项目的 README 文档吧：</p>
+
+<h2 id="registration-login-interface2">Registration-login-interface2</h2>
+
+<h3 id="version-01">Version 0.1</h3>
+
+<p>使用 SSM 框架来对原先的 <a href="https://github.com/lihanxiang/Registration-login-interface">Registration-login-interface</a> 进行重构，页面做细微改动，后台使用框架，来达到同样的效果：</p>
+
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-c1638bca24a9db97.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
+
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-f583ceb88b70e7bb.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
+
+<p>0.1  版本是使用框架进行重构，接下来的 0.2 版本将会是添加一些功能：用户保持登陆状态，添加一张 SQL 表来存放用户信息，并在页面中进行个人信息添加和修改</p>
+
+<h4 id="1-文件结构">1. 文件结构</h4>
+
+<p>关于建包和创建哪些类，不多说，直接上一整个项目的图：</p>
+
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-ec1033863d4614b8.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
+
+<h4 id="2-配置文件config-包">2. 配置文件（config 包）</h4>
+
+<p>将 Spring 和 MyBatis 整合的方式，在之前的 <a href="https://github.com/lihanxiang/new-p-m">new-p-m</a> 和 <a href="http://www.mybatis.org/spring/zh/index.html">mybatis-spring 官方文档</a> 中都能找到答案，这里直接给出配置：</p>
+
+<p>数据库信息（db.properties)：</p>
+
+<p>jdbc.driver = com.mysql.jdbc.Driver
+jdbc.url = jdbc:mysql://localhost:3306/user
+jdbc.username = xxx（你自己的用户名）
+jdbc.password = xxx（你自己的密码）</p>
+
+<p>spring-mvc.xml:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="nt">&lt;beans</span> <span class="na">xmlns=</span><span class="s">"http://www.springframework.org/schema/beans"</span>
+       <span class="na">xmlns:xsi=</span><span class="s">"http://www.w3.org/2001/XMLSchema-instance"</span>
+       <span class="na">xmlns:context=</span><span class="s">"http://www.springframework.org/schema/context"</span>
+       <span class="na">xmlns:mvc=</span><span class="s">"http://www.springframework.org/schema/mvc"</span>
+       <span class="na">xsi:schemaLocation=</span><span class="s">"http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd"</span><span class="nt">&gt;</span>
+
+    <span class="c">&lt;!-- 组件扫描 --&gt;</span>
+    <span class="nt">&lt;context:component-scan</span> <span class="na">base-package=</span><span class="s">"controller"</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;context:component-scan</span> <span class="na">base-package=</span><span class="s">"service"</span><span class="nt">/&gt;</span>
+
+    <span class="c">&lt;!-- 注解驱动 --&gt;</span>
+    <span class="nt">&lt;mvc:annotation-driven/&gt;</span>
+
+    <span class="c">&lt;!-- 配置视图解析器 --&gt;</span>
+    <span class="nt">&lt;bean</span> <span class="na">class=</span><span class="s">"org.springframework.web.servlet.view.InternalResourceViewResolver"</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"prefix"</span> <span class="na">value=</span><span class="s">"WEB-INF/jsp/"</span><span class="nt">/&gt;</span>
+        <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"suffix"</span> <span class="na">value=</span><span class="s">".jsp"</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;/bean&gt;</span>
+
+    <span class="c">&lt;!-- 这两行代码是为了不让静态资源被 servlet 拦截 --&gt;</span>
+    <span class="nt">&lt;mvc:resources</span> <span class="na">mapping=</span><span class="s">"/image/**"</span> <span class="na">location=</span><span class="s">"image"</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;mvc:resources</span> <span class="na">mapping=</span><span class="s">"../../css/**"</span> <span class="na">location=</span><span class="s">"css"</span><span class="nt">/&gt;</span>
+<span class="nt">&lt;/beans&gt;</span>
+</code></pre></div></div>
+
+<p>spring-mybatis.xml:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="nt">&lt;beans</span> <span class="na">xmlns=</span><span class="s">"http://www.springframework.org/schema/beans"</span>
+       <span class="na">xmlns:xsi=</span><span class="s">"http://www.w3.org/2001/XMLSchema-instance"</span>
+       <span class="na">xmlns:context=</span><span class="s">"http://www.springframework.org/schema/context"</span>
+       <span class="na">xsi:schemaLocation=</span><span class="s">"http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd"</span><span class="nt">&gt;</span>
+
+    <span class="c">&lt;!-- 将数据库信息配置在外部文件中，使用占位符来代替具体信息的配置 --&gt;</span>
+    <span class="nt">&lt;context:property-placeholder</span> <span class="na">location=</span><span class="s">"classpath:config/db.properties"</span><span class="nt">/&gt;</span>
+
+    <span class="c">&lt;!-- 配置数据源 --&gt;</span>
+    <span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">"dataSource"</span> <span class="na">class=</span><span class="s">"org.apache.commons.dbcp.BasicDataSource"</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"driverClassName"</span> <span class="na">value=</span><span class="s">"${jdbc.driver}"</span><span class="nt">/&gt;</span>
+        <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"url"</span> <span class="na">value=</span><span class="s">"${jdbc.url}"</span><span class="nt">/&gt;</span>
+        <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"username"</span> <span class="na">value=</span><span class="s">"${jdbc.username}"</span><span class="nt">/&gt;</span>
+        <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"password"</span> <span class="na">value=</span><span class="s">"${jdbc.password}"</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;/bean&gt;</span>
+
+    <span class="c">&lt;!-- sqlSessionFactory 的配置，这是基于 MyBatis 的应用的核心 --&gt;</span>
+    <span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">"sqlSessionFactory"</span> <span class="na">class=</span><span class="s">"org.mybatis.spring.SqlSessionFactoryBean"</span><span class="nt">&gt;</span>
+        <span class="c">&lt;!-- 使用上面定义的数据源来进行配置 --&gt;</span>
+        <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"dataSource"</span> <span class="na">ref=</span><span class="s">"dataSource"</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;/bean&gt;</span>
+
+    <span class="c">&lt;!-- 查找下面指定的类路径中的映射器 --&gt;</span>
+    <span class="nt">&lt;bean</span> <span class="na">class=</span><span class="s">"org.mybatis.spring.mapper.MapperScannerConfigurer"</span><span class="nt">&gt;</span>
+        <span class="c">&lt;!-- 定义 Mapper 配置器的位置 --&gt;</span>
+        <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"basePackage"</span> <span class="na">value=</span><span class="s">"mapper"</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;/bean&gt;</span>
+
+    <span class="c">&lt;!-- 之后要用到的两个 Bean --&gt;</span>
+    <span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">"exceptionService"</span> <span class="na">class=</span><span class="s">"service.impl.ExceptionServiceImpl"</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">"verifyCode"</span> <span class="na">class=</span><span class="s">"util.VerifyCode"</span><span class="nt">/&gt;</span>
+<span class="nt">&lt;/beans&gt;</span>
+</code></pre></div></div>
+
+<h4 id="3-webxml">3. web.xml</h4>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="nt">&lt;web-app</span> <span class="na">xmlns=</span><span class="s">"http://xmlns.jcp.org/xml/ns/javaee"</span>
+         <span class="na">xmlns:xsi=</span><span class="s">"http://www.w3.org/2001/XMLSchema-instance"</span>
+         <span class="na">xsi:schemaLocation=</span><span class="s">"http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"</span>
+         <span class="na">version=</span><span class="s">"4.0"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;context-param&gt;</span>
+        <span class="nt">&lt;param-name&gt;</span>contextConfigLocation<span class="nt">&lt;/param-name&gt;</span>
+        <span class="nt">&lt;param-value&gt;</span>/WEB-INF/classes/config/spring/spring-mybatis.xml<span class="nt">&lt;/param-value&gt;</span>
+    <span class="nt">&lt;/context-param&gt;</span>
+    <span class="nt">&lt;listener&gt;</span>
+        <span class="nt">&lt;listener-class&gt;</span>org.springframework.web.context.ContextLoaderListener<span class="nt">&lt;/listener-class&gt;</span>
+    <span class="nt">&lt;/listener&gt;</span>
+    <span class="nt">&lt;servlet&gt;</span>
+        <span class="nt">&lt;servlet-name&gt;</span>dispatcher<span class="nt">&lt;/servlet-name&gt;</span>
+        <span class="nt">&lt;servlet-class&gt;</span>org.springframework.web.servlet.DispatcherServlet<span class="nt">&lt;/servlet-class&gt;</span>
+        <span class="nt">&lt;init-param&gt;</span>
+            <span class="nt">&lt;param-name&gt;</span>contextConfigLocation<span class="nt">&lt;/param-name&gt;</span>
+            <span class="nt">&lt;param-value&gt;</span>classpath:config/spring/spring-mvc.xml<span class="nt">&lt;/param-value&gt;</span>
+        <span class="nt">&lt;/init-param&gt;</span>
+    <span class="nt">&lt;/servlet&gt;</span>
+    <span class="nt">&lt;servlet-mapping&gt;</span>
+        <span class="nt">&lt;servlet-name&gt;</span>dispatcher<span class="nt">&lt;/servlet-name&gt;</span>
+        <span class="nt">&lt;url-pattern&gt;</span>*.action<span class="nt">&lt;/url-pattern&gt;</span>
+    <span class="nt">&lt;/servlet-mapping&gt;</span>
+<span class="nt">&lt;/web-app&gt;</span>
+</code></pre></div></div>
+
+<p>第 2 步中配置的两个文件作为上下文配置信息，最后的 url 映射是 xxx.action 的形式</p>
+
+<h4 id="4-实体类userjava">4. 实体类（User.java）</h4>
+
+<p>为了节省篇幅，这里不给出实体类代码，和 Registration-login-interface 中的实体类是一样的</p>
+
+<h4 id="5-自定义异常">5. 自定义异常</h4>
+
+<p>自定义的异常是调用父类方法来实现的，因用户注册或登陆时输入有误而抛出</p>
+
+<p>public class UserException extends Exception {
+    //自定义异常
+    public UserException(String message) {
+        super(message);
+    }
+}</p>
+
+<h4 id="6-映射器">6. 映射器</h4>
+
+<p>MyBatis-Spring 提供的 MapperFactoryBean 能够进行动态代理，能够将数据映射器<strong>接口</strong>注入到 Service 层中的 Bean 里，注意，一定要是接口，不能是实现类，所以我们这里写了一个 UserMapper：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public interface UserMapper {
+    void addUser(User user);
+    User findUserByName(String username);
+    User findUserByPhone(String phone);
+    User findUserByEmail(String email);
+}
+</code></pre></div></div>
+
+<p>映射器接口对应着一个同名的 XML 映射器文件文件：UserMapper.xml</p>
+
+<p>这个映射器中写的是 SQL 语句，这里面有四句，添加，按照名称、电话号码和邮箱进行查找，映射文件的命名空间（namespace）对应着映射器接口的名称，SQL 语句的 id 对应着接口中的方法，不能有误</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;mapper namespace="mapper.UserMapper"&gt;
+    &lt;insert id="addUser" parameterType="domain.User"&gt;
+      INSERT INTO user(username,password,phone,email)
+      VALUES (#{username}, #{password}, #{phone}, #{email})
+    &lt;/insert&gt;
+
+    &lt;select id="findUserByName" parameterType="String" resultType="domain.User"&gt;
+        SELECT * FROM user WHERE username = #{username}
+    &lt;/select&gt;
+
+    &lt;select id="findUserByPhone" parameterType="String" resultType="domain.User"&gt;
+        SELECT * FROM user WHERE phone = #{phone}
+    &lt;/select&gt;
+
+    &lt;select id="findUserByEmail" parameterType="String" resultType="domain.User"&gt;
+        SELECT * FROM user WHERE email = #{email}
+    &lt;/select&gt;
+&lt;/mapper&gt;
+</code></pre></div></div>
+
+<h4 id="6-验证码">6. 验证码</h4>
+
+<p>SSM 版本的验证码没有变化，还是 <a href="https://github.com/lihanxiang/Registration-login-interface">Registration-login-interface</a> 中的验证码，不做更改</p>
+
+<h4 id="7-service-层">7. Service 层</h4>
+
+<p>Service 层有两个接口，一个是关于注册和登陆的：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public interface UserService {
+    public void addUser(User user) throws UserException;
+    public void login(User user) throws UserException;
+}
+</code></pre></div></div>
+
+<p>另一个是检测注册和登陆过程中的错误情况：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>@Service
+public interface ExceptionService {
+
+    //_user 是从数据库中查找出的记录，user 是用户输入
+    public void loginException(User user, User db_user) throws UserException;
+
+    public void addUserException1(User user) throws UserException;
+
+    public void addUserException2(User user) throws UserException;
+}
+</code></pre></div></div>
+
+<p>先写 ExceptionService 的实现，在注册和登陆过程中要使用：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    //先创建 Bean，接下来会用到
+    private final UserMapper userMapper;
+
+    @Autowired
+    public ExceptionServiceImpl(UserMapper userMapper) {
+        this.userMapper = userMapper;
+    }
+    
+    //先判断输入格式是否有误
+    public void addUserException1(User user) throws UserException{
+        if (user.getUsername() == null || user.getUsername().trim().isEmpty()){
+            throw new UserException("用户名不能为空");
+        }else if (user.getUsername().length() &lt; 5 || user.getUsername().length() &gt; 15){
+            throw new UserException("用户名必须为5-15个字符");
+        }
+
+        if (user.getPassword() == null || user.getPassword().trim().isEmpty()){
+            throw new UserException("密码不能为空");
+        }else if (user.getPassword().length() &lt; 5 || user.getPassword().length() &gt; 15){
+            throw new UserException("密码必须为5-15个字符");
+        }
+
+        if (user.getPhone() == null || user.getPhone().trim().isEmpty()){
+            throw new UserException("电话号码不能为空");
+        }
+
+        if (user.getEmail() == null || user.getEmail().trim().isEmpty()){
+            throw new UserException("邮箱不能为空");
+        }
+    }
+
+    //再判断输入的信息是否已被注册
+    public void addUserException2(User user) throws UserException{
+        //这三者都必须是唯一的
+        if (userMapper.findUserByName(user.getUsername()) != null){
+            throw new UserException("该用户名已被注册");
+        } else if (userMapper.findUserByPhone(user.getPhone()) != null){
+            throw new UserException("该电话号码已被注册");
+        } else if (userMapper.findUserByEmail(user.getEmail()) != null){
+            throw new UserException("该邮箱已被注册");
+        }
+    }
+
+    //登入检测
+    public void loginException(User user, User db_user) throws UserException {
+
+        if(db_user == null){
+            throw new UserException("该用户不存在");
+        }
+        if(!user.getPassword().equals(db_user.getPassword())){
+            throw new UserException("密码错误");
+        }
+    }
+
+    //验证码检测
+    @Override
+    public void verifyCodeException(String inputVerifyCode, String code) throws UserException {
+        if (inputVerifyCode == null || inputVerifyCode.trim().isEmpty()){
+            throw new UserException("验证码不能为空");
+        } else if (inputVerifyCode.length() != 4){
+            throw new UserException("验证码长度应为 4 位");
+        } else if (!inputVerifyCode.equals(code)){
+            throw new UserException("验证码错误");
+        }
+    }
+</code></pre></div></div>
+
+<p>然后是 UserService 的实现：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    //先是用构造器注入来创建 UserMapper 和 ExceptionService 两个 Bean
+    private final UserMapper userMapper;
+
+    private final ExceptionService exceptionService;
+
+    @Autowired
+    public UserServiceImpl(UserMapper userMapper, ExceptionService exceptionService) {
+        this.userMapper = userMapper;
+        this.exceptionService = exceptionService;
+    }
+    
+    public void addUser(User user) throws UserException {
+        //先判断用户的输入是否有错
+        exceptionService.addUserException1(user);
+        //再判断用户的信息是否已被注册
+        exceptionService.addUserException2(user);
+        userMapper.addUser(user);
+    }
+    
+    //根据用户输入名字去数据库查找有没有这个用户，如果没有，就会抛出异常
+    public void login(User user) throws UserException {
+        User db_user = userMapper.findUserByName(user.getUsername());
+        exceptionService.loginException(user, db_user);
+    }
+</code></pre></div></div>
+
+<p>可能有人会觉得为什么登陆的方法没有返回值，其实如果登入成功，也就是没有抛出异常，在 Controller 中就可以接着执行后面的方法，如果用户名或密码错误，是会抛出异常，中断程序的</p>
+
+<h4 id="8-controller">8. Controller</h4>
+
+<p>到了关键的一步，Controller 负责处理 DispatcherServlet 分发的请求：</p>
+
+<p>首先是使用构造器注入来创建三个 Bean：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    private final UserService userService;
+
+    private final VerifyCode verifyCode;
+
+    private final ExceptionService exceptionService;
+
+    @Autowired
+    public UserController(UserService userService, VerifyCode verifyCode, ExceptionService exceptionService) {
+        this.userService = userService;
+        this.verifyCode = verifyCode;
+        this.exceptionService = exceptionService;
+    }
+</code></pre></div></div>
+
+<p>userService 就是用于注册和登陆的，verifyCode 就是用于得到验证码，exceptionService 是用来检测注册和登陆过程中是否出现错误</p>
+
+<p>在注册和登陆之前，都需要得到带有表单的页面：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    //在注册之前需要先得到注册的界面
+    @RequestMapping("/preAdd")
+    public ModelAndView preAdd(){
+        return new ModelAndView("addUser");
+    }
+    
+    //同样的，需要先得到界面
+    @RequestMapping("preLogin")
+    public ModelAndView preLogin(){
+        return new ModelAndView("login");
+    }
+</code></pre></div></div>
+
+<p>然后是注册的过程，先调用 addUser() 方法，如果用户注册的时候出现了问题，比如说用户名、电话号码或者邮箱已被注册，就直接抛出异常，就没有执行验证码验证的方法了，如果没问题，就接着检测验证码输入，将表单输入与验证码文本进行比较</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    @RequestMapping("/addUser")
+    public ModelAndView addUser(User user, HttpServletRequest request){
+        ModelAndView modelAndView;
+        //如果下面的 try 语句块没有抛出异常，则返回 addUserSuccessful.jsp
+        modelAndView = new ModelAndView("addUserSuccessful");
+        try{
+            //先调用添加用户的方法，看看有没有因为不符规定的输入而导致异常抛出
+            userService.addUser(user);
+            //然后再看有没有因为验证码错误而导致异常抛出
+            exceptionService.verifyCodeException(request.getParameter("verifyCode"), verifyCode.getText());
+        } catch (UserException e){
+            //如果捕获异常，就带着异常信息返回注册界面
+            modelAndView = new ModelAndView("addUser");
+            modelAndView.addObject("message", e.getMessage());
+        }
+        return modelAndView;
+    }
+</code></pre></div></div>
+
+<p>登陆的过程，也是先先检查用户输入信息是否有误，再检查验证码信息</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    //登陆的逻辑和上面是一样的
+    @RequestMapping("/login")
+    public ModelAndView login(User user, HttpServletRequest request) {
+        ModelAndView modelAndView;
+        modelAndView = new ModelAndView("loginSuccessful");
+        try {
+            userService.login(user);
+            exceptionService.verifyCodeException(request.getParameter("verifyCode"), verifyCode.getText());
+        } catch (UserException e){
+            modelAndView = new ModelAndView("login");
+            modelAndView.addObject("message", e.getMessage());
+        }
+        return modelAndView;
+    }
+</code></pre></div></div>
+
+<p>最后是关于输出验证码图片的操作：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    //得到验证码，然后用于 jsp 文件的 &lt;img&gt; 标签的 src 属性中
+    @RequestMapping("/getVerifyCode")
+    public void setVerifyCode(HttpServletResponse response)
+            throws IOException{
+        //设置响应格式
+        response.setContentType("image/jpg");
+        //得到图片
+        BufferedImage image = verifyCode.getImage();
+        //输出
+        verifyCode.output(image, response.getOutputStream());
+    }
+</code></pre></div></div>
+
+
+                <hr>
+
+               
+
+
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/2018/08/13/Git-%E7%B3%BB%E5%88%97%E6%96%87%E7%AB%A0-%E5%9B%9B-GitHub-Flow/" data-toggle="tooltip" data-placement="top" title="Git 系列文章（四）">&larr; Previous Post</a>
+                    </li>
+                    
+                    
+                </ul>
+
+		
+                <!-- disqus 评论框 start -->
+                <div class="comment">
+                    <div id="disqus_thread" class="disqus-thread"></div>
+                </div>
+                <!-- disqus 评论框 end -->
+                
+
+
+
+            </div>
+
+    <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <hr class="hidden-sm hidden-xs">
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+        				
+                            
+                				<a href="/tags/#Java Web" title="Java Web" rel="4">
+                                    Java Web
+                                </a>
+                            
+        				
+                            
+                				<a href="/tags/#IntelliJ IDEA" title="IntelliJ IDEA" rel="1">
+                                    IntelliJ IDEA
+                                </a>
+                            
+        				
+                            
+                				<a href="/tags/#Spring MVC" title="Spring MVC" rel="2">
+                                    Spring MVC
+                                </a>
+                            
+        				
+                            
+                				<a href="/tags/#随笔" title="随笔" rel="2">
+                                    随笔
+                                </a>
+                            
+        				
+                            
+                				<a href="/tags/#树莓派" title="树莓派" rel="3">
+                                    树莓派
+                                </a>
+                            
+        				
+                            
+                				<a href="/tags/#Java基础" title="Java基础" rel="4">
+                                    Java基础
+                                </a>
+                            
+        				
+                            
+                				<a href="/tags/#MySQL" title="MySQL" rel="1">
+                                    MySQL
+                                </a>
+                            
+        				
+                            
+                				<a href="/tags/#项目模块" title="项目模块" rel="2">
+                                    项目模块
+                                </a>
+                            
+        				
+                            
+                				<a href="/tags/#Java源码解析" title="Java源码解析" rel="7">
+                                    Java源码解析
+                                </a>
+                            
+        				
+                            
+                				<a href="/tags/#Spring" title="Spring" rel="3">
+                                    Spring
+                                </a>
+                            
+        				
+                            
+                				<a href="/tags/#Mybatis" title="Mybatis" rel="2">
+                                    Mybatis
+                                </a>
+                            
+        				
+                            
+                				<a href="/tags/#LeetCode" title="LeetCode" rel="1">
+                                    LeetCode
+                                </a>
+                            
+        				
+                            
+                				<a href="/tags/#Git" title="Git" rel="4">
+                                    Git
+                                </a>
+                            
+        				
+                            
+                				<a href="/tags/#掘金翻译计划" title="掘金翻译计划" rel="1">
+                                    掘金翻译计划
+                                </a>
+                            
+        				
+        			</div>
+                </section>
+                
+
+                <!-- Something else -->
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+<!-- disqus 公共JS代码 end -->
+
+<!-- disqus 公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = "http-hxblog-site";
+    var disqus_identifier = "/2018/08/26/SSM 重构注册登陆界面";
+    var disqus_url = "http://localhost:4000/2018/08/26/SSM-%E9%87%8D%E6%9E%84%E6%B3%A8%E5%86%8C%E7%99%BB%E9%99%86%E7%95%8C%E9%9D%A2/";
+
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<!-- disqus 公共JS代码 end -->
+
+
+
+
+
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                    
+
+		    	    
+                            <li>
+                                <a target="_blank" href="https://juejin.im/user/58e48dc38d6d810061654870">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fa fa-circle fa-stack-2x"></i>
+                                        <i class="fa fa-stack-1x fa-inverse">掘金</i>
+                                    </span>
+                                </a>
+                            </li>
+                            
+                           
+			    
+                            <li>
+                                <a target="_blank" href="https://www.jianshu.com/u/fbc9284d5523">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fa fa-circle fa-stack-2x"></i>
+                                        <i class="fa  fa-stack-1x fa-inverse">简书</i>
+                                    </span>
+                                </a>
+                            </li>
+                            
+				
+                            
+                            <li>
+                                <a target="_blank" href="https://www.zhihu.com/people/li-han-xiang-54-15">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fa fa-circle fa-stack-2x"></i>
+                                        <i class="fa  fa-stack-1x fa-inverse">知乎</i>
+                                    </span>
+                                </a>
+                            </li>
+                            
+                            
+                            
+                            <li>
+                                <a target="_blank" href="https://github.com/lihanxiang">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fa fa-circle fa-stack-2x"></i>
+                                        <i class="fa  fa-stack-1x fa-inverse">GitHub</i>
+                                    </span>
+                                </a>
+                            </li>
+                            
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; L Blog 2018
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("http://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+<script>
+    // dynamic User by Hux
+    var _gaId = 'UA-117570649-1';
+    var _gaDomain = 'https://lihanxiang.github.io/';
+
+    // Originial
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', _gaId, _gaDomain);
+    ga('send', 'pageview');
+</script>
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+
+<!-- Image to hack wechat -->
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>

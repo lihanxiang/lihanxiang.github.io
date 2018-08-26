@@ -5,9 +5,456 @@
     <description>你问我什么咖啡最好，我当然觉得是 Java</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Thu, 16 Aug 2018 02:36:03 -0700</pubDate>
-    <lastBuildDate>Thu, 16 Aug 2018 02:36:03 -0700</lastBuildDate>
+    <pubDate>Sun, 26 Aug 2018 07:12:54 -0700</pubDate>
+    <lastBuildDate>Sun, 26 Aug 2018 07:12:54 -0700</lastBuildDate>
     <generator>Jekyll v3.8.0</generator>
+    
+      <item>
+        <title>SSM 重构注册登陆界面</title>
+        <description>&lt;h3 id=&quot;正文之前&quot;&gt;正文之前&lt;/h3&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;之前有做过一个练手的&lt;a href=&quot;https://github.com/lihanxiang/p-m&quot;&gt;商品管理的小项目&lt;/a&gt;，然后用 &lt;a href=&quot;https://github.com/lihanxiang/new-p-m&quot;&gt;SSM 重构&lt;/a&gt;了，接下来又做了一个&lt;a href=&quot;https://github.com/lihanxiang/Registration-login-interface&quot;&gt;模拟注册登录的界面&lt;/a&gt;，然后前两天用 &lt;a href=&quot;https://github.com/lihanxiang/Registration-login-interface2&quot;&gt;SSM 重构&lt;/a&gt;了这个项目的后台代码，修改了一点前端页面，后台功能不变&lt;/p&gt;
+
+  &lt;p&gt;接下来还有在此基础上做新的功能：保持登陆状态，查看个人信息等，然后把注册登陆界面整合至商品管理的项目，一步一步扩大&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h3 id=&quot;正文&quot;&gt;正文&lt;/h3&gt;
+
+&lt;h4 id=&quot;1-项目截图&quot;&gt;1. 项目截图&lt;/h4&gt;
+
+&lt;p&gt;下面的文档中有给出截图&lt;/p&gt;
+
+&lt;h4 id=&quot;2-功能实现&quot;&gt;2. 功能实现&lt;/h4&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;注册、登陆&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;常规的注册登陆操作&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;验证码&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;输出验证码，单击验证码图片可刷新&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;验证用户&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;注册是验证用户名、电话号码和邮箱是否已被注册，登陆时验证用户是否已注册以及密码是否正确，两个过程中都有检测验证码的准确性&lt;/p&gt;
+
+&lt;h4 id=&quot;3-具体说明&quot;&gt;3. 具体说明&lt;/h4&gt;
+
+&lt;p&gt;我还是放上项目的 README 文档吧：&lt;/p&gt;
+
+&lt;h2 id=&quot;registration-login-interface2&quot;&gt;Registration-login-interface2&lt;/h2&gt;
+
+&lt;h3 id=&quot;version-01&quot;&gt;Version 0.1&lt;/h3&gt;
+
+&lt;p&gt;使用 SSM 框架来对原先的 &lt;a href=&quot;https://github.com/lihanxiang/Registration-login-interface&quot;&gt;Registration-login-interface&lt;/a&gt; 进行重构，页面做细微改动，后台使用框架，来达到同样的效果：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-c1638bca24a9db97.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-f583ceb88b70e7bb.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;0.1  版本是使用框架进行重构，接下来的 0.2 版本将会是添加一些功能：用户保持登陆状态，添加一张 SQL 表来存放用户信息，并在页面中进行个人信息添加和修改&lt;/p&gt;
+
+&lt;h4 id=&quot;1-文件结构&quot;&gt;1. 文件结构&lt;/h4&gt;
+
+&lt;p&gt;关于建包和创建哪些类，不多说，直接上一整个项目的图：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-ec1033863d4614b8.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;2-配置文件config-包&quot;&gt;2. 配置文件（config 包）&lt;/h4&gt;
+
+&lt;p&gt;将 Spring 和 MyBatis 整合的方式，在之前的 &lt;a href=&quot;https://github.com/lihanxiang/new-p-m&quot;&gt;new-p-m&lt;/a&gt; 和 &lt;a href=&quot;http://www.mybatis.org/spring/zh/index.html&quot;&gt;mybatis-spring 官方文档&lt;/a&gt; 中都能找到答案，这里直接给出配置：&lt;/p&gt;
+
+&lt;p&gt;数据库信息（db.properties)：&lt;/p&gt;
+
+&lt;p&gt;jdbc.driver = com.mysql.jdbc.Driver
+jdbc.url = jdbc:mysql://localhost:3306/user
+jdbc.username = xxx（你自己的用户名）
+jdbc.password = xxx（你自己的密码）&lt;/p&gt;
+
+&lt;p&gt;spring-mvc.xml:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;cp&quot;&gt;&amp;lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;beans&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;xmlns=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;http://www.springframework.org/schema/beans&quot;&lt;/span&gt;
+       &lt;span class=&quot;na&quot;&gt;xmlns:xsi=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;http://www.w3.org/2001/XMLSchema-instance&quot;&lt;/span&gt;
+       &lt;span class=&quot;na&quot;&gt;xmlns:context=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;http://www.springframework.org/schema/context&quot;&lt;/span&gt;
+       &lt;span class=&quot;na&quot;&gt;xmlns:mvc=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;http://www.springframework.org/schema/mvc&quot;&lt;/span&gt;
+       &lt;span class=&quot;na&quot;&gt;xsi:schemaLocation=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;
+
+    &lt;span class=&quot;c&quot;&gt;&amp;lt;!-- 组件扫描 --&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;context:component-scan&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;base-package=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;controller&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;/&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;context:component-scan&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;base-package=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;service&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;/&amp;gt;&lt;/span&gt;
+
+    &lt;span class=&quot;c&quot;&gt;&amp;lt;!-- 注解驱动 --&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;mvc:annotation-driven/&amp;gt;&lt;/span&gt;
+
+    &lt;span class=&quot;c&quot;&gt;&amp;lt;!-- 配置视图解析器 --&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;bean&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;class=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;org.springframework.web.servlet.view.InternalResourceViewResolver&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;property&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;name=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;prefix&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;value=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;WEB-INF/jsp/&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;/&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;property&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;name=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;suffix&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;value=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;.jsp&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;/&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;/bean&amp;gt;&lt;/span&gt;
+
+    &lt;span class=&quot;c&quot;&gt;&amp;lt;!-- 这两行代码是为了不让静态资源被 servlet 拦截 --&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;mvc:resources&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;mapping=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;/image/**&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;location=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;image&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;/&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;mvc:resources&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;mapping=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;../../css/**&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;location=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;css&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;/&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;/beans&amp;gt;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;spring-mybatis.xml:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;cp&quot;&gt;&amp;lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;beans&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;xmlns=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;http://www.springframework.org/schema/beans&quot;&lt;/span&gt;
+       &lt;span class=&quot;na&quot;&gt;xmlns:xsi=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;http://www.w3.org/2001/XMLSchema-instance&quot;&lt;/span&gt;
+       &lt;span class=&quot;na&quot;&gt;xmlns:context=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;http://www.springframework.org/schema/context&quot;&lt;/span&gt;
+       &lt;span class=&quot;na&quot;&gt;xsi:schemaLocation=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;
+
+    &lt;span class=&quot;c&quot;&gt;&amp;lt;!-- 将数据库信息配置在外部文件中，使用占位符来代替具体信息的配置 --&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;context:property-placeholder&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;location=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;classpath:config/db.properties&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;/&amp;gt;&lt;/span&gt;
+
+    &lt;span class=&quot;c&quot;&gt;&amp;lt;!-- 配置数据源 --&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;bean&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;id=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;dataSource&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;class=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;org.apache.commons.dbcp.BasicDataSource&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;property&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;name=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;driverClassName&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;value=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;${jdbc.driver}&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;/&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;property&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;name=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;url&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;value=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;${jdbc.url}&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;/&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;property&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;name=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;username&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;value=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;${jdbc.username}&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;/&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;property&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;name=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;password&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;value=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;${jdbc.password}&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;/&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;/bean&amp;gt;&lt;/span&gt;
+
+    &lt;span class=&quot;c&quot;&gt;&amp;lt;!-- sqlSessionFactory 的配置，这是基于 MyBatis 的应用的核心 --&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;bean&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;id=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;sqlSessionFactory&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;class=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;org.mybatis.spring.SqlSessionFactoryBean&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;c&quot;&gt;&amp;lt;!-- 使用上面定义的数据源来进行配置 --&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;property&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;name=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;dataSource&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;ref=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;dataSource&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;/&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;/bean&amp;gt;&lt;/span&gt;
+
+    &lt;span class=&quot;c&quot;&gt;&amp;lt;!-- 查找下面指定的类路径中的映射器 --&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;bean&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;class=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;org.mybatis.spring.mapper.MapperScannerConfigurer&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;c&quot;&gt;&amp;lt;!-- 定义 Mapper 配置器的位置 --&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;property&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;name=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;basePackage&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;value=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;mapper&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;/&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;/bean&amp;gt;&lt;/span&gt;
+
+    &lt;span class=&quot;c&quot;&gt;&amp;lt;!-- 之后要用到的两个 Bean --&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;bean&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;id=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;exceptionService&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;class=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;service.impl.ExceptionServiceImpl&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;/&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;bean&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;id=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;verifyCode&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;class=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;util.VerifyCode&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;/&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;/beans&amp;gt;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h4 id=&quot;3-webxml&quot;&gt;3. web.xml&lt;/h4&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;cp&quot;&gt;&amp;lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;web-app&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;xmlns=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;http://xmlns.jcp.org/xml/ns/javaee&quot;&lt;/span&gt;
+         &lt;span class=&quot;na&quot;&gt;xmlns:xsi=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;http://www.w3.org/2001/XMLSchema-instance&quot;&lt;/span&gt;
+         &lt;span class=&quot;na&quot;&gt;xsi:schemaLocation=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd&quot;&lt;/span&gt;
+         &lt;span class=&quot;na&quot;&gt;version=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;4.0&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;context-param&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;param-name&amp;gt;&lt;/span&gt;contextConfigLocation&lt;span class=&quot;nt&quot;&gt;&amp;lt;/param-name&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;param-value&amp;gt;&lt;/span&gt;/WEB-INF/classes/config/spring/spring-mybatis.xml&lt;span class=&quot;nt&quot;&gt;&amp;lt;/param-value&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;/context-param&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;listener&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;listener-class&amp;gt;&lt;/span&gt;org.springframework.web.context.ContextLoaderListener&lt;span class=&quot;nt&quot;&gt;&amp;lt;/listener-class&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;/listener&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;servlet&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;servlet-name&amp;gt;&lt;/span&gt;dispatcher&lt;span class=&quot;nt&quot;&gt;&amp;lt;/servlet-name&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;servlet-class&amp;gt;&lt;/span&gt;org.springframework.web.servlet.DispatcherServlet&lt;span class=&quot;nt&quot;&gt;&amp;lt;/servlet-class&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;init-param&amp;gt;&lt;/span&gt;
+            &lt;span class=&quot;nt&quot;&gt;&amp;lt;param-name&amp;gt;&lt;/span&gt;contextConfigLocation&lt;span class=&quot;nt&quot;&gt;&amp;lt;/param-name&amp;gt;&lt;/span&gt;
+            &lt;span class=&quot;nt&quot;&gt;&amp;lt;param-value&amp;gt;&lt;/span&gt;classpath:config/spring/spring-mvc.xml&lt;span class=&quot;nt&quot;&gt;&amp;lt;/param-value&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;/init-param&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;/servlet&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;servlet-mapping&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;servlet-name&amp;gt;&lt;/span&gt;dispatcher&lt;span class=&quot;nt&quot;&gt;&amp;lt;/servlet-name&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;url-pattern&amp;gt;&lt;/span&gt;*.action&lt;span class=&quot;nt&quot;&gt;&amp;lt;/url-pattern&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;/servlet-mapping&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;/web-app&amp;gt;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;第 2 步中配置的两个文件作为上下文配置信息，最后的 url 映射是 xxx.action 的形式&lt;/p&gt;
+
+&lt;h4 id=&quot;4-实体类userjava&quot;&gt;4. 实体类（User.java）&lt;/h4&gt;
+
+&lt;p&gt;为了节省篇幅，这里不给出实体类代码，和 Registration-login-interface 中的实体类是一样的&lt;/p&gt;
+
+&lt;h4 id=&quot;5-自定义异常&quot;&gt;5. 自定义异常&lt;/h4&gt;
+
+&lt;p&gt;自定义的异常是调用父类方法来实现的，因用户注册或登陆时输入有误而抛出&lt;/p&gt;
+
+&lt;p&gt;public class UserException extends Exception {
+    //自定义异常
+    public UserException(String message) {
+        super(message);
+    }
+}&lt;/p&gt;
+
+&lt;h4 id=&quot;6-映射器&quot;&gt;6. 映射器&lt;/h4&gt;
+
+&lt;p&gt;MyBatis-Spring 提供的 MapperFactoryBean 能够进行动态代理，能够将数据映射器&lt;strong&gt;接口&lt;/strong&gt;注入到 Service 层中的 Bean 里，注意，一定要是接口，不能是实现类，所以我们这里写了一个 UserMapper：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public interface UserMapper {
+    void addUser(User user);
+    User findUserByName(String username);
+    User findUserByPhone(String phone);
+    User findUserByEmail(String email);
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;映射器接口对应着一个同名的 XML 映射器文件文件：UserMapper.xml&lt;/p&gt;
+
+&lt;p&gt;这个映射器中写的是 SQL 语句，这里面有四句，添加，按照名称、电话号码和邮箱进行查找，映射文件的命名空间（namespace）对应着映射器接口的名称，SQL 语句的 id 对应着接口中的方法，不能有误&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&amp;lt;mapper namespace=&quot;mapper.UserMapper&quot;&amp;gt;
+    &amp;lt;insert id=&quot;addUser&quot; parameterType=&quot;domain.User&quot;&amp;gt;
+      INSERT INTO user(username,password,phone,email)
+      VALUES (#{username}, #{password}, #{phone}, #{email})
+    &amp;lt;/insert&amp;gt;
+
+    &amp;lt;select id=&quot;findUserByName&quot; parameterType=&quot;String&quot; resultType=&quot;domain.User&quot;&amp;gt;
+        SELECT * FROM user WHERE username = #{username}
+    &amp;lt;/select&amp;gt;
+
+    &amp;lt;select id=&quot;findUserByPhone&quot; parameterType=&quot;String&quot; resultType=&quot;domain.User&quot;&amp;gt;
+        SELECT * FROM user WHERE phone = #{phone}
+    &amp;lt;/select&amp;gt;
+
+    &amp;lt;select id=&quot;findUserByEmail&quot; parameterType=&quot;String&quot; resultType=&quot;domain.User&quot;&amp;gt;
+        SELECT * FROM user WHERE email = #{email}
+    &amp;lt;/select&amp;gt;
+&amp;lt;/mapper&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h4 id=&quot;6-验证码&quot;&gt;6. 验证码&lt;/h4&gt;
+
+&lt;p&gt;SSM 版本的验证码没有变化，还是 &lt;a href=&quot;https://github.com/lihanxiang/Registration-login-interface&quot;&gt;Registration-login-interface&lt;/a&gt; 中的验证码，不做更改&lt;/p&gt;
+
+&lt;h4 id=&quot;7-service-层&quot;&gt;7. Service 层&lt;/h4&gt;
+
+&lt;p&gt;Service 层有两个接口，一个是关于注册和登陆的：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public interface UserService {
+    public void addUser(User user) throws UserException;
+    public void login(User user) throws UserException;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;另一个是检测注册和登陆过程中的错误情况：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;@Service
+public interface ExceptionService {
+
+    //_user 是从数据库中查找出的记录，user 是用户输入
+    public void loginException(User user, User db_user) throws UserException;
+
+    public void addUserException1(User user) throws UserException;
+
+    public void addUserException2(User user) throws UserException;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;先写 ExceptionService 的实现，在注册和登陆过程中要使用：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    //先创建 Bean，接下来会用到
+    private final UserMapper userMapper;
+
+    @Autowired
+    public ExceptionServiceImpl(UserMapper userMapper) {
+        this.userMapper = userMapper;
+    }
+    
+    //先判断输入格式是否有误
+    public void addUserException1(User user) throws UserException{
+        if (user.getUsername() == null || user.getUsername().trim().isEmpty()){
+            throw new UserException(&quot;用户名不能为空&quot;);
+        }else if (user.getUsername().length() &amp;lt; 5 || user.getUsername().length() &amp;gt; 15){
+            throw new UserException(&quot;用户名必须为5-15个字符&quot;);
+        }
+
+        if (user.getPassword() == null || user.getPassword().trim().isEmpty()){
+            throw new UserException(&quot;密码不能为空&quot;);
+        }else if (user.getPassword().length() &amp;lt; 5 || user.getPassword().length() &amp;gt; 15){
+            throw new UserException(&quot;密码必须为5-15个字符&quot;);
+        }
+
+        if (user.getPhone() == null || user.getPhone().trim().isEmpty()){
+            throw new UserException(&quot;电话号码不能为空&quot;);
+        }
+
+        if (user.getEmail() == null || user.getEmail().trim().isEmpty()){
+            throw new UserException(&quot;邮箱不能为空&quot;);
+        }
+    }
+
+    //再判断输入的信息是否已被注册
+    public void addUserException2(User user) throws UserException{
+        //这三者都必须是唯一的
+        if (userMapper.findUserByName(user.getUsername()) != null){
+            throw new UserException(&quot;该用户名已被注册&quot;);
+        } else if (userMapper.findUserByPhone(user.getPhone()) != null){
+            throw new UserException(&quot;该电话号码已被注册&quot;);
+        } else if (userMapper.findUserByEmail(user.getEmail()) != null){
+            throw new UserException(&quot;该邮箱已被注册&quot;);
+        }
+    }
+
+    //登入检测
+    public void loginException(User user, User db_user) throws UserException {
+
+        if(db_user == null){
+            throw new UserException(&quot;该用户不存在&quot;);
+        }
+        if(!user.getPassword().equals(db_user.getPassword())){
+            throw new UserException(&quot;密码错误&quot;);
+        }
+    }
+
+    //验证码检测
+    @Override
+    public void verifyCodeException(String inputVerifyCode, String code) throws UserException {
+        if (inputVerifyCode == null || inputVerifyCode.trim().isEmpty()){
+            throw new UserException(&quot;验证码不能为空&quot;);
+        } else if (inputVerifyCode.length() != 4){
+            throw new UserException(&quot;验证码长度应为 4 位&quot;);
+        } else if (!inputVerifyCode.equals(code)){
+            throw new UserException(&quot;验证码错误&quot;);
+        }
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;然后是 UserService 的实现：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    //先是用构造器注入来创建 UserMapper 和 ExceptionService 两个 Bean
+    private final UserMapper userMapper;
+
+    private final ExceptionService exceptionService;
+
+    @Autowired
+    public UserServiceImpl(UserMapper userMapper, ExceptionService exceptionService) {
+        this.userMapper = userMapper;
+        this.exceptionService = exceptionService;
+    }
+    
+    public void addUser(User user) throws UserException {
+        //先判断用户的输入是否有错
+        exceptionService.addUserException1(user);
+        //再判断用户的信息是否已被注册
+        exceptionService.addUserException2(user);
+        userMapper.addUser(user);
+    }
+    
+    //根据用户输入名字去数据库查找有没有这个用户，如果没有，就会抛出异常
+    public void login(User user) throws UserException {
+        User db_user = userMapper.findUserByName(user.getUsername());
+        exceptionService.loginException(user, db_user);
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;可能有人会觉得为什么登陆的方法没有返回值，其实如果登入成功，也就是没有抛出异常，在 Controller 中就可以接着执行后面的方法，如果用户名或密码错误，是会抛出异常，中断程序的&lt;/p&gt;
+
+&lt;h4 id=&quot;8-controller&quot;&gt;8. Controller&lt;/h4&gt;
+
+&lt;p&gt;到了关键的一步，Controller 负责处理 DispatcherServlet 分发的请求：&lt;/p&gt;
+
+&lt;p&gt;首先是使用构造器注入来创建三个 Bean：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    private final UserService userService;
+
+    private final VerifyCode verifyCode;
+
+    private final ExceptionService exceptionService;
+
+    @Autowired
+    public UserController(UserService userService, VerifyCode verifyCode, ExceptionService exceptionService) {
+        this.userService = userService;
+        this.verifyCode = verifyCode;
+        this.exceptionService = exceptionService;
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;userService 就是用于注册和登陆的，verifyCode 就是用于得到验证码，exceptionService 是用来检测注册和登陆过程中是否出现错误&lt;/p&gt;
+
+&lt;p&gt;在注册和登陆之前，都需要得到带有表单的页面：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    //在注册之前需要先得到注册的界面
+    @RequestMapping(&quot;/preAdd&quot;)
+    public ModelAndView preAdd(){
+        return new ModelAndView(&quot;addUser&quot;);
+    }
+    
+    //同样的，需要先得到界面
+    @RequestMapping(&quot;preLogin&quot;)
+    public ModelAndView preLogin(){
+        return new ModelAndView(&quot;login&quot;);
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;然后是注册的过程，先调用 addUser() 方法，如果用户注册的时候出现了问题，比如说用户名、电话号码或者邮箱已被注册，就直接抛出异常，就没有执行验证码验证的方法了，如果没问题，就接着检测验证码输入，将表单输入与验证码文本进行比较&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    @RequestMapping(&quot;/addUser&quot;)
+    public ModelAndView addUser(User user, HttpServletRequest request){
+        ModelAndView modelAndView;
+        //如果下面的 try 语句块没有抛出异常，则返回 addUserSuccessful.jsp
+        modelAndView = new ModelAndView(&quot;addUserSuccessful&quot;);
+        try{
+            //先调用添加用户的方法，看看有没有因为不符规定的输入而导致异常抛出
+            userService.addUser(user);
+            //然后再看有没有因为验证码错误而导致异常抛出
+            exceptionService.verifyCodeException(request.getParameter(&quot;verifyCode&quot;), verifyCode.getText());
+        } catch (UserException e){
+            //如果捕获异常，就带着异常信息返回注册界面
+            modelAndView = new ModelAndView(&quot;addUser&quot;);
+            modelAndView.addObject(&quot;message&quot;, e.getMessage());
+        }
+        return modelAndView;
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;登陆的过程，也是先先检查用户输入信息是否有误，再检查验证码信息&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    //登陆的逻辑和上面是一样的
+    @RequestMapping(&quot;/login&quot;)
+    public ModelAndView login(User user, HttpServletRequest request) {
+        ModelAndView modelAndView;
+        modelAndView = new ModelAndView(&quot;loginSuccessful&quot;);
+        try {
+            userService.login(user);
+            exceptionService.verifyCodeException(request.getParameter(&quot;verifyCode&quot;), verifyCode.getText());
+        } catch (UserException e){
+            modelAndView = new ModelAndView(&quot;login&quot;);
+            modelAndView.addObject(&quot;message&quot;, e.getMessage());
+        }
+        return modelAndView;
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;最后是关于输出验证码图片的操作：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    //得到验证码，然后用于 jsp 文件的 &amp;lt;img&amp;gt; 标签的 src 属性中
+    @RequestMapping(&quot;/getVerifyCode&quot;)
+    public void setVerifyCode(HttpServletResponse response)
+            throws IOException{
+        //设置响应格式
+        response.setContentType(&quot;image/jpg&quot;);
+        //得到图片
+        BufferedImage image = verifyCode.getImage();
+        //输出
+        verifyCode.output(image, response.getOutputStream());
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+</description>
+        <pubDate>Sun, 26 Aug 2018 00:00:00 -0700</pubDate>
+        <link>http://localhost:4000/2018/08/26/SSM-%E9%87%8D%E6%9E%84%E6%B3%A8%E5%86%8C%E7%99%BB%E9%99%86%E7%95%8C%E9%9D%A2/</link>
+        <guid isPermaLink="true">http://localhost:4000/2018/08/26/SSM-%E9%87%8D%E6%9E%84%E6%B3%A8%E5%86%8C%E7%99%BB%E9%99%86%E7%95%8C%E9%9D%A2/</guid>
+        
+        <category>Spring MVC</category>
+        
+        <category>Java Web</category>
+        
+        <category>Spring</category>
+        
+        
+      </item>
     
       <item>
         <title>Git 系列文章（四）</title>
@@ -2042,335 +2489,6 @@ public class Vector&amp;lt;E&amp;gt; extends AbstractList&amp;lt;E&amp;gt;
         <guid isPermaLink="true">http://localhost:4000/2018/06/18/Vector-%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/</guid>
         
         <category>Java源码解析</category>
-        
-        
-      </item>
-    
-      <item>
-        <title>Bean的装配（二）</title>
-        <description>&lt;h3 id=&quot;正文之前&quot;&gt;正文之前&lt;/h3&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;上一篇文章已经介绍了 &lt;a href=&quot;http://hxblog.site/2018/06/09/Bean%E7%9A%84%E8%A3%85%E9%85%8D-%E4%B8%80/&quot;&gt;Bean 的基本概念&lt;/a&gt;，所以今天这篇文章是基于上一篇中 Bean 的三种装配方式来进一步探讨，内容中会穿插着基础的依赖注入的概念&lt;/p&gt;
-
-  &lt;p&gt;主要内容&lt;/p&gt;
-  &lt;ol&gt;
-    &lt;li&gt;自动装配&lt;/li&gt;
-    &lt;li&gt;使用 XML 装配&lt;/li&gt;
-    &lt;li&gt;使用 Java 装配&lt;/li&gt;
-  &lt;/ol&gt;
-&lt;/blockquote&gt;
-
-&lt;h3 id=&quot;正文&quot;&gt;正文&lt;/h3&gt;
-
-&lt;h4 id=&quot;1-自动装配&quot;&gt;1. 自动装配&lt;/h4&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;Bean 的命名&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;上一篇文章中使用注解定义 Bean 的时候都是在类的定义上加注解，小写的类名作为 Bean 的 ID，但是我们可以自己命名 Bean：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-636382e6454b4e7d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;设置组件的值为 Bean 的名字，如果这么做了，在测试中就找不到名为“student”的 Bean 了：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-dc62dba7e68b406f.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-a4d73b83585089d4.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;将测试中获取的 Bean 的名字改为“myBean”之后就能通过测试了&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;组件扫描&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;上次讲到了组件扫描，设置组件扫描的方式有两种：&lt;/p&gt;
-
-&lt;ol&gt;
-  &lt;li&gt;XML 文件中配置&lt;/li&gt;
-  &lt;li&gt;Java 配置类中添加注解&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;p&gt;我们再还原 student 这个 Bean 的状态，也就是在类的定义上加一个注解 &lt;strong&gt;@Component&lt;/strong&gt;：&lt;/p&gt;
-
-&lt;p&gt;在配置文件中添加组建扫描：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-f1f83c530e911da6.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;这个是上次讲过的，就不再多说，然后来看看 Java 配置类的组件扫描：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-762cb53b165f66b6.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;添加的注解 &lt;strong&gt;@Component&lt;/strong&gt; 带一个参数，指定了扫描的包的位置，就相当于 XML 配置文件中的 base-package 属性&lt;/p&gt;
-
-&lt;p&gt;如果不填写参数，就扫描此文件所在的包，在这里，我们扫描名为“bean”的包，点击注解左边的那个按钮就能跳转到 Student 类（bean 包中）&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;进阶自动装配&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;此处引用《Spring实战》的一句话：&lt;/p&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;简单来说，自动装配就是让 Spring 自动满足 Bean 依赖的一种方法，在满足依赖的过程中，会在 Spring 应用上下文中寻找匹配某个 Bean 需求的其他 Bean&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;我们这里添加一个接口 Book，至于为什么用接口而不用实现类，因为我们后文要对这个接口做多个实现：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-61b236068ad840d4.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;然后创建一个实现了 Book 接口的类，并且将其作为一个 Bean：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-8a1913ed3bfb445a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;既然是自动装配，肯定要用到注解 &lt;strong&gt;@Autowired&lt;/strong&gt;，那么，这个注解可以用在什么地方呢？&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;实例化&lt;/li&gt;
-  &lt;li&gt;构造器（构造器注入）&lt;/li&gt;
-  &lt;li&gt;Setter 方法（设值注入）&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;第一点之前说过，在实例化时候添加这个注解进行自动装配&lt;/p&gt;
-
-&lt;h5 id=&quot;怎么在构造器上使用呢&quot;&gt;怎么在构造器上使用呢？&lt;/h5&gt;
-
-&lt;p&gt;我们修改一下 Student 类：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-ebac8af5c79b024b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;在构造 Student 的时候，我将一个 Book 类注入，因为我们刚才已经有了 Book 类的实现，所以这里注入的是 englishBook 这个 Bean&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;需要注意的是：Spring 在创建 student 这个 Bean 的时候，会传入一个 Book 类型的 Bean&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;有两种情况会导致抛出异常，没有所匹配的 Bean 或有多个所匹配的 Bean&lt;/p&gt;
-
-&lt;p&gt;为了验证第一种情况，我将 EnglishBook 的 &lt;strong&gt;@Component&lt;/strong&gt; 注解去掉，这样子就没有 Book 类型的 Bean 了&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-a40f42de9fe9dfbe.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;将 &lt;strong&gt;@Autowired&lt;/strong&gt; 的属性值 &lt;strong&gt;required&lt;/strong&gt; 设置为 false，可避免图中的缺少 Bean 的情况：&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-d6ae2c4d1a59e547.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;运行测试之后，看到两条主要的错误信息：&lt;/p&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;Caused by: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name ‘student’ defined in file [C:\Users\94545\Desktop\Developer Folder\Java Test Folder\springtest\out\production\springtest\bean\Student.class]: Unsatisfied dependency expressed through constructor parameter 0; nested exception is org.springframework.beans.factory.NoSuchBeanDefinitionException: No qualifying bean of type ‘bean.Book’ available: expected at least 1 bean which qualifies as autowire candidate. Dependency annotations: {}&lt;/p&gt;
-
-  &lt;p&gt;Caused by: org.springframework.beans.factory.NoSuchBeanDefinitionException: No qualifying bean of type ‘bean.Book’ available: expected at least 1 bean which qualifies as autowire candidate. Dependency annotations: {}&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;首先是名为“student” 的 Bean 的构造器中的依赖关系出错了，第二是没有 Book 类型的 Bean，导致 Student 的 Bean 的构造器中条件不符合&lt;/p&gt;
-
-&lt;p&gt;为了验证第二种情况，我将代码还原，并且创建另一个 Book 类型的 Bean：mathBook，在此情况下，测试是不会通过的，因为没有单一符合条件的 Bean&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-38fcf0f57cc4c0d7.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;若有多个符合要求的 Bean，就需要一下方案来消除歧义：&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;ol&gt;
-  &lt;li&gt;标识首选的一个 Bean：&lt;strong&gt;@Primary&lt;/strong&gt; 注解&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-bea44aa543e72e78.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;测试后，证实了注解有效：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-b674e3dfe522663c.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;ol&gt;
-  &lt;li&gt;在需要注入的地方使用 &lt;strong&gt;@Qualifier&lt;/strong&gt;注解：&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;p&gt;这个注解对于构造器注入是不可用的，接下来在 Setter 方法上装配的时候再讲解&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-2953298d146f0c0b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;h5 id=&quot;怎么在-setter-方法上使用呢&quot;&gt;怎么在 Setter 方法上使用呢？&lt;/h5&gt;
-
-&lt;p&gt;我们需要修改一下 Student 类，并且暂时隐藏一下 mathBook 这个 Bean：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-c1691409c4ff077b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;带有 &lt;strong&gt;@Autowired&lt;/strong&gt; 注解，在实例化时能够自动匹配 Book 类型的 Bean：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-b8f88ac336ae01fd.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;关于 Setter 方法和构造器来装配 Bean，就目前的学习情况来说，只有一点区别，如果有多个&lt;strong&gt;不同类型&lt;/strong&gt;的 Bean，使用构造器能够指定装配的顺序&lt;/p&gt;
-
-&lt;p&gt;现在我们还原 mathBook 这个 Bean，如果出现上述的两个可能抛出异常的情况，这里有两种解决方式：&lt;/p&gt;
-
-&lt;ol&gt;
-  &lt;li&gt;&lt;strong&gt;@Primary&lt;/strong&gt; 注解：&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;p&gt;和上述类似，不多说&lt;/p&gt;
-
-&lt;ol&gt;
-  &lt;li&gt;在需要注入的地方使用限定符，也就是 &lt;strong&gt;@Qualifier&lt;/strong&gt;注解：&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-842b10aca780d83e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;然后就能打印出英语书的信息（不截图了）&lt;/p&gt;
-
-&lt;p&gt;这个注解有一点灵活的地方就是，能够在 Bean 的定义上设置限定符，也就是说，限定符不一定要是 Bean 的名字，做个测试：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-b641a3773cfd406f.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;这时候，如果还使用 englishBook 作为限定符，也能够定位到这个 Bean，但是我们用自定义的限定符也可以，修改 Setter 方法上的限定符，进行测试：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-b777747f7bdd3033.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;证明使用 testQualifier 作为限定符也能得到结果&lt;/p&gt;
-
-&lt;h4 id=&quot;2-使用-xml-装配&quot;&gt;2. 使用 XML 装配&lt;/h4&gt;
-
-&lt;p&gt;使用 XML 装配也有分构造器注入还是设值注入（Setter）方法，接下来的前三个使用的是构造器注入&lt;/p&gt;
-
-&lt;h5 id=&quot;1-构造器注入&quot;&gt;1. 构造器注入&lt;/h5&gt;
-
-&lt;h6 id=&quot;传递-bean-的引用&quot;&gt;传递 Bean 的引用&lt;/h6&gt;
-
-&lt;p&gt;将自动装配部分添加的注解取消掉，把代码还原成初始状态，然后我们开始使用 XML 装配：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-c66039d635d4e576.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;暂时不配置 mathBook 这个 Bean，并修改 StudentTest 的上下文配置信息：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-89690de335b1b5cf.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;最后便是 Bean 的配置文件：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-dfaa72ec385b0001.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;首先创建 englishBook 这个 Bean，在创建 student 这个 Bean，这里有一个元素&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&amp;lt;constructor-arg ref=&quot;&quot;/&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;因为我在 student 的构造器中有一个名叫 englishBook 的Bean 作为参数，所以 Spring 会创建一个 ID 为 englishBook 的Bean，并将其引用传递至 student 的构造器中，&lt;strong&gt;ref&lt;/strong&gt; 属性表明了传递引用的 Bean 的 ID&lt;/p&gt;
-
-&lt;h6 id=&quot;传递字符串&quot;&gt;传递字符串&lt;/h6&gt;
-
-&lt;p&gt;如果我在 student 的构造器中传入的不是某个 Bean 的引用，而是某个字符串呢？&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-626c8fac064350f4.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;修改 XML 文件中的配置信息：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-57a49bc535f6814e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;value 属性表示的是构造器中的字面量的值，可以是字符串、数字或布尔值等&lt;/p&gt;
-
-&lt;p&gt;然后测试一下：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-12f1b1d10b1eb777.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;证明字面量被成功注入了&lt;/p&gt;
-
-&lt;h6 id=&quot;传递列表&quot;&gt;传递列表&lt;/h6&gt;
-
-&lt;p&gt;一个学生不可能只有一本书，所以我们要考虑，如何传入列表呢？&lt;/p&gt;
-
-&lt;p&gt;首先我们先修改 Student 类，传入的参数不仅是字符串，还有一个存放书本的列表：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-688a224f21a29816.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;然后在 XML 文件中配置 Bean：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    &amp;lt;bean id=&quot;englishBook&quot; class=&quot;bean.EnglishBook&quot;/&amp;gt;
-    &amp;lt;bean id=&quot;mathBook&quot; class=&quot;bean.MathBook&quot;/&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;最后配置 student 这个 Bean，并且配置构造器参数：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    &amp;lt;bean id=&quot;student&quot; class=&quot;bean.Student&quot;&amp;gt;
-        &amp;lt;constructor-arg value=&quot;I have some books&quot;/&amp;gt;
-        &amp;lt;constructor-arg&amp;gt;
-            &amp;lt;list&amp;gt;
-                &amp;lt;ref bean=&quot;englishBook&quot;/&amp;gt;
-                &amp;lt;ref bean=&quot;mathBook&quot;/&amp;gt;
-            &amp;lt;/list&amp;gt;
-        &amp;lt;/constructor-arg&amp;gt;
-    &amp;lt;/bean&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;第一个参数是字符串，第二个是 Book 类型的 List，列表中存放的是刚才创建的两个 Bean 的引用，然后来进行测试：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-c4a41cdb67cf4190.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;如果列表中也存放字符串，而不是引用，在元素&lt;list&gt;&lt;/list&gt;中使用&lt;value&gt;属性来代替&lt;ref&gt;属性&lt;/ref&gt;&lt;/value&gt;&lt;/p&gt;
-
-&lt;h5 id=&quot;2-设值注入&quot;&gt;2. 设值注入&lt;/h5&gt;
-
-&lt;p&gt;修改 Student 类和 Bean 配置文件：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-087c6965cf420bad.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;然后在 Bean 的配置文件中加上这么一句：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    &amp;lt;bean id=&quot;student&quot; class=&quot;bean.Student&quot;&amp;gt;
-        &amp;lt;property name=&quot;book&quot; ref=&quot;englishBook&quot;/&amp;gt;
-    &amp;lt;/bean&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;&amp;lt;property&amp;gt;&lt;/code&gt;属性是为 Setter 方法提供服务的，和上述的&lt;code class=&quot;highlighter-rouge&quot;&gt;&amp;lt;constructor-arg&amp;gt;&lt;/code&gt;属性所提供的服务是一样的，在这个语句中，我在 book 中注入了 ID 为 englishBook 的 Bean 的引用，然后测试，会输出英语书的信息：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-b6d23cf06cbd2292.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;关于字面量和列表的注入，其实和构造器注入是类似的，将&lt;code class=&quot;highlighter-rouge&quot;&gt;&amp;lt;constructor-arg&amp;gt;&lt;/code&gt;属性替换为&lt;code class=&quot;highlighter-rouge&quot;&gt;&amp;lt;property&amp;gt;&lt;/code&gt;，只不过，设置注入需要设置属性名，也就是将 a Bean 的引用（或字面量或集合）注入到 b 属性中，就不再详述&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h4 id=&quot;3-使用-java-装配&quot;&gt;3. 使用 Java 装配&lt;/h4&gt;
-
-&lt;p&gt;除了使用 XML，还可使用 Java 代码来装配 Bean 并且达到依赖注入的目的&lt;/p&gt;
-
-&lt;p&gt;所以我们需要先修改测试中的上下文配置信息：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;@ContextConfiguration(classes = StudentConfig.class)
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;再将 Student 类改回构造器注入的类型：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-93870d8ae679221a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;使用 Java 进行 Bean 的装配在上一篇文章中已经提到，这里就说一说依赖注入的实现：&lt;/p&gt;
-
-&lt;p&gt;在 Java 配置类中定义两个 Bean：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-87d4c35a1f7bec0b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;在 student 中使用构造器注入了 englishBook 这个 Bean，运行测试，将会得到英语书的输出：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-f9b61d6e4391bdd7.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;h4 id=&quot;总结&quot;&gt;总结&lt;/h4&gt;
-
-&lt;p&gt;其实，这一篇文章把 Bean 的装配和依赖注入混合起来将了，可能有些人会觉得乱，但是三种方式其实从思路来说是类似的，通过认真地阅读这两篇关于 Bean 的介绍，就能对 Spring 的 DI 以及 IoC 有一个基本了解&lt;/p&gt;
-
-&lt;p&gt;DI（Dependency Injection）称为依赖注入，通俗的说，是在运行时，动态地满足某个对象对其他对象的需求，用上面的例子来说，student 在运行时需要 Book 类型的 Bean 作为依赖，我就给它注入一个 Bean，叫做 englishBook，这就能够叫做依赖注入&lt;/p&gt;
-
-&lt;p&gt;IoC（Inversion of Control）称为控制反转，在上面做的所有测试中，我都没有手动创建某个对象的实例，比如说注入一个列表，我甚至都没有创建一个列表的实例，那么为什么还会通过测试呢？因为 Spring 帮我在程序运行时创建了各个 Bean 的实例&lt;/p&gt;
-
-&lt;p&gt;IoC 能够由 DI 来实现，也就是说，程序中的各个组件之间的依赖关系都是由 Spring 来管理的，这就称作&lt;strong&gt;控制反转&lt;/strong&gt;，这是 Spring 的核心&lt;/p&gt;
-
-&lt;p&gt;接下来还陆续会有文章来讲述这一概念&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-79919768b5365766.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; width=&quot;40%&quot; height=&quot;40%&quot; /&gt;&lt;/p&gt;
-</description>
-        <pubDate>Tue, 12 Jun 2018 00:00:00 -0700</pubDate>
-        <link>http://localhost:4000/2018/06/12/Bean%E7%9A%84%E8%A3%85%E9%85%8D-%E4%BA%8C/</link>
-        <guid isPermaLink="true">http://localhost:4000/2018/06/12/Bean%E7%9A%84%E8%A3%85%E9%85%8D-%E4%BA%8C/</guid>
-        
-        <category>Spring</category>
         
         
       </item>
