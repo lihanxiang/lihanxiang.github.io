@@ -19,9 +19,9 @@
     <meta name="keyword"  content="Java">
     <link rel="shortcut icon" href="/img/favicon.ico">
 
-    <title>Github Pages + Jekyll 创建个人博客 - 李汉祥的博客 | L Blog</title>
+    <title>保持登录状态的注册登陆界面 - 李汉祥的博客 | L Blog</title>
 
-    <link rel="canonical" href="http://localhost:4000/2018/05/29/Github-Pages-+-Jekyll-%E5%88%9B%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/">
+    <link rel="canonical" href="http://localhost:4000/2018/08/30/%E4%BF%9D%E6%8C%81%E7%99%BB%E5%BD%95%E7%8A%B6%E6%80%81%E7%9A%84%E6%B3%A8%E5%86%8C%E7%99%BB%E9%99%86%E7%95%8C%E9%9D%A2/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -143,12 +143,12 @@
 
 
     <!-- Image to hack wechat -->
-<!-- <img src="/img/post/2018-05/29.jpg" width="0" height="0"> -->
+<!-- <img src="/img/post/2018-08/30.jpg" width="0" height="0"> -->
 
 <!-- Post Header -->
 <style type="text/css">
     header.intro-header{
-        background-image: url('/img/post/2018-05/29.jpg')
+        background-image: url('/img/post/2018-08/30.jpg')
     }
 </style>
 <header class="intro-header" >
@@ -158,15 +158,19 @@
                 <div class="post-heading">
                     <div class="tags">
                         
-                        <a class="tag" href="/tags/#随笔" title="随笔">随笔</a>
+                        <a class="tag" href="/tags/#Spring MVC" title="Spring MVC">Spring MVC</a>
+                        
+                        <a class="tag" href="/tags/#Java Web" title="Java Web">Java Web</a>
+                        
+                        <a class="tag" href="/tags/#Spring" title="Spring">Spring</a>
                         
                     </div>
-                    <h1>Github Pages + Jekyll 创建个人博客</h1>
+                    <h1>保持登录状态的注册登陆界面</h1>
                     
                     
-                    <h2 class="subheading">随便说说</h2>
+                    <h2 class="subheading">练手项目</h2>
                     
-                    <span class="meta">Posted by L on May 29, 2018</span>
+                    <span class="meta">Posted by L on August 30, 2018</span>
                 </div>
             </div>
         </div>
@@ -187,152 +191,241 @@
 				<h3 id="正文之前">正文之前</h3>
 
 <blockquote>
-  <p>在去年的时候接触到了Github，同时也了解到了Github Pages，这是Github为每位用户提供的一个能够作为个人主页的仓库，上个月才开始搭建个人仓库，应网友的请求，写一篇搭建个人博客的过程，最后当然要打一波<a href="http://lihanxiang.github.io">我的博客</a>的广告了</p>
-
-  <p>关于题目中说到的Jekyll，是一个<strong>静态博客网站生成器</strong>，也就是说，用MarkDown写完的文章，经过你选定的Jekyll模板的转换，就能够生成面向公众的静态网页了，而且Jekyll集成了服务器，支持本地预览</p>
+  <p>前两天写了<a href="https://lihanxiang.github.io/2018/08/26/SSM-%E9%87%8D%E6%9E%84%E6%B3%A8%E5%86%8C%E7%99%BB%E9%99%86%E7%95%8C%E9%9D%A2/">SSM 重构注册登陆界面</a>，然后添加了一点功能：保持登录状态，修改当前登录用户信息，查看登录状态</p>
 </blockquote>
 
 <h3 id="正文">正文</h3>
 
-<p>接下来说重点：</p>
+<h3 id="version-021">Version 0.2.1</h3>
 
-<h4 id="1-创建仓库">1. 创建仓库</h4>
+<h4 id="新增的功能都是在原有的基础上添加代码基本没有删去版本-01-的代码">新增的功能都是在原有的基础上添加代码，基本没有删去版本 0.1 的代码</h4>
 
-<p>既然是每个用户只能有一个主页，所以仓库的名字肯定是要特殊化的：</p>
+<p>可通过点击 tag 来查看 v0.1：</p>
 
-<p><strong>用户名.github.io</strong></p>
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-a2a86f9628363959.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
 
-<p>我创建了一个小号来做这个示范：</p>
+<h4 id="1-新增功能截图">1. 新增功能截图</h4>
 
-<p><img src="https://upload-images.jianshu.io/upload_images/3426615-e5467e8c90dd40fd.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" />
-<br /></p>
+<p>登录成功后主页面：</p>
 
-<h4 id="2-jekyll工具">2. Jekyll工具</h4>
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-e89ae45825fa5ff5.PNG?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
 
-<p>准备一个Linux系统，来使用Jekyll工具，我用的是虚拟机里的Ubuntu系统</p>
+<p>修改用户信息（用户名无法修改）：</p>
 
-<p>具体的Jekyll下载过程：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-a95449255a2f23c2.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
 
-<ol>
-  <li>需要配置按照官网给出的环境：</li>
-</ol>
+<p>电话号码和邮箱不能为空：</p>
 
-<p><img src="https://upload-images.jianshu.io/upload_images/3426615-66ffcbe2e43e423f.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-619e57307bb9bd2b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
 
-<ol>
-  <li>安装Jekyll：</li>
-</ol>
+<p>修改成功：</p>
 
-<p>Ubuntu镜像应该自带上述环境，我直接进行了jekyll的安装：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-2955b3d0ca2d9c26.PNG?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>gem install jekyll
+<p>检测登录状态：</p>
+
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-16eb325efa37d0f3.PNG?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
+
+<p>若未登录就检测登录状态：</p>
+
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-4299278f99f6f2af.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
+
+<h4 id="2-实体类">2. 实体类</h4>
+
+<p>用户的信息添加了电话号码和描述，所以要在实体类和数据库中都做一点改动：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    private String gender;
+    private String description;
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+    public String getGender() {
+        return gender;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+    public String getDescription() {
+        return description;
+    }
 </code></pre></div></div>
 
-<p><img src="https://upload-images.jianshu.io/upload_images/3426615-1d32d8018bbac443.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
+<p>MySQL 中对表做一点改动：</p>
 
-<ol>
-  <li>挑选模板</li>
-</ol>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>alter table user add gender varchar(10), add description varchar(200);
+</code></pre></div></div>
 
-<p>在jekyll的<a href="http://jekyllthemes.org/">模板目录</a>中挑选自己喜欢的，并找到模板的GitHub地址，这里要将一点，推荐选用那些有空白模板的，免得有很多需要修改的信息</p>
+<h4 id="3-mybatis">3. Mybatis</h4>
 
-<p>我们以模板中的第一个模板为例</p>
-
-<p><img src="https://upload-images.jianshu.io/upload_images/3426615-f844cd7e83e470a8.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
-
-<p>找到模板的源码位置：</p>
-
-<p><img src="https://upload-images.jianshu.io/upload_images/3426615-9256e30599245e31.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" />
-<br /></p>
-
-<h4 id="3-本地编辑">3. 本地编辑</h4>
-
-<p>把这个模板仓库和你刚才创建的博客仓库下载到本地，并且认真阅读模板项目中的README文档，文档里有关于模板的基础配置，一些特点以及博客文章的规范等信息</p>
-
-<p>具体的操作试模板而定，我是直接把模板里的所有文件（除了README文档）全部复制到我的仓库里，简单粗暴，然后push
-<br /></p>
-
-<h4 id="4-jekyll目录">4. Jekyll目录</h4>
-
-<p>官网给出的基本的目录是这样的：</p>
-
-<p><img src="https://upload-images.jianshu.io/upload_images/3426615-b10e1e6cb5f80e02.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
-
-<p>然后我以我的博客目录来解释一下这些文件夹：</p>
+<p>为了添加新功能，需要在 MyBatis 映射器中添加两步：</p>
 
 <ul>
-  <li>_config.yml</li>
+  <li>查找用户信息：</li>
 </ul>
 
-<p>是核心的配置文件，里面包含了你的博客的基本信息，网页的地址，其他的链接以及MarkDown格式等信息</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    &lt;select id="showInfo" parameterType="String" resultType="domain.User"&gt;
+        SELECT *
+        FROM user
+        WHERE username = #{username}
+    &lt;/select&gt;
+</code></pre></div></div>
 
 <ul>
-  <li>_includes</li>
+  <li>修改用户信息：</li>
 </ul>
 
-<p>是一些可重用的组件，比如Github、知乎和简书的链接，谷歌分析的代码等等</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    &lt;update id="setUserInfo" parameterType="domain.User"&gt;
+        UPDATE user SET phone = #{phone}, email = #{email},
+        gender = #{gender}, description = #{description}
+    &lt;/update&gt;
+</code></pre></div></div>
 
-<ul>
-  <li>_layouts</li>
-</ul>
+<p>然后在接口中添加对应方法：</p>
 
-<p>是你博客网页的布局</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    User showInfo(String username);
+    void setUserInfo(User user);
+</code></pre></div></div>
 
-<ul>
-  <li>_posts</li>
-</ul>
+<h4 id="3-service">3. Service</h4>
 
-<p>这里存放要发表的文章，也就是需要被转换成<strong>.html</strong>的<strong>.md</strong>文件</p>
+<p>先写异常的接口 ExceptionService 吧：</p>
 
-<ul>
-  <li>_site</li>
-</ul>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    void setInfoException(User user) throws UserException;
 
-<p>这个文件夹是存放Jekyll转换完成的页面，官方推荐最好放入.gitignore 文件中，以免被他人查看</p>
+    void statusException(String username) throws UserException;
+</code></pre></div></div>
 
-<p>其他没有提到的是我没有使用到的，当然我使用的博客模板中还有一些如<strong>css</strong>, <strong>js</strong>, <strong>img</strong>, <strong>font</strong>之类的目录，这些都视模板而定
-<br /></p>
+<p>然后写实现类：</p>
 
-<h4 id="5-发布文章">5. 发布文章</h4>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    //重置信息检测，关键信息不能为空
+    @Override
+    public void setInfoException(User user) throws UserException {
+        if (user.getPhone() == null || user.getPhone().trim().isEmpty()){
+            throw new UserException("电话号码不能为空");
+        } else if (user.getEmail() == null || user.getEmail().trim().isEmpty()){
+            throw new UserException("邮箱不能为空");
+        }
+    }
 
-<ul>
-  <li>文章标题</li>
-</ul>
+    //用户状态检测，如果在 Session 中未找到有用户登陆，就抛出异常
+    @Override
+    public void statusException(String username) throws UserException {
+        if (username == null){
+            throw new UserException("请先登录");
+        }
+    }
+</code></pre></div></div>
 
-<p>年-月-日-标题.MARKUP，比如当前这篇文章就是：</p>
+<p>在 UserService 中新增三个功能，其中有两个有异常检测：</p>
 
-<p><strong>2018-05-28-Github Pages + Jekyll 创建个人博客.md</strong></p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    User showInfo(String username);
+    String getStatus(String username) throws UserException;
+    void setUserInfo(User user) throws UserException;
+</code></pre></div></div>
 
-<ul>
-  <li>YAML头信息</li>
-</ul>
+<p>然后是实现类：</p>
 
-<p>每篇文章都需要YAML头信息，具体的信息是由你的模板决定的</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    //显示用户信息
+    @Override
+    public User showInfo(String username) {
+        return userMapper.showInfo(username);
+    }
 
-<ul>
-  <li>Jekyll转换</li>
-</ul>
+    //显示当前登录状态
+    @Override
+    public String getStatus(String username) throws UserException {
+        exceptionService.statusException(username);
+        return username;
+    }
 
-<p>把添加了头信息和修改了标题的文章放至_posts文件夹中，然后在博客仓库内使用 <strong>jekyll serve</strong> 命令：</p>
+    //修改用户信息
+    @Override
+    public void setUserInfo(User user) throws UserException{
+        exceptionService.setInfoException(user);
+        userMapper.setUserInfo(user);
+    }
+</code></pre></div></div>
 
-<p><img src="https://upload-images.jianshu.io/upload_images/3426615-82e2bd8f8ed4cf47.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
+<h4 id="4-controller">4. Controller</h4>
 
-<p>运行之后可以在本地预览博客内容，端口为<strong>http://localhost:4000</strong>：</p>
+<p>在登录时，需要添加一点代码，将用户名写入 Session，以保持登录状态：</p>
 
-<p><img src="https://upload-images.jianshu.io/upload_images/3426615-9dd037396fef0e4c.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    public ModelAndView login(User user, HttpServletRequest request) {
+        ModelAndView modelAndView = new ModelAndView("main");
+        try {
+            userService.login(user);
+            userService.verifyCode(request.getParameter("verifyCode"), verifyCode.getText());
+            //创建 Session，保持登录状态
+            request.getSession().setAttribute("username", user.getUsername());
+            //在模型中添加对象，用于 JSP 读取
+            modelAndView.addObject("username", request.getSession().getAttribute("username"));
+        } catch (UserException e){
+            //如果未登录成功，就重新登录
+            modelAndView.setViewName("login");
+            modelAndView.addObject("message", e.getMessage());
+        }
+        return modelAndView;
+</code></pre></div></div>
 
-<p>预览完成之后，用git命令来进行add和commit，并且push本地仓库，过几分钟登陆博客地址，就能够看到内容更新了：</p>
+<p>然后是登出的操作：</p>
 
-<p><img src="https://upload-images.jianshu.io/upload_images/3426615-d68cdbe54832bfbd.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    //登出账户，不需要具体用户名称，直接废除 session 就行
+    @RequestMapping("/logout")
+    public ModelAndView logout(HttpServletRequest request){
+        request.getSession().invalidate();
+        return new ModelAndView("login").addObject("message", "已登出");
+    }
+</code></pre></div></div>
 
-<blockquote>
-  <p>git add
-git commit
-git pull
-git push</p>
-</blockquote>
+<p>新增查看用户状态的功能：</p>
 
-<p>这四条命令就够了，博客的基础搭建就这样结束了，祝大家都能挑选到心仪的模板，最后再次抛出<a href="http://lihanxiang.github.io">我的博客</a></p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    //查看用户状态，显示是哪个用户在登录，如果没有登录的用户，就会提示你先登录
+    @RequestMapping("/userStatus")
+    public ModelAndView userState(HttpServletRequest request){
+        ModelAndView modelAndView = new ModelAndView("userStatus");
+        try {
+            modelAndView.addObject("username",
+                    userService.getStatus((String)request.getSession().getAttribute("username")));
+        } catch (UserException e){
+            modelAndView.addObject("message", e.getMessage());
+        }
+        return modelAndView;
+    }
+</code></pre></div></div>
+
+<p>然后是用户信息相关的操作，如果在修改信息时抛出异常，就带着错误信息回到信息修改页面：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    //显示用户信息
+    @RequestMapping("showInfo")
+    public ModelAndView showInfo(HttpServletRequest request){
+        return new ModelAndView("userInfo")
+                .addObject("user", userService.showInfo(
+                        ((String)request.getSession().getAttribute("username"))));
+    }
+
+    //对用户信息进行修改
+    @RequestMapping("setUserInfo")
+    public ModelAndView setUserInfo(User user){
+        ModelAndView modelAndView = new ModelAndView("userInfo");
+        try {
+            userService.setUserInfo(user);
+            //设置提示信息
+            modelAndView.addObject("message", "修改成功");
+            //跳转
+            modelAndView.setViewName("main");
+        } catch (UserException e){
+            modelAndView.addObject("message", e.getMessage());
+        }
+        return modelAndView;
+    }
+</code></pre></div></div>
+
+<h4 id="5-jsp">5. JSP</h4>
+
+<p>新增两个前端页面：userInfo.jsp 和 userStatus.jsp，都是差不多的页面，这里就不演示了</p>
+
+<p>接下来的 v0.2.2 是采用过滤器来实现相同功能</p>
 
 <p><img src="https://upload-images.jianshu.io/upload_images/3426615-79919768b5365766.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" width="40%" height="40%" /></p>
 
@@ -345,13 +438,9 @@ git push</p>
                 <ul class="pager">
                     
                     <li class="previous">
-                        <a href="/2018/05/28/LinkedList%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E4%BA%8C/" data-toggle="tooltip" data-placement="top" title="LinkedList源码分析（二）">&larr; Previous Post</a>
+                        <a href="/2018/08/26/SSM-%E9%87%8D%E6%9E%84%E6%B3%A8%E5%86%8C%E7%99%BB%E9%99%86%E7%95%8C%E9%9D%A2/" data-toggle="tooltip" data-placement="top" title="SSM 重构注册登陆界面">&larr; Previous Post</a>
                     </li>
                     
-                    
-                    <li class="next">
-                        <a href="/2018/06/08/LinkedList%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E4%B8%89/" data-toggle="tooltip" data-placement="top" title="LinkedList源码分析（三）">Next Post &rarr;</a>
-                    </li>
                     
                 </ul>
 
@@ -481,8 +570,8 @@ git push</p>
 <script type="text/javascript">
     /* * * CONFIGURATION VARIABLES * * */
     var disqus_shortname = "http-hxblog-site";
-    var disqus_identifier = "/2018/05/29/Github Pages + Jekyll 创建个人博客";
-    var disqus_url = "http://localhost:4000/2018/05/29/Github-Pages-+-Jekyll-%E5%88%9B%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/";
+    var disqus_identifier = "/2018/08/30/保持登录状态的注册登陆界面";
+    var disqus_url = "http://localhost:4000/2018/08/30/%E4%BF%9D%E6%8C%81%E7%99%BB%E5%BD%95%E7%8A%B6%E6%80%81%E7%9A%84%E6%B3%A8%E5%86%8C%E7%99%BB%E9%99%86%E7%95%8C%E9%9D%A2/";
 
     (function() {
         var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;

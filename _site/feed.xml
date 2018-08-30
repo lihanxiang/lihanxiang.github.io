@@ -5,9 +5,265 @@
     <description>你问我什么咖啡最好，我当然觉得是 Java</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Sun, 26 Aug 2018 07:12:54 -0700</pubDate>
-    <lastBuildDate>Sun, 26 Aug 2018 07:12:54 -0700</lastBuildDate>
+    <pubDate>Thu, 30 Aug 2018 07:04:54 -0700</pubDate>
+    <lastBuildDate>Thu, 30 Aug 2018 07:04:54 -0700</lastBuildDate>
     <generator>Jekyll v3.8.0</generator>
+    
+      <item>
+        <title>保持登录状态的注册登陆界面</title>
+        <description>&lt;h3 id=&quot;正文之前&quot;&gt;正文之前&lt;/h3&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;前两天写了&lt;a href=&quot;https://lihanxiang.github.io/2018/08/26/SSM-%E9%87%8D%E6%9E%84%E6%B3%A8%E5%86%8C%E7%99%BB%E9%99%86%E7%95%8C%E9%9D%A2/&quot;&gt;SSM 重构注册登陆界面&lt;/a&gt;，然后添加了一点功能：保持登录状态，修改当前登录用户信息，查看登录状态&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h3 id=&quot;正文&quot;&gt;正文&lt;/h3&gt;
+
+&lt;h3 id=&quot;version-021&quot;&gt;Version 0.2.1&lt;/h3&gt;
+
+&lt;h4 id=&quot;新增的功能都是在原有的基础上添加代码基本没有删去版本-01-的代码&quot;&gt;新增的功能都是在原有的基础上添加代码，基本没有删去版本 0.1 的代码&lt;/h4&gt;
+
+&lt;p&gt;可通过点击 tag 来查看 v0.1：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-a2a86f9628363959.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;1-新增功能截图&quot;&gt;1. 新增功能截图&lt;/h4&gt;
+
+&lt;p&gt;登录成功后主页面：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-e89ae45825fa5ff5.PNG?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;修改用户信息（用户名无法修改）：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-a95449255a2f23c2.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;电话号码和邮箱不能为空：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-619e57307bb9bd2b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;修改成功：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-2955b3d0ca2d9c26.PNG?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;检测登录状态：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-16eb325efa37d0f3.PNG?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;若未登录就检测登录状态：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-4299278f99f6f2af.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;2-实体类&quot;&gt;2. 实体类&lt;/h4&gt;
+
+&lt;p&gt;用户的信息添加了电话号码和描述，所以要在实体类和数据库中都做一点改动：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    private String gender;
+    private String description;
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+    public String getGender() {
+        return gender;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+    public String getDescription() {
+        return description;
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;MySQL 中对表做一点改动：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;alter table user add gender varchar(10), add description varchar(200);
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h4 id=&quot;3-mybatis&quot;&gt;3. Mybatis&lt;/h4&gt;
+
+&lt;p&gt;为了添加新功能，需要在 MyBatis 映射器中添加两步：&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;查找用户信息：&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    &amp;lt;select id=&quot;showInfo&quot; parameterType=&quot;String&quot; resultType=&quot;domain.User&quot;&amp;gt;
+        SELECT *
+        FROM user
+        WHERE username = #{username}
+    &amp;lt;/select&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;修改用户信息：&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    &amp;lt;update id=&quot;setUserInfo&quot; parameterType=&quot;domain.User&quot;&amp;gt;
+        UPDATE user SET phone = #{phone}, email = #{email},
+        gender = #{gender}, description = #{description}
+    &amp;lt;/update&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;然后在接口中添加对应方法：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    User showInfo(String username);
+    void setUserInfo(User user);
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h4 id=&quot;3-service&quot;&gt;3. Service&lt;/h4&gt;
+
+&lt;p&gt;先写异常的接口 ExceptionService 吧：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    void setInfoException(User user) throws UserException;
+
+    void statusException(String username) throws UserException;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;然后写实现类：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    //重置信息检测，关键信息不能为空
+    @Override
+    public void setInfoException(User user) throws UserException {
+        if (user.getPhone() == null || user.getPhone().trim().isEmpty()){
+            throw new UserException(&quot;电话号码不能为空&quot;);
+        } else if (user.getEmail() == null || user.getEmail().trim().isEmpty()){
+            throw new UserException(&quot;邮箱不能为空&quot;);
+        }
+    }
+
+    //用户状态检测，如果在 Session 中未找到有用户登陆，就抛出异常
+    @Override
+    public void statusException(String username) throws UserException {
+        if (username == null){
+            throw new UserException(&quot;请先登录&quot;);
+        }
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;在 UserService 中新增三个功能，其中有两个有异常检测：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    User showInfo(String username);
+    String getStatus(String username) throws UserException;
+    void setUserInfo(User user) throws UserException;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;然后是实现类：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    //显示用户信息
+    @Override
+    public User showInfo(String username) {
+        return userMapper.showInfo(username);
+    }
+
+    //显示当前登录状态
+    @Override
+    public String getStatus(String username) throws UserException {
+        exceptionService.statusException(username);
+        return username;
+    }
+
+    //修改用户信息
+    @Override
+    public void setUserInfo(User user) throws UserException{
+        exceptionService.setInfoException(user);
+        userMapper.setUserInfo(user);
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h4 id=&quot;4-controller&quot;&gt;4. Controller&lt;/h4&gt;
+
+&lt;p&gt;在登录时，需要添加一点代码，将用户名写入 Session，以保持登录状态：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    public ModelAndView login(User user, HttpServletRequest request) {
+        ModelAndView modelAndView = new ModelAndView(&quot;main&quot;);
+        try {
+            userService.login(user);
+            userService.verifyCode(request.getParameter(&quot;verifyCode&quot;), verifyCode.getText());
+            //创建 Session，保持登录状态
+            request.getSession().setAttribute(&quot;username&quot;, user.getUsername());
+            //在模型中添加对象，用于 JSP 读取
+            modelAndView.addObject(&quot;username&quot;, request.getSession().getAttribute(&quot;username&quot;));
+        } catch (UserException e){
+            //如果未登录成功，就重新登录
+            modelAndView.setViewName(&quot;login&quot;);
+            modelAndView.addObject(&quot;message&quot;, e.getMessage());
+        }
+        return modelAndView;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;然后是登出的操作：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    //登出账户，不需要具体用户名称，直接废除 session 就行
+    @RequestMapping(&quot;/logout&quot;)
+    public ModelAndView logout(HttpServletRequest request){
+        request.getSession().invalidate();
+        return new ModelAndView(&quot;login&quot;).addObject(&quot;message&quot;, &quot;已登出&quot;);
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;新增查看用户状态的功能：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    //查看用户状态，显示是哪个用户在登录，如果没有登录的用户，就会提示你先登录
+    @RequestMapping(&quot;/userStatus&quot;)
+    public ModelAndView userState(HttpServletRequest request){
+        ModelAndView modelAndView = new ModelAndView(&quot;userStatus&quot;);
+        try {
+            modelAndView.addObject(&quot;username&quot;,
+                    userService.getStatus((String)request.getSession().getAttribute(&quot;username&quot;)));
+        } catch (UserException e){
+            modelAndView.addObject(&quot;message&quot;, e.getMessage());
+        }
+        return modelAndView;
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;然后是用户信息相关的操作，如果在修改信息时抛出异常，就带着错误信息回到信息修改页面：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    //显示用户信息
+    @RequestMapping(&quot;showInfo&quot;)
+    public ModelAndView showInfo(HttpServletRequest request){
+        return new ModelAndView(&quot;userInfo&quot;)
+                .addObject(&quot;user&quot;, userService.showInfo(
+                        ((String)request.getSession().getAttribute(&quot;username&quot;))));
+    }
+
+    //对用户信息进行修改
+    @RequestMapping(&quot;setUserInfo&quot;)
+    public ModelAndView setUserInfo(User user){
+        ModelAndView modelAndView = new ModelAndView(&quot;userInfo&quot;);
+        try {
+            userService.setUserInfo(user);
+            //设置提示信息
+            modelAndView.addObject(&quot;message&quot;, &quot;修改成功&quot;);
+            //跳转
+            modelAndView.setViewName(&quot;main&quot;);
+        } catch (UserException e){
+            modelAndView.addObject(&quot;message&quot;, e.getMessage());
+        }
+        return modelAndView;
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h4 id=&quot;5-jsp&quot;&gt;5. JSP&lt;/h4&gt;
+
+&lt;p&gt;新增两个前端页面：userInfo.jsp 和 userStatus.jsp，都是差不多的页面，这里就不演示了&lt;/p&gt;
+
+&lt;p&gt;接下来的 v0.2.2 是采用过滤器来实现相同功能&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-79919768b5365766.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; width=&quot;40%&quot; height=&quot;40%&quot; /&gt;&lt;/p&gt;
+</description>
+        <pubDate>Thu, 30 Aug 2018 00:00:00 -0700</pubDate>
+        <link>http://localhost:4000/2018/08/30/%E4%BF%9D%E6%8C%81%E7%99%BB%E5%BD%95%E7%8A%B6%E6%80%81%E7%9A%84%E6%B3%A8%E5%86%8C%E7%99%BB%E9%99%86%E7%95%8C%E9%9D%A2/</link>
+        <guid isPermaLink="true">http://localhost:4000/2018/08/30/%E4%BF%9D%E6%8C%81%E7%99%BB%E5%BD%95%E7%8A%B6%E6%80%81%E7%9A%84%E6%B3%A8%E5%86%8C%E7%99%BB%E9%99%86%E7%95%8C%E9%9D%A2/</guid>
+        
+        <category>Spring MVC</category>
+        
+        <category>Java Web</category>
+        
+        <category>Spring</category>
+        
+        
+      </item>
     
       <item>
         <title>SSM 重构注册登陆界面</title>
@@ -442,6 +698,8 @@ public interface ExceptionService {
         verifyCode.output(image, response.getOutputStream());
     }
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-79919768b5365766.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; width=&quot;40%&quot; height=&quot;40%&quot; /&gt;&lt;/p&gt;
 </description>
         <pubDate>Sun, 26 Aug 2018 00:00:00 -0700</pubDate>
         <link>http://localhost:4000/2018/08/26/SSM-%E9%87%8D%E6%9E%84%E6%B3%A8%E5%86%8C%E7%99%BB%E9%99%86%E7%95%8C%E9%9D%A2/</link>
@@ -1911,584 +2169,6 @@ mysql-connector-java-5.1.46&lt;/p&gt;
         <guid isPermaLink="true">http://localhost:4000/2018/06/21/%E5%88%9D%E8%AF%86-Mybatis-%E4%B8%80-%E5%9F%BA%E6%9C%AC%E9%85%8D%E7%BD%AE%E5%8F%8A%E7%94%A8%E6%B3%95/</guid>
         
         <category>Mybatis</category>
-        
-        
-      </item>
-    
-      <item>
-        <title>Vector源码分析</title>
-        <description>&lt;h3 id=&quot;正文之前&quot;&gt;正文之前&lt;/h3&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;之前介绍过 &lt;a href=&quot;http://hxblog.site/2018/05/04/ArrayList%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E4%B8%80/&quot;&gt;ArrayList&lt;/a&gt; 和 &lt;a href=&quot;http://hxblog.site/2018/05/22/LinkedList%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E4%B8%80/&quot;&gt;LinkedList&lt;/a&gt;，所以今天来说说 List 接口的另一个实现类：&lt;strong&gt;Vector&lt;/strong&gt;，其实这也是一个类似的动态数组，只不过是线程安全的，和 ArrayList 还是有一点区别的&lt;/p&gt;
-
-  &lt;p&gt;主要内容：&lt;/p&gt;
-  &lt;ol&gt;
-    &lt;li&gt;基本概念&lt;/li&gt;
-    &lt;li&gt;构造&lt;/li&gt;
-    &lt;li&gt;针对容量的操作&lt;/li&gt;
-    &lt;li&gt;增删改查&lt;/li&gt;
-  &lt;/ol&gt;
-&lt;/blockquote&gt;
-
-&lt;h3 id=&quot;正文&quot;&gt;正文&lt;/h3&gt;
-
-&lt;h4 id=&quot;1-基本概念&quot;&gt;1. 基本概念&lt;/h4&gt;
-
-&lt;p&gt;关于 &lt;strong&gt;Vector&lt;/strong&gt; 的介绍，其实直接看 JDK 中的注释就解释的很清楚了：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;/**
- * The {@code Vector} class implements a growable array of
- * objects. Like an array, it contains components that can be
- * accessed using an integer index. However, the size of a
- * {@code Vector} can grow or shrink as needed to accommodate
- * adding and removing items after the {@code Vector} has been created.
- *
- * &amp;lt;p&amp;gt;Each vector tries to optimize storage management by maintaining a
- * {@code capacity} and a {@code capacityIncrement}. The
- * {@code capacity} is always at least as large as the vector
- * size; it is usually larger because as components are added to the
- * vector, the vector's storage increases in chunks the size of
- * {@code capacityIncrement}. An application can increase the
- * capacity of a vector before inserting a large number of
- * components; this reduces the amount of incremental reallocation.
- */
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;首先，Vector 是一个可增长的数组（和 ArrayList 类似），能够用索引直接找到元素，Vector 的容量可增可减&lt;/p&gt;
-
-&lt;p&gt;其次，Vector 使用变量 &lt;code class=&quot;highlighter-rouge&quot;&gt;capacity&lt;/code&gt; 和 &lt;code class=&quot;highlighter-rouge&quot;&gt;capacityIncrement&lt;/code&gt; 来进行容量的管理，关于容量和大小的说法，之前也提到过，容量是最多能够容纳多少元素，而大小是目前容纳了多少元素。&lt;code class=&quot;highlighter-rouge&quot;&gt;capacity&lt;/code&gt; 指的就是容量，是永远大于或等于 Vector 的大小的，不过容量通常是大于 Vector 的大小的，因为它扩容的方式有点特殊，下文提及，在插入大量数据之前，最好能进行适当的扩容，避免了再分配的时间浪费&lt;/p&gt;
-
-&lt;p&gt;Vector 是线程安全的，它所有的方法都加上了 &lt;code class=&quot;highlighter-rouge&quot;&gt;synchronized&lt;/code&gt; 关键字&lt;/p&gt;
-
-&lt;p&gt;关于 Vector，需要先介绍一下它的变量：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    // Vector 的操作就是基于这个数组来实现的：
-    protected Object[] elementData;
-    
-    // Vector 中的元素数量
-    protected int elementCount;
-
-    // Vector 的增量，用它来判断需要扩容多少
-    protected int capacityIncrement;
-
-    //某些 JVM 会在数组的前几位保留一些信息（具体的也不晓得）
-    private static final int MAX_ARRAY_SIZE = Integer.MAX_VALUE - 8;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h4 id=&quot;2-构造&quot;&gt;2. 构造&lt;/h4&gt;
-
-&lt;p&gt;关于 Vector 的构造器，有四种方式：&lt;/p&gt;
-
-&lt;h6 id=&quot;1--使用给定的初始容量和增量来创造一个空的-vector&quot;&gt;1.  使用给定的初始容量和增量来创造一个空的 Vector&lt;/h6&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    public Vector(int initialCapacity, int capacityIncrement) {
-        super();
-        if (initialCapacity &amp;lt; 0)
-            //容量为负
-            throw new IllegalArgumentException(&quot;Illegal Capacity: &quot;+
-                                               initialCapacity);
-        //根据容量创造数组
-        this.elementData = new Object[initialCapacity];
-        this.capacityIncrement = capacityIncrement;
-    }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h6 id=&quot;2-使用给定的容量来创造一个空的-vector&quot;&gt;2. 使用给定的容量来创造一个空的 Vector&lt;/h6&gt;
-
-&lt;p&gt;调用了上一个构造器&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    //增量设置为0
-    public Vector(int initialCapacity) {
-        this(initialCapacity, 0);
-    }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h6 id=&quot;3-不带参数创造一个空的-vector&quot;&gt;3. 不带参数创造一个空的 Vector&lt;/h6&gt;
-
-&lt;p&gt;调用上一个构造器，并将容量初始值设为10&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    public Vector() {
-        this(10);
-    }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h6 id=&quot;4-创造一个带有其他容器元素的-vector&quot;&gt;4. 创造一个带有其他容器元素的 Vector&lt;/h6&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    public Vector(Collection&amp;lt;? extends E&amp;gt; c) {
-        elementData = c.toArray();
-        elementCount = elementData.length;
-        // c.toArray might (incorrectly) not return Object[] (see 6260652)
-        if (elementData.getClass() != Object[].class)
-            elementData = Arrays.copyOf(elementData, elementCount, Object[].class);
-    }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h4 id=&quot;3-针对容量的操作&quot;&gt;3. 针对容量的操作&lt;/h4&gt;
-
-&lt;h6 id=&quot;1-增长容量&quot;&gt;1. 增长容量&lt;/h6&gt;
-
-&lt;p&gt;增长容量的操作真是一套又一套，和俄罗斯套娃一样，用一个同步的公有方法来调用其他未同步的私有方法：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    public synchronized void ensureCapacity(int minCapacity) {
-        if (minCapacity &amp;gt; 0) {
-            modCount++;
-            ensureCapacityHelper(minCapacity);
-        }
-    }
-
-    private void ensureCapacityHelper(int minCapacity) {
-        // overflow-conscious code
-        if (minCapacity - elementData.length &amp;gt; 0)
-            grow(minCapacity);
-    }
-
-    //先确定需要扩容多少，在方法最后才进行扩容
-    private void grow(int minCapacity) {
-        // overflow-conscious code
-        //现有的容量
-        int oldCapacity = elementData.length;
-        //如果增量大于0，就按增量来扩容，否则就扩容至原来的2倍容量
-        int newCapacity = oldCapacity + ((capacityIncrement &amp;gt; 0) ?
-                                         capacityIncrement : oldCapacity);
-        //如果扩容之后的容量还是小于给定的容量，则按照给定容量扩容
-        if (newCapacity - minCapacity &amp;lt; 0)
-            newCapacity = minCapacity;
-        if (newCapacity - MAX_ARRAY_SIZE &amp;gt; 0)
-            newCapacity = hugeCapacity(minCapacity);
-        elementData = Arrays.copyOf(elementData, newCapacity);
-    }
-
-    private static int hugeCapacity(int minCapacity) {
-        if (minCapacity &amp;lt; 0) // overflow
-            throw new OutOfMemoryError();
-        return (minCapacity &amp;gt; MAX_ARRAY_SIZE) ?
-            Integer.MAX_VALUE :
-            MAX_ARRAY_SIZE;
-    }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h6 id=&quot;2-缩减容量&quot;&gt;2. 缩减容量&lt;/h6&gt;
-
-&lt;p&gt;有时候，使用 Vector 完成任务之后，容量会有剩余，可以调用这个方法把容量调整至与大小相同：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    public synchronized void trimToSize() {
-        modCount++;
-        int oldCapacity = elementData.length;
-        //如果容量多余
-        if (elementCount &amp;lt; oldCapacity) {
-            //原地复制
-            elementData = Arrays.copyOf(elementData, elementCount);
-        }
-    }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h6 id=&quot;3-设置大小&quot;&gt;3. 设置大小&lt;/h6&gt;
-
-&lt;p&gt;根据给定的大小设置 Vector，如果 newSize 小于 Vector 的 size，则抹掉后面的部分&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    public synchronized void setSize(int newSize) {
-        modCount++;
-        if (newSize &amp;gt; elementCount) {
-            ensureCapacityHelper(newSize);
-        //抹掉后面的部分
-        } else {
-            for (int i = newSize ; i &amp;lt; elementCount ; i++) {
-                elementData[i] = null;
-            }
-        }
-        //调整大小
-        elementCount = newSize;
-    }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h6 id=&quot;4-得到容量或大小的数值&quot;&gt;4. 得到容量或大小的数值&lt;/h6&gt;
-
-&lt;p&gt;很简单，直接上代码：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    public synchronized int capacity() {
-        return elementData.length;
-    }
-
-    public synchronized int size() {
-        return elementCount;
-    }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h6 id=&quot;5-判断是否为空&quot;&gt;5. 判断是否为空&lt;/h6&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    public synchronized boolean isEmpty() {
-        return elementCount == 0;
-    }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h4 id=&quot;4-增删改查&quot;&gt;4. 增删改查&lt;/h4&gt;
-
-&lt;h6 id=&quot;1-增&quot;&gt;1. 增&lt;/h6&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;先扩容，再添加：&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    public synchronized boolean add(E e) {
-        modCount++;
-        //先扩容
-        ensureCapacityHelper(elementCount + 1);
-        elementData[elementCount++] = e;
-        return true;
-    }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;在指定位置添加：&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    public synchronized void insertElementAt(E obj, int index) {
-        modCount++;
-        //下标越界
-        if (index &amp;gt; elementCount) {
-            throw new ArrayIndexOutOfBoundsException(index
-                                                     + &quot; &amp;gt; &quot; + elementCount);
-        }
-        //先扩容
-        ensureCapacityHelper(elementCount + 1);
-        //把要插入的位置后面的元素后移一位
-        System.arraycopy(elementData, index, elementData, index + 1, elementCount - index);
-        elementData[index] = obj;
-        elementCount++;
-    }
-
-    //调用上面的方法
-    public void add(int index, E element) {
-        insertElementAt(element, index);
-    }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;在末尾添加：&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    public synchronized void addElement(E obj) {
-        modCount++;
-        //扩容后在末尾添加
-        ensureCapacityHelper(elementCount + 1);
-        elementData[elementCount++] = obj;
-    }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;在末尾添加指定集合的元素：&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    public synchronized boolean addAll(Collection&amp;lt;? extends E&amp;gt; c) {
-        modCount++;
-        //转为数组后根据大小进行扩容
-        Object[] a = c.toArray();
-        int numNew = a.length;
-        ensureCapacityHelper(elementCount + numNew);
-        //将数组内容复制到 Vector 的末尾
-        System.arraycopy(a, 0, elementData, elementCount, numNew);
-        elementCount += numNew;
-        return numNew != 0;
-    }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;在指定位置添加指定集合的元素&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    public synchronized boolean addAll(int index, Collection&amp;lt;? extends E&amp;gt; c) {
-        modCount++;
-        if (index &amp;lt; 0 || index &amp;gt; elementCount)
-            throw new ArrayIndexOutOfBoundsException(index);
-
-        Object[] a = c.toArray();
-        int numNew = a.length;
-        ensureCapacityHelper(elementCount + numNew);
-        //算出需要后移几个元素
-        int numMoved = elementCount - index;
-        //先将元素后移，空出位置之后，在将指定容器的元素加入
-        if (numMoved &amp;gt; 0)
-            System.arraycopy(elementData, index, elementData, index + numNew,
-                             numMoved);
-
-        System.arraycopy(a, 0, elementData, index, numNew);
-        elementCount += numNew;
-        return numNew != 0;
-    }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h6 id=&quot;2-删&quot;&gt;2. 删&lt;/h6&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;删除指定位置的元素（无返回值）&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    public synchronized void removeElementAt(int index) {
-        modCount++;
-        if (index &amp;gt;= elementCount) {
-            throw new ArrayIndexOutOfBoundsException(index + &quot; &amp;gt;= &quot; +
-                                                     elementCount);
-        }
-        else if (index &amp;lt; 0) {
-            throw new ArrayIndexOutOfBoundsException(index);
-        }
-        //先算出需要前移的元素个数
-        int j = elementCount - index - 1;
-        if (j &amp;gt; 0) {
-            System.arraycopy(elementData, index + 1, elementData, index, j);
-        }
-        //元素前移，大小减1，并将最后一个位置设为 null，让 GC 进行处理
-        elementCount--;
-        elementData[elementCount] = null; /* to let gc do its work */
-    }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;删除指定位置的元素（有返回值）&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;过程和上面的是类似的，区别就是这个方法返回删除的元素&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    public synchronized E remove(int index) {
-        modCount++;
-        if (index &amp;gt;= elementCount)
-            throw new ArrayIndexOutOfBoundsException(index);
-        E oldValue = elementData(index);
-
-        int numMoved = elementCount - index - 1;
-        if (numMoved &amp;gt; 0)
-            System.arraycopy(elementData, index+1, elementData, index,
-                             numMoved);
-        elementData[--elementCount] = null; // Let gc do its work
-
-        return oldValue;
-    }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;在某个元素第一次出现的位置将其删除：&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    public synchronized boolean removeElement(Object obj) {
-        modCount++;
-        //查找该元素位置
-        int i = indexOf(obj);
-        if (i &amp;gt;= 0) {
-            removeElementAt(i);
-            return true;
-        }
-        return false;
-    }
-
-    //这也是一样的
-    public boolean remove(Object o) {
-        return removeElement(o);
-    }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;删除全部元素&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    public synchronized void removeAllElements() {
-        modCount++;
-        // Let gc do its work
-        for (int i = 0; i &amp;lt; elementCount; i++)
-            //把每个位置都设为空就行了
-            elementData[i] = null;
-
-        elementCount = 0;
-    }
-
-    //清空列表，效果是一样的
-    public void clear() {
-        removeAllElements();
-    }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h6 id=&quot;3-改&quot;&gt;3. 改&lt;/h6&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;修改指定位置的元素&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    public synchronized void setElementAt(E obj, int index) {
-        if (index &amp;gt;= elementCount) {
-            throw new ArrayIndexOutOfBoundsException(index + &quot; &amp;gt;= &quot; +
-                                                     elementCount);
-        }
-        elementData[index] = obj;
-    }
-
-    //和上面方法类似，只是参数位置对调，带有返回值
-    public synchronized E set(int index, E element) {
-        if (index &amp;gt;= elementCount)
-            throw new ArrayIndexOutOfBoundsException(index);
-
-        E oldValue = elementData(index);
-        elementData[index] = element;
-        return oldValue;
-    }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h6 id=&quot;4-查&quot;&gt;4. 查&lt;/h6&gt;
-
-&lt;p&gt;Vector 中查找的方式比较多，下面一一列举：&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;枚举出所有元素&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    public Enumeration&amp;lt;E&amp;gt; elements() {
-        return new Enumeration&amp;lt;E&amp;gt;() {
-            int count = 0;
-
-            public boolean hasMoreElements() {
-                return count &amp;lt; elementCount;
-            }
-
-            public E nextElement() {
-                synchronized (Vector.this) {
-                    if (count &amp;lt; elementCount) {
-                        return elementData(count++);
-                    }
-                }
-                throw new NoSuchElementException(&quot;Vector Enumeration&quot;);
-            }
-        };
-    }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;从指定位置开始搜索元素第一次出现的位置：&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    public synchronized int indexOf(Object o, int index) {
-        if (o == null) {
-            for (int i = index ; i &amp;lt; elementCount ; i++)
-                if (elementData[i]==null)
-                    return i;
-        } else {
-            //从给定的位置开始搜索
-            for (int i = index ; i &amp;lt; elementCount ; i++)
-                if (o.equals(elementData[i]))
-                    return i;
-        }
-        return -1;
-    }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;查找指定元素或判断是否包含指定元素：&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    //从0开始查找
-    public int indexOf(Object o) {
-        return indexOf(o, 0);
-    }
-
-    //也是从0开始，返回布尔类型
-    public boolean contains(Object o) {
-        return indexOf(o, 0) &amp;gt;= 0;
-    }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;查找指定元素最后一次出现的位置&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;其实就是把上面查找的方式倒过来，不解释：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    public synchronized int lastIndexOf(Object o) {
-        return lastIndexOf(o, elementCount-1);
-    }
-
-
-    public synchronized int lastIndexOf(Object o, int index) {
-        if (index &amp;gt;= elementCount)
-            throw new IndexOutOfBoundsException(index + &quot; &amp;gt;= &quot;+ elementCount);
-
-        if (o == null) {
-            for (int i = index; i &amp;gt;= 0; i--)
-                if (elementData[i]==null)
-                    return i;
-        } else {
-            for (int i = index; i &amp;gt;= 0; i--)
-                if (o.equals(elementData[i]))
-                    return i;
-        }
-        return -1;
-    }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;根据给定位置查找元素：&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    //两个方法是一样的
-    public synchronized E elementAt(int index) {
-        if (index &amp;gt;= elementCount) {
-            throw new ArrayIndexOutOfBoundsException(index + &quot; &amp;gt;= &quot; + elementCount);
-        }
-
-        return elementData(index);
-    }
-
-    public synchronized E get(int index) {
-        if (index &amp;gt;= elementCount)
-            throw new ArrayIndexOutOfBoundsException(index);
-
-        return elementData(index);
-    }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;查找首尾元素：&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    public synchronized E firstElement() {
-        if (elementCount == 0) {
-            throw new NoSuchElementException();
-        }
-        return elementData(0);
-    }
-
-    public synchronized E lastElement() {
-        if (elementCount == 0) {
-            throw new NoSuchElementException();
-        }
-        return elementData(elementCount - 1);
-    }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h4 id=&quot;4-总结&quot;&gt;4. 总结&lt;/h4&gt;
-
-&lt;p&gt;之前在学习 Java 的时候，没有听到过 Vector 的相关概念，还是在学习 ArrayList 的时候，发现挺多人拿 ArrayList 和 Vector 来作比较，后来才知道，Vector 其实可以算得上是线程安全的 ArrayList&lt;/p&gt;
-
-&lt;p&gt;首先，他们继承的类和实现的接口是一样的，说明他们能够实现相同的功能：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public class ArrayList&amp;lt;E&amp;gt; extends AbstractList&amp;lt;E&amp;gt;
-        implements List&amp;lt;E&amp;gt;, RandomAccess, Cloneable, java.io.Serializable
-
-public class Vector&amp;lt;E&amp;gt; extends AbstractList&amp;lt;E&amp;gt;
-    implements List&amp;lt;E&amp;gt;, RandomAccess, Cloneable, java.io.Serializable
-
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;其次，在上述的操作中可以看出，它和 ArrayList 的操作还是很类似的&lt;/p&gt;
-
-&lt;p&gt;Vector 是从 JDK1.0 出现的，而 ArrayList 是从 JDK1.2 出现的，从网上的一些其他人的观点中可以看出，Vector 似乎没什么存在感了，ArrayList 也可以通过集合的包装来实现线程安全的效果，不过这不应该成为我们不学习的理由，谁知道哪一天就派上用场了呢&lt;/p&gt;
-
-&lt;p&gt;关于 Vector 的迭代器操作，粗略看了一下，与 ArrayList 的极其相似，甚至有一些操作就是 ArrayList 的操作，所以就不必用多篇文章来阐述，接下来会是集合类中的其他 API&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-79919768b5365766.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; width=&quot;40%&quot; height=&quot;40%&quot; /&gt;&lt;/p&gt;
-</description>
-        <pubDate>Mon, 18 Jun 2018 00:00:00 -0700</pubDate>
-        <link>http://localhost:4000/2018/06/18/Vector-%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/</link>
-        <guid isPermaLink="true">http://localhost:4000/2018/06/18/Vector-%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/</guid>
-        
-        <category>Java源码解析</category>
         
         
       </item>
