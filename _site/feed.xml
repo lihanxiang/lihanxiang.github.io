@@ -5,9 +5,159 @@
     <description>你问我什么咖啡最好，我当然觉得是 Java</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Thu, 30 Aug 2018 07:04:54 -0700</pubDate>
-    <lastBuildDate>Thu, 30 Aug 2018 07:04:54 -0700</lastBuildDate>
+    <pubDate>Fri, 31 Aug 2018 06:52:48 -0700</pubDate>
+    <lastBuildDate>Fri, 31 Aug 2018 06:52:48 -0700</lastBuildDate>
     <generator>Jekyll v3.8.0</generator>
+    
+      <item>
+        <title>拦截器和过滤器验证登录</title>
+        <description>&lt;p&gt;之前的版本是 &lt;a href=&quot;https://github.com/lihanxiang/Registration-login-interface2/tree/v0.2.1&quot;&gt;v0.2.1&lt;/a&gt; 保持登录状态的版本，这一次 v0.2.2 是对验证登录过程的一个更新，用拦截器和过滤器来进行，发现这种方式省去了一些逻辑的实现&lt;/p&gt;
+
+&lt;h3 id=&quot;registration-login-interface2&quot;&gt;&lt;a href=&quot;https://github.com/lihanxiang/Registration-login-interface2&quot;&gt;Registration-login-interface2&lt;/a&gt;&lt;/h3&gt;
+
+&lt;h3 id=&quot;version-022&quot;&gt;Version 0.2.2&lt;/h3&gt;
+
+&lt;h4 id=&quot;新增的功能都是在-v021-的基础上进行修改删去部分代码&quot;&gt;新增的功能都是在 v0.2.1 的基础上进行修改，删去部分代码&lt;/h4&gt;
+
+&lt;p&gt;可通过点击 tag 来查看之前的代码：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-a2a86f9628363959.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;1-新增功能&quot;&gt;1. 新增功能&lt;/h4&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;使用 mvc 的拦截器来对特定页面进行拦截，拦截之后跳转至登录界面&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;使用过滤器来进行相同功能的拦截&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;2-删去的代码&quot;&gt;2. 删去的代码&lt;/h4&gt;
+
+&lt;p&gt;先删除 ExceptionService 中的 statusException 方法，删去对应的实现，然后在 UserServiceImpl 和 Controller 中删去调用它的代码&lt;/p&gt;
+
+&lt;p&gt;这样，就变成了不检测用户是否登录&lt;/p&gt;
+
+&lt;h4 id=&quot;3-拦截器&quot;&gt;3. 拦截器&lt;/h4&gt;
+
+&lt;p&gt;首先新建一个包：interceptor&lt;/p&gt;
+
+&lt;p&gt;然后新建一个类：LoginInterceptor，实现了 HandlerInterceptor 接口：&lt;/p&gt;
+
+&lt;p&gt;关于 HandlerInterceptor 的使用这里不讲述，如果在 session 中没有获得 &lt;strong&gt;username&lt;/strong&gt; 属性，就跳转到登录页面&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;拦截是有范围的，在下文的配置文件中自行配置需要拦截的页面&lt;/strong&gt;&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    public class LoginInterceptor implements org.springframework.web.servlet.HandlerInterceptor {
+    @Override
+    public boolean preHandle(HttpServletRequest httpServletRequest,
+                             HttpServletResponse httpServletResponse, Object o) throws Exception {
+        HttpSession session = httpServletRequest.getSession();
+        if (session.getAttribute(&quot;username&quot;) == null){
+            httpServletResponse.sendRedirect(&quot;preLogin.action&quot;);
+        } else {
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public void postHandle(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse,
+                           Object o, ModelAndView modelAndView) throws Exception {
+
+    }
+
+    @Override
+    public void afterCompletion(HttpServletRequest httpServletRequest,
+                                HttpServletResponse httpServletResponse, Object o, Exception e) throws Exception {
+
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;在 spring-mvc.xml 中添加拦截器的配置：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    &amp;lt;mvc:interceptors&amp;gt;
+        &amp;lt;mvc:interceptor&amp;gt;
+            &amp;lt;mvc:mapping path=&quot;/userStatus.action&quot;/&amp;gt;
+            &amp;lt;mvc:mapping path=&quot;/showInfo.action&quot;/&amp;gt;
+            &amp;lt;mvc:mapping path=&quot;/setUserInfo.action&quot;/&amp;gt;
+            &amp;lt;bean class=&quot;interceptor.LoginInterceptor&quot;/&amp;gt;
+        &amp;lt;/mvc:interceptor&amp;gt;
+    &amp;lt;/mvc:interceptors&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;对指定路径进行映射，LoginInterceptor 中的操作就是对映射的路径而言的，然后指定一下拦截器所在位置，就完成了&lt;/p&gt;
+
+&lt;h5 id=&quot;效果&quot;&gt;效果&lt;/h5&gt;
+
+&lt;p&gt;运行之后，在浏览器地址栏输入&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;localhost:8080/userStatus.action&lt;/strong&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;localhost:8080/showInfo.action&lt;/strong&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;localhost:8080/setUserInfo.action&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;就会跳转到 http://localhost:8080/preLogin.action&lt;/p&gt;
+
+&lt;p&gt;拦截器的部分就结束了&lt;/p&gt;
+
+&lt;h4 id=&quot;4-过滤器&quot;&gt;4. 过滤器&lt;/h4&gt;
+
+&lt;p&gt;将 spring-mvc.xml 中配置的拦截器信息注释掉，然后新建包：filter，包中新建类 LoginFilter，实现 &lt;strong&gt;javax.servlet.Filter&lt;/strong&gt; 接口：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public class LoginFilter implements Filter {
+
+    @Override
+    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, 
+                         FilterChain filterChain) throws IOException, ServletException {
+        if (((HttpServletRequest) servletRequest).getSession().
+                getAttribute(&quot;username&quot;) == null){
+            ((HttpServletResponse)servletResponse).sendRedirect(&quot;preLogin.action&quot;);
+        } else {
+            filterChain.doFilter(servletRequest,
+                    servletResponse);
+        }
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;如果检测出没有登录，就会跳转到登录界面，&lt;strong&gt;有一点要注意&lt;/strong&gt;：&lt;code class=&quot;highlighter-rouge&quot;&gt; filterChain.doFilter(servletRequest,
+                    servletResponse);&lt;/code&gt;
+是一定要写的，如果不写，在登录之后，就不能访问那些需要登录才能访问的页面的，相当于请求已经被过滤器中断了，如果检测出已登录，就要加上这一行代码才能方位个人信息页面&lt;/p&gt;
+
+&lt;p&gt;然后在 web.xml 中添加一个过滤器的配置：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    &amp;lt;filter&amp;gt;
+        &amp;lt;filter-name&amp;gt;loginFilter&amp;lt;/filter-name&amp;gt;
+        &amp;lt;filter-class&amp;gt;filter.LoginFilter&amp;lt;/filter-class&amp;gt;
+    &amp;lt;/filter&amp;gt;
+    &amp;lt;filter-mapping&amp;gt;
+        &amp;lt;filter-name&amp;gt;loginFilter&amp;lt;/filter-name&amp;gt;
+        &amp;lt;url-pattern&amp;gt;/showInfo.action&amp;lt;/url-pattern&amp;gt;
+        &amp;lt;url-pattern&amp;gt;/userStatus.action&amp;lt;/url-pattern&amp;gt;
+        &amp;lt;url-pattern&amp;gt;/setUserInfo.action&amp;lt;/url-pattern&amp;gt;
+    &amp;lt;/filter-mapping&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;这样子，不同于 v0.2.1 的验证登录方式就做完了&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-79919768b5365766.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; width=&quot;40%&quot; height=&quot;40%&quot; /&gt;&lt;/p&gt;
+</description>
+        <pubDate>Fri, 31 Aug 2018 00:00:00 -0700</pubDate>
+        <link>http://localhost:4000/2018/08/31/%E6%8B%A6%E6%88%AA%E5%99%A8%E5%92%8C%E8%BF%87%E6%BB%A4%E5%99%A8%E9%AA%8C%E8%AF%81%E7%99%BB%E5%BD%95/</link>
+        <guid isPermaLink="true">http://localhost:4000/2018/08/31/%E6%8B%A6%E6%88%AA%E5%99%A8%E5%92%8C%E8%BF%87%E6%BB%A4%E5%99%A8%E9%AA%8C%E8%AF%81%E7%99%BB%E5%BD%95/</guid>
+        
+        <category>Spring MVC</category>
+        
+        <category>Java Web</category>
+        
+        <category>Spring</category>
+        
+        
+      </item>
     
       <item>
         <title>保持登录状态的注册登陆界面</title>
@@ -1855,318 +2005,6 @@ git push&lt;br /&gt;&lt;/p&gt;
         <pubDate>Mon, 02 Jul 2018 00:00:00 -0700</pubDate>
         <link>http://localhost:4000/2018/07/02/%E5%88%9D%E8%AF%86-Mybatis-%E4%BA%8C-%E5%8A%A8%E6%80%81-SQL/</link>
         <guid isPermaLink="true">http://localhost:4000/2018/07/02/%E5%88%9D%E8%AF%86-Mybatis-%E4%BA%8C-%E5%8A%A8%E6%80%81-SQL/</guid>
-        
-        <category>Mybatis</category>
-        
-        
-      </item>
-    
-      <item>
-        <title>初识 Mybatis（一） —— 基本配置及用法</title>
-        <description>&lt;h3 id=&quot;正文之前&quot;&gt;正文之前&lt;/h3&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;在使用 SSM 对之前所做的小项目重构了之后，发现需要写几篇文章来总结一下各个部件的用法，先写几篇关于 Mybatis 的文章，正好补缺补漏顺便总结一下&lt;/p&gt;
-
-  &lt;p&gt;主要内容：&lt;/p&gt;
-  &lt;ol&gt;
-    &lt;li&gt;Mybatis 简介&lt;/li&gt;
-    &lt;li&gt;测试项目构建&lt;/li&gt;
-    &lt;li&gt;配置文件&lt;/li&gt;
-    &lt;li&gt;增删改查&lt;/li&gt;
-  &lt;/ol&gt;
-&lt;/blockquote&gt;
-
-&lt;h3 id=&quot;正文&quot;&gt;正文&lt;/h3&gt;
-
-&lt;h4 id=&quot;1-mybatis-简介&quot;&gt;1. Mybatis 简介&lt;/h4&gt;
-
-&lt;p&gt;引用官网的介绍：&lt;/p&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;MyBatis 是一款优秀的持久层框架，它支持定制化 SQL、存储过程以及高级映射。MyBatis 避免了几乎所有的 JDBC 代码和手动设置参数以及获取结果集。MyBatis 可以使用简单的 XML 或注解来配置和映射原生信息，将接口和 Java 的 POJOs(Plain Old Java Objects,普通的 Java对象)映射成数据库中的记录。&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;总而言之，是个框架就对了&lt;/p&gt;
-
-&lt;h4 id=&quot;2-测试项目构建&quot;&gt;2. 测试项目构建&lt;/h4&gt;
-
-&lt;p&gt;要使用 Mybatis，我们需要先导入两个包：&lt;/p&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;mybatis-3.4.6
-mysql-connector-java-5.1.46&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;我们先创建所要用到的包和类：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-ef36e6bbb733f491.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;
-    &lt;p&gt;Product 是实体类，对应数据库中的表&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;db.properties 是外部配置数据库信息的文件&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;SqlMapConfig 是 Mybatis 的配置文件（文件名不固定）&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;ProductMapper.xml 是对应的映射文件&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;ProductTest 是测试类&lt;/p&gt;
-  &lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;lib 包中的其他文件是日志文件和单元测试文件&lt;/p&gt;
-
-&lt;p&gt;使用到的数据库中的表为 product 表：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-107fa62a0eb47291.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;创建实体类 Product ：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-f03ca16807cc8b6a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;h4 id=&quot;3-配置文件&quot;&gt;3. 配置文件&lt;/h4&gt;
-
-&lt;p&gt;关于 Mybatis 的信息都在 &lt;code class=&quot;highlighter-rouge&quot;&gt;SqlMapConfig.xml&lt;/code&gt; 文件中&lt;/p&gt;
-
-&lt;h6 id=&quot;1-配置环境&quot;&gt;1. 配置环境&lt;/h6&gt;
-
-&lt;p&gt;Mybatis 可以对应多种环境，这在配置文件中定义：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;cp&quot;&gt;&amp;lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; ?&amp;gt;&lt;/span&gt;
-&lt;span class=&quot;cp&quot;&gt;&amp;lt;!DOCTYPE configuration
-        PUBLIC &quot;-//mybatis.org//DTD Config 3.0//EN&quot;
-        &quot;http://mybatis.org/dtd/mybatis-3-config.dtd&quot;&amp;gt;&lt;/span&gt;
-&lt;span class=&quot;nt&quot;&gt;&amp;lt;configuration&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;c&quot;&gt;&amp;lt;!-- 配置的环境，可以有多个环境来对应多种数据库，至少要有一个环境 id 与此对应 --&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;nt&quot;&gt;&amp;lt;environments&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;default=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;mysql&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;
-        &lt;span class=&quot;c&quot;&gt;&amp;lt;!-- 这里的环境 id，就是具体某个数据库的 id --&amp;gt;&lt;/span&gt;
-        &lt;span class=&quot;nt&quot;&gt;&amp;lt;environment&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;id=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;mysql&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;
-            &lt;span class=&quot;nt&quot;&gt;&amp;lt;transactionManager&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;type=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&amp;lt;/transactionManager&amp;gt;&lt;/span&gt;
-            &lt;span class=&quot;nt&quot;&gt;&amp;lt;dataSource&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;type=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&amp;lt;/dataSource&amp;gt;&lt;/span&gt;
-        &lt;span class=&quot;nt&quot;&gt;&amp;lt;/environment&amp;gt;&lt;/span&gt;
-        &lt;span class=&quot;c&quot;&gt;&amp;lt;!--
-        &amp;lt;environment id=&quot;oracle&quot;&amp;gt;
-            &amp;lt;transactionManager type=&quot;&quot;&amp;gt;&amp;lt;/transactionManager&amp;gt;
-            &amp;lt;dataSource type=&quot;&quot;&amp;gt;&amp;lt;/dataSource&amp;gt;
-        &amp;lt;/environment&amp;gt;
-        --&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;nt&quot;&gt;&amp;lt;/environments&amp;gt;&lt;/span&gt;
-&lt;span class=&quot;nt&quot;&gt;&amp;lt;/configuration&amp;gt;&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h6 id=&quot;2-事务管理和数据源&quot;&gt;2. 事务管理和数据源&lt;/h6&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&amp;lt;transactionManager type=&quot;JDBC&quot;/&amp;gt;
-&amp;lt;dataSource type=&quot;POOLED&quot;&amp;gt;&amp;lt;/dataSource&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;事务管理有两种：JDBC 和 MANAGED，我们就关注 JDBC，它其实就是使用了 JDBC 的设置来进行管理、&lt;/p&gt;
-
-&lt;p&gt;数据源有三种：&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;
-    &lt;p&gt;UNPOOLED：在请求时打开和关闭连接，如果对数据库的使用较为频繁，则不适用此方式，太浪费时间&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;POOLED：连接池，最常用的方式，一开始创建一定数量的连接，即用即取，用完归还&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;JNDI：为了能在如 EJB 或应用服务器这类容器中使用&lt;/p&gt;
-  &lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h6 id=&quot;3-数据库信息&quot;&gt;3. 数据库信息&lt;/h6&gt;
-
-&lt;p&gt;有关数据库的信息可以直接写在配置文件里面：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-75e127c1b65c9281.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;不过，通常的做法是在外部创建一个 &lt;code class=&quot;highlighter-rouge&quot;&gt;db.properties&lt;/code&gt; 文件：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-5ad00ff70d932d8e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;然后用外部配置来替换这些属性的值，只是引用外部配置文件需要在&lt;strong&gt;配置数据源之前进行&lt;/strong&gt;：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-6e4ab8f0df2196ad.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;关于 Mybatis 的系统配置就先到这，接下来是实体类相关的一个映射文件 ProductMapper.xml 的配置&lt;/p&gt;
-
-&lt;h6 id=&quot;4-映射文件&quot;&gt;4. 映射文件&lt;/h6&gt;
-
-&lt;p&gt;在实体类的映射文件中写明了你要进行什么操作：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-2b20d4a68786366c.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;接下来解释这个文件：&lt;/p&gt;
-
-&lt;p&gt;mapper 映射器：需要定义命名空间，因为后面调用的时候要用到&lt;/p&gt;
-
-&lt;p&gt;select 元素：对应 SQL 中的查询操作，id 指的是这个查询操作的名称，调用它的时候需要使用这个 id， resultType 指的是返回类型，我这里查询出的每一条记录都指定为 Product 类型，相类似的还有 update、insert 和 delete 元素，对应相关的的 SQL 操作&lt;/p&gt;
-
-&lt;h6 id=&quot;5-加载映射文件&quot;&gt;5. 加载映射文件&lt;/h6&gt;
-
-&lt;p&gt;把映射文件写完了之后，我们需要告诉 Mybatis 去哪里找这些 SQL 语句，所以我们在 Mybatis 配置文件里写出路径：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    &amp;lt;mappers&amp;gt;
-        &amp;lt;mapper resource=&quot;mapper/ProductMapper.xml&quot;/&amp;gt;
-    &amp;lt;/mappers&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h4 id=&quot;4-增删改查&quot;&gt;4. 增删改查&lt;/h4&gt;
-
-&lt;p&gt;首先我们先说一下 Mybatis 是怎么用的：&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;
-    &lt;p&gt;Mybatis 中有一个工具类叫 Resources，使用它来加载你的配置文件&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;SqlSessionFactoryBuilder 根据配置的 XML 文件（我们这里就是指 SqlMapConfig.xml）中的 &lt;configuration&gt; 元素来创建一个 **SqlSessionFactory** 实例&lt;/configuration&gt;&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;Mybatis 应用是以一个 &lt;strong&gt;SqlSessionFactory&lt;/strong&gt; 的实例为中心来展开工作的&lt;/p&gt;
-  &lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;        //配置文件的位置是基于我这个测试项目来写的
-        String resource = &quot;config/SqlMapConfig&quot;;
-        //输入流
-        InputStream inputStream = Resources.getResourceAsStream(resource);
-        SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;然后得到 SqlSession 的实例，就可以用来执行 SQL 语句了：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;        SqlSession sqlSession = sqlSessionFactory.openSession();
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h6 id=&quot;1-增加记录&quot;&gt;1. 增加记录&lt;/h6&gt;
-
-&lt;p&gt;我们先在映射文件中写一个增加记录的操作：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    &amp;lt;insert id=&quot;insertProduct&quot; parameterType=&quot;bean.Product&quot;&amp;gt;
-        INSERT INTO product VALUES
-        (#{id}, #{barcode}, #{name}, #{units}, #{purchasePrice}, #{salePrice}, #{inventory})
-    &amp;lt;/insert&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;这里的 #{} 是一个占位符，就相当于 SQL 中的 ? 符号，添加的参数类型是 Product 类型的&lt;/p&gt;
-
-&lt;p&gt;然后我们在测试类中进行添加操作：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-ec60e74b810e0d4a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;这里的 insert 操作的第一个参数就是用来定位 SQL 语句的，它是命名方式是&lt;strong&gt;映射文件的命名空间.SQL语句的 ID&lt;/strong&gt;，然后这第二个参数就是我添加进去的记录，在最后&lt;strong&gt;一定要进行提交&lt;/strong&gt;，否则是无效的，进行测试：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-61ce8922af72fdac.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;这时候查看表中的所有记录就会发现刚才的操作是成功的：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-3c7a71fe976a6c0a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;h6 id=&quot;2-删除记录&quot;&gt;2. 删除记录&lt;/h6&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    &amp;lt;delete id=&quot;deleteProduct&quot; parameterType=&quot;String&quot;&amp;gt;
-        DELETE FROM product
-        WHERE id = #{id}
-    &amp;lt;/delete&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;根据 ID 来删除商品，这里的参数类型是 String&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    @Test
-    public void test() throws IOException{
-        String resource = &quot;config/SqlMapConfig&quot;;
-        InputStream inputStream = Resources.getResourceAsStream(resource);
-        SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
-        SqlSession sqlSession = sqlSessionFactory.openSession();
-        sqlSession.delete(&quot;ProductMapper.deleteProduct&quot;, &quot;123&quot;);
-        sqlSession.commit();
-    }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;运行之后就能看到我们第一步添加进去的商品被删除了：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-40f6b6e53334e646.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;h6 id=&quot;3-修改记录&quot;&gt;3. 修改记录&lt;/h6&gt;
-
-&lt;p&gt;我们也是根据商品 ID 来修改记录，只不过参数类型是 Product：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    &amp;lt;update id=&quot;updateProduct&quot; parameterType=&quot;bean.Product&quot;&amp;gt;
-        UPDATE product SET 
-        barcode = #{barcode},
-        name = #{name},
-        units = #{units},
-        purchasePrice = #{purchasePrice},
-        salePrice = #{salePrice},
-        inventory = #{inventory}
-        WHERE id = #{id}
-    &amp;lt;/update&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;在测试中，我们创建一个商品的实例，然后用这个实例来替换掉数据库中的相对应的记录：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;        Product product = new Product(&quot;1F01DC70F9A64B2CBB52B92C41FBCC9E&quot;, &quot;123&quot;, 
-                                        &quot;T-shirt&quot;, &quot;piece&quot;, &quot;50&quot;, &quot;100&quot;, &quot;10&quot;);
-        sqlSession.update(&quot;ProductMapper.updateProduct&quot;, product);
-        sqlSession.commit();
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;然后就会发现表中的第一条记录已被更改：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-d1f6d157239253fa.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;h6 id=&quot;4-查询记录&quot;&gt;4. 查询记录&lt;/h6&gt;
-
-&lt;p&gt;我们用一个列表来存放表中的所有数据，这里没有用到参数，只要定义返回类型就可以了：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    &amp;lt;select id=&quot;findAllProducts&quot;  resultType=&quot;bean.Product&quot;&amp;gt;
-        SELECT * FROM product
-    &amp;lt;/select&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;这里不需要 commit，我们并没有提交至数据库中，只是查询：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;        List&amp;lt;Product&amp;gt; list = sqlSession.selectList(&quot;ProductMapper.findAllProducts&quot;);
-        for (Product p :
-                list) {
-            System.out.println(p);
-        }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;然后就能看到 5 条记录：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-d0db12a07b6213b4.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;h4 id=&quot;总结&quot;&gt;总结&lt;/h4&gt;
-
-&lt;p&gt;若想要成功地使用 Mybatis，总共有三个要点：&lt;/p&gt;
-
-&lt;h6 id=&quot;1-sqlmapconfigxmlmybatis-配置文件&quot;&gt;1. SqlMapConfig.xml（Mybatis 配置文件）&lt;/h6&gt;
-
-&lt;p&gt;这是 Mybatis 的核心，这里面配置了数据库的基本信息以及映射文件的加载信息等&lt;/p&gt;
-
-&lt;h6 id=&quot;2-实体类接口&quot;&gt;2. 实体类、接口&lt;/h6&gt;
-
-&lt;p&gt;也就是 POJO（Plain Old Java Objects,普通的 Java对象），我们这篇文章中的 Product 实体类，关于接口，我们这一篇文章中没有说明，接口是对应映射文件存在的，接口的命名和映射文件同名，这个在之后将 Mybatis 逆向工程的时候会说到&lt;/p&gt;
-
-&lt;h6 id=&quot;3-映射文件&quot;&gt;3. 映射文件&lt;/h6&gt;
-
-&lt;p&gt;映射文件就是我们上面写到的 ProductMapper.xml，它的作用不仅仅是带有 SQL 语句，还能将 POJO 映射成为数据库中的记录，所以我们刚才才能够使用占位符进行增删改查操作或将查询结果映射为POJO&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-79919768b5365766.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; width=&quot;40%&quot; height=&quot;40%&quot; /&gt;&lt;/p&gt;
-</description>
-        <pubDate>Thu, 21 Jun 2018 00:00:00 -0700</pubDate>
-        <link>http://localhost:4000/2018/06/21/%E5%88%9D%E8%AF%86-Mybatis-%E4%B8%80-%E5%9F%BA%E6%9C%AC%E9%85%8D%E7%BD%AE%E5%8F%8A%E7%94%A8%E6%B3%95/</link>
-        <guid isPermaLink="true">http://localhost:4000/2018/06/21/%E5%88%9D%E8%AF%86-Mybatis-%E4%B8%80-%E5%9F%BA%E6%9C%AC%E9%85%8D%E7%BD%AE%E5%8F%8A%E7%94%A8%E6%B3%95/</guid>
         
         <category>Mybatis</category>
         
