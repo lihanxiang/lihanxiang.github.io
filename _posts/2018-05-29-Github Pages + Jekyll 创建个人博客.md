@@ -134,5 +134,3 @@ gem install jekyll
 > git push
 
 这四条命令就够了，博客的基础搭建就这样结束了，祝大家都能挑选到心仪的模板，最后再次抛出[我的博客](http://lihanxiang.github.io)
-
-<p><img src="https://upload-images.jianshu.io/upload_images/3426615-79919768b5365766.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" width="40%" height="40%" /></p>

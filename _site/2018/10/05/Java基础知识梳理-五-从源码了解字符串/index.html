@@ -19,9 +19,9 @@
     <meta name="keyword"  content="Java">
     <link rel="shortcut icon" href="/img/favicon.ico">
 
-    <title>树莓派小车（三）Python控制小车 - 李汉祥的博客 | L Blog</title>
+    <title>Java基础知识梳理（五）从源码了解字符串 - 李汉祥的博客 | L Blog</title>
 
-    <link rel="canonical" href="http://localhost:4000/2018/04/21/%E6%A0%91%E8%8E%93%E6%B4%BE%E5%B0%8F%E8%BD%A6-%E4%B8%89-Python%E6%8E%A7%E5%88%B6%E5%B0%8F%E8%BD%A6/">
+    <link rel="canonical" href="http://localhost:4000/2018/10/05/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E4%BA%94-%E4%BB%8E%E6%BA%90%E7%A0%81%E4%BA%86%E8%A7%A3%E5%AD%97%E7%AC%A6%E4%B8%B2/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -143,12 +143,12 @@
 
 
     <!-- Image to hack wechat -->
-<!-- <img src="/img/post/2018-04/21.jpg" width="0" height="0"> -->
+<!-- <img src="/img/post/2018-10/05.jpg" width="0" height="0"> -->
 
 <!-- Post Header -->
 <style type="text/css">
     header.intro-header{
-        background-image: url('/img/post/2018-04/21.jpg')
+        background-image: url('/img/post/2018-10/05.jpg')
     }
 </style>
 <header class="intro-header" >
@@ -158,15 +158,15 @@
                 <div class="post-heading">
                     <div class="tags">
                         
-                        <a class="tag" href="/tags/#树莓派" title="树莓派">树莓派</a>
+                        <a class="tag" href="/tags/#Java基础" title="Java基础">Java基础</a>
                         
                     </div>
-                    <h1>树莓派小车（三）Python控制小车</h1>
+                    <h1>Java基础知识梳理（五）从源码了解字符串</h1>
                     
                     
-                    <h2 class="subheading">随便玩玩</h2>
+                    <h2 class="subheading">知识点回顾</h2>
                     
-                    <span class="meta">Posted by L on April 21, 2018</span>
+                    <span class="meta">Posted by L on October 5, 2018</span>
                 </div>
             </div>
         </div>
@@ -184,140 +184,226 @@
                 col-md-10 col-md-offset-1
                 post-container">
 
-				<p>这篇博客来自<a href="https://www.jianshu.com/p/43baa2037dfc">我的简书</a></p>
+				<p>之前写过一篇关于 <a href="https://lihanxiang.github.io/2018/04/23/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E4%BA%8C-%E5%AD%97%E7%AC%A6%E4%B8%B2/">String 类、StringBuilder 和 StringBuffer 的基本介绍</a>，今天从 String 类的部分源码来看 String 类（本文基于 JDK 1.8）</p>
 
-<h3 id="正文之前">正文之前</h3>
 <blockquote>
-  <p>由于最近忙于复习赶考，所以暂时没有拿起树莓派小车，直到昨天，终于空出时间来把代码整理一下来和大家分享</p>
+  <ol>
+    <li>String 类的实例化</li>
+    <li>常用方法</li>
+    <li>String 类的不可变</li>
+    <li>总结</li>
+  </ol>
 </blockquote>
 
-<h3 id="正文">正文</h3>
-<p>在<a href="http://hxblog.site/2018/04/20/%E6%A0%91%E8%8E%93%E6%B4%BE%E5%B0%8F%E8%BD%A6-%E4%BA%8C-%E6%A0%91%E8%8E%93%E6%B4%BE-%E5%B0%8F%E8%BD%A6%E5%92%8C%E7%BA%A2%E5%A4%96%E7%BA%BF%E6%A8%A1%E5%9D%97%E8%BF%9E%E6%8E%A5/">树莓派小车系列之二</a>中，讲到了树莓派的引脚定义方式有两种：</p>
-<ul>
-  <li>PHYSICAL NUMBERING</li>
-  <li>GPIO NUMBERING</li>
-</ul>
+<h3 id="1-string-类的构造器">1. String 类的构造器</h3>
 
-<p>我采用的是第二种方式</p>
+<p>先看看 String 类中定义的一个常量和一个变量：</p>
 
-<h4 id="开始写">开始写</h4>
-<h5 id="1-导入库">1. 导入库</h5>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>import RPi.GPIO as GPIO
-import time
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    /** The value is used for character storage. */
+    //存储字符
+    private final char value[];
+
+    /** Cache the hash code for the string */
+    //字符串的哈希值
+    private int hash; // Default to 0
 </code></pre></div></div>
 
-<h5 id="2-定义接口方式以及接口位置">2. 定义接口方式以及接口位置</h5>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>GPIO.setmode(GPIO.BCM)
-IN1 = 17
-IN2 = 18
-IN3 = 27
-IN4 = 22
-IN5 = 23
-IN6 = 24 
-</code></pre></div></div>
-<p>IN1 - IN4为L298N接入，IN5和IN6为红外线模块接入</p>
-<h6 id="车轮驱动方式">车轮驱动方式：</h6>
-<p>IN1和IN2负责驱动车轮转动（前进）
-IN3和IN4负责驱动车轮转动（后退）</p>
+<p>翻了以下源码，发现从 100 - 600 行左右都是写的构造器，数不胜数，这里就选几个常见的吧：</p>
 
-<h5 id="3-初始化">3. 初始化</h5>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>def init():
-    GPIO.setup(IN1, GPIO.OUT)
-    GPIO.setup(IN2, GPIO.OUT)
-    GPIO.setup(IN3, GPIO.OUT)
-    GPIO.setup(IN4, GPIO.OUT)
-    GPIO.setup(IN5, GPIO.IN)
-    GPIO.setup(IN6, GPIO.IN)
-</code></pre></div></div>
-<p>连接L298N的接口设为输出，因为需要输出的信号来驱动电机
-连接红外线模块的接口为输入，因为需要输入的信号来做出判断</p>
+<p>先来说说连开发者都觉得没用的构造器吧：</p>
 
-<h5 id="4-基础方向行为">4. 基础方向行为</h5>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>def up():
-    GPIO.output(IN1, GPIO.HIGH)          //右侧车轮前进
-    GPIO.output(IN2, GPIO.HIGH)          //左侧车轮前进
-    GPIO.output(IN3, GPIO.LOW)
-    GPIO.output(IN4, GPIO.LOW)
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    //初始化一个 String 对象，它代表了一个空的字符序列
+    //我们平常直接就 String str = ""；就好了
+    public String() {
+        this.value = "".value;
+    }
 
-
-def down():
-    GPIO.output(IN1, GPIO.LOW)
-    GPIO.output(IN2, GPIO.LOW)
-    GPIO.output(IN3, GPIO.HIGH)          //右侧车轮后退
-    GPIO.output(IN4, GPIO.HIGH)          //左侧车轮后退
-
-
-def turn_left():
-    GPIO.output(IN1, GPIO.HIGH)          //右侧车轮前进
-    GPIO.output(IN2, GPIO.LOW)
-    GPIO.output(IN3, GPIO.LOW)
-    GPIO.output(IN4, GPIO.LOW)
-
-
-def turn_right():
-    GPIO.output(IN1, GPIO.LOW)
-    GPIO.output(IN2, GPIO.HIGH)          //左侧车轮前进
-    GPIO.output(IN3, GPIO.LOW)
-    GPIO.output(IN4, GPIO.LOW)
+    //初始化一个和参数一模一样的对象，除非你是要保留副本，不然没什么用处
+    public String(String original) {
+        this.value = original.value;
+        this.hash = original.hash;
+    }
 </code></pre></div></div>
 
-<p>需要说明的是：由于不含舵机，转弯的操作是单边车轮驱动，带动车身转动</p>
+<p>然后是根据字符数组来进行初始化的构造器：</p>
 
-<h5 id="5-红外控制">5. 红外控制</h5>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>init()
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    /**
+     * 用一个字符数组当前所储存的字符来初始化字符串，
+     * 后续对数组的修改将不会对字符串有影响，感觉在做
+     * String 类的题目时，较常用到这个方法
+     */
+    public String(char value[]) {
+        this.value = Arrays.copyOf(value, value.length);
+    }
 
-n = 5
 
-while (n &gt; 0):                                  //总共转弯五次
-    in_left = GPIO.input(IN5)                   //左侧红外线接收器
-    in_right = GPIO.input(IN6)                  //右侧红外线接收器
-    up()                                        //未遇到障碍时直行
-    if (in_left == GPIO.LOW):
-        down()
-        time.sleep(1)
-        turn_right()
-        time.sleep(1)
-        n = n - 1
-        continue
-    
-    if (in_right == GPIO.LOW):
-        down()
-        time.sleep(1)
-        turn_left()
-        time.sleep(1)
-        n = n - 1
-        continue
-    
-    if (in_right == GPIO.LOW &amp; in_left == GPIO.LOW):
-        down()
-        time.sleep(1)
-        turn_right()               //如果两侧都有障碍，就右转（个人喜好）
-        time.sleep(1)
-        n = n - 1
-        continue
-
-stop()                      
-GPIO.cleanup()                    //清空GPIO接口配置信息
+    //截取字符数组中的某一部分来初始化
+    public String(char value[], int offset, int count) {
+        if (offset &lt; 0) {
+            throw new StringIndexOutOfBoundsException(offset);
+        }
+        if (count &lt;= 0) {
+            if (count &lt; 0) {
+                throw new StringIndexOutOfBoundsException(count);
+            }
+            if (offset &lt;= value.length) {
+                this.value = "".value;
+                return;
+            }
+        }
+        // Note: offset or count might be near -1&gt;&gt;&gt;1.
+        if (offset &gt; value.length - count) {
+            throw new StringIndexOutOfBoundsException(offset + count);
+        }
+        this.value = Arrays.copyOfRange(value, offset, offset+count);
+    }
 </code></pre></div></div>
 
-<p>如果前方遇到障碍，就后退一秒，然后转弯，最后继续直行，直到遇到下一个障碍</p>
+<p>最后是根据 StringBuffer 和 StringBuilder 来进行初始化的构造器：</p>
 
-<p>需要说明的是time.sleep()的用法：
-time.sleep(time) 表示的是经过 time 秒后执行下一步操作，就是休眠一段时间的意思
-如果不使用time.sleep()，将会一直执行第一步操作</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    //StringBuffer 是线程安全的，所以需要加锁
+    public String(StringBuffer buffer) {
+        synchronized(buffer) {
+            this.value = Arrays.copyOf(buffer.getValue(), buffer.length());
+        }
+    }
 
-<h4 id="关于运行">关于运行：</h4>
-<ul>
-  <li>由于红外传感器的有效距离偏短(5cm左右)，以及传感器的安装位置在车的底部，所以在车辆运动时，如果遇到凹凸不平的物体，有可能造成避障的延迟</li>
-</ul>
+    public String(StringBuilder builder) {
+        this.value = Arrays.copyOf(builder.getValue(), builder.length());
+    }
+</code></pre></div></div>
 
-<h4 id="运行视频">运行视频</h4>
+<p>这里还有个很有意思的包私有构造器（看不懂）：</p>
 
-<p><a href="http://v.youku.com/v_show/id_XMzE2NzkzNjAwMA==.html?spm=a2h3j.8428770.3416059.1">树莓派小车</a></p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    /*
+    * Package private constructor which shares value array for speed.
+    * this constructor is always expected to be called with share==true.
+    * a separate constructor is needed because we already have a public
+    * String(char[]) constructor that makes a copy of the given char[].
+    */
+    String(char[] value, boolean share) {
+        // assert share : "unshared not supported";
+        this.value = value;
+    }
+</code></pre></div></div>
 
-<p>遇到凹凸不平的物体有些许碰撞（环境简陋）</p>
+<p>后来去 Google 了一下有关字符串共享的相关内容，还是不太明白，可能是因为常量池的原因，在常量池中存放着字符串的引用，就会导致字符串被共享，这个构造器可能就是共享时的构造吧（待确定），文末给出写文时查询这一部分内容的链接，这一部分内容等下一篇讲述常量池时一起说说</p>
 
-<p>关于树莓派信息的内容就先告一段落</p>
+<h3 id="2-常用方法">2. 常用方法</h3>
+
+<h4 id="1-基本的">1. 基本的</h4>
+
+<p>常用的 length(), charAt(), isEmpty() 等等都是根据根据字符数组来做操作的，就看其中一个吧：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    public char charAt(int index) {
+        if ((index &lt; 0) || (index &gt;= value.length)) {
+            throw new StringIndexOutOfBoundsException(index);
+        }
+        return value[index];
+    }
+</code></pre></div></div>
+
+<h4 id="2-hashcode">2. hashCode()</h4>
+
+<p>这个方法是重写了 Object 类的 hashCode：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    public int hashCode() {
+        int h = hash;
+        if (h == 0 &amp;&amp; value.length &gt; 0) {
+            char val[] = value;
+
+            for (int i = 0; i &lt; value.length; i++) {
+                h = 31 * h + val[i];
+            }
+            hash = h;
+        }
+        return h;
+    }
+</code></pre></div></div>
+
+<p>在 哈希值等于 0 且字符串不为空时，才计算哈希值，否则就返回 0，计算方法就是 for 循环里的，举个简单的例子算一下：</p>
+
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-9fa5f64c6c9c5dfe.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
+
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-9ffe69d38bfa532e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
+
+<p>字符串 ab 的哈希值就是 97 * 32 + 98 得出的</p>
+
+<p>通过对字符串的哈希值的比较，能够得出两个字符串的值是否相同，但是却<strong>不能用来比较两个对象的引用</strong>：</p>
+
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-18f376906d05fec3.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
+
+<h4 id="3-join">3. join()</h4>
+
+<p>这个方法以前还都没听过，这次刚好看见了，就说一下用法：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    //第一个参数时分隔符，第二个是可变参数
+    public static String join(CharSequence delimiter, CharSequence... elements) {
+        Objects.requireNonNull(delimiter);
+        Objects.requireNonNull(elements);
+        // Number of elements not likely worth Arrays.stream overhead.
+        StringJoiner joiner = new StringJoiner(delimiter);
+        for (CharSequence cs: elements) {
+            joiner.add(cs);
+        }
+        return joiner.toString();
+    }
+</code></pre></div></div>
+
+<p>这里引出另一个类：StringJoiner，这里不介绍，如果只有一个字符串，就不会添加分隔符，若有多个，则在每两个拼接的字符串中添加分隔符：</p>
+
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-b2f27c212a476e24.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
+
+<p>如果要拼接多个字符，并且要添加分隔符，用 join() 会方便很多</p>
+
+<h4 id="4-equals">4. equals()</h4>
+
+<p>== 和 equals() 的区别相信都应该知道了，前者比较引用（引用相同，值自然就相同），后者只比较值：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    public boolean equals(Object anObject) {
+        //如果引用相同，就直接返回 true
+        if (this == anObject) {
+            return true;
+        }
+        //逐个比较字符
+        if (anObject instanceof String) {
+            String anotherString = (String)anObject;
+            int n = value.length;
+            if (n == anotherString.value.length) {
+                char v1[] = value;
+                char v2[] = anotherString.value;
+                int i = 0;
+                while (n-- != 0) {
+                    if (v1[i] != v2[i])
+                        return false;
+                    i++;
+                }
+                return true;
+            }
+        }
+        return false;
+    }
+</code></pre></div></div>
+
+<h3 id="3-string-类的不可变">3. String 类的不可变</h3>
+
+<p>一直都在说 String 类是不可变的，究竟是怎么实现呢？</p>
+
+<p>首先，String 类本身被声明为 final：<code class="highlighter-rouge">public final class String</code>，不能被继承，所以不可能重写 String 类的方法（只读），整个 String 类的核心：<code class="highlighter-rouge">private final char value[]</code> 也被声明为 final</p>
+
+<p>其次，在源码中的返回值为 String 类型的方法，如果方法中修改了字符串的结构，在最后都是 return new String(xxx) 这样子，如果没有修改字符串结构，就返回这个字符串，也就是所说的：任何修改字符串结构的操作都会产生一个新的 String 对象</p>
+
+<h3 id="4-总结">4. 总结</h3>
+
+<p>其实对于 String 类，最重要的点就是不可变，至于其它的一些操作，感兴趣的可以去翻一下源码（3100 行，不多），注释写的非常清楚，很多操作其实伴随注释看一遍就可理解），就没有写在这篇文章里</p>
+
+<p>最近开始着手准备明年的春招了，所以刚好写博客复习一下 Java 的一些基础知识，下一篇会介绍一下常量池</p>
+
+<p>参考资源：</p>
+
+<p>很早之前的一篇文章，JDK 版本还没到 1.8，所以看一看就好了：</p>
+
+<p><a href="http://chunlong.github.io/blog/2013/05/23/something-about-string/">http://chunlong.github.io/blog/2013/05/23/something-about-string/</a></p>
 
 
                 <hr>
@@ -328,13 +414,9 @@ time.sleep(time) 表示的是经过 time 秒后执行下一步操作，就是休
                 <ul class="pager">
                     
                     <li class="previous">
-                        <a href="/2018/04/20/%E6%A0%91%E8%8E%93%E6%B4%BE%E5%B0%8F%E8%BD%A6-%E4%BA%8C-%E6%A0%91%E8%8E%93%E6%B4%BE-%E5%B0%8F%E8%BD%A6%E5%92%8C%E7%BA%A2%E5%A4%96%E7%BA%BF%E6%A8%A1%E5%9D%97%E8%BF%9E%E6%8E%A5/" data-toggle="tooltip" data-placement="top" title="树莓派小车（二）树莓派、小车和红外线模块连接">&larr; Previous Post</a>
+                        <a href="/2018/09/14/%E5%A4%A7%E5%AD%A6%E4%B8%A4%E5%B9%B4%E7%9A%84%E4%B8%80%E7%82%B9%E6%80%BB%E7%BB%93/" data-toggle="tooltip" data-placement="top" title="大学两年的一点总结">&larr; Previous Post</a>
                     </li>
                     
-                    
-                    <li class="next">
-                        <a href="/2018/04/22/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E4%B8%80/" data-toggle="tooltip" data-placement="top" title="Java基础知识梳理（一）">Next Post &rarr;</a>
-                    </li>
                     
                 </ul>
 
@@ -464,8 +546,8 @@ time.sleep(time) 表示的是经过 time 秒后执行下一步操作，就是休
 <script type="text/javascript">
     /* * * CONFIGURATION VARIABLES * * */
     var disqus_shortname = "http-hxblog-site";
-    var disqus_identifier = "/2018/04/21/树莓派小车（三）Python控制小车";
-    var disqus_url = "http://localhost:4000/2018/04/21/%E6%A0%91%E8%8E%93%E6%B4%BE%E5%B0%8F%E8%BD%A6-%E4%B8%89-Python%E6%8E%A7%E5%88%B6%E5%B0%8F%E8%BD%A6/";
+    var disqus_identifier = "/2018/10/05/Java基础知识梳理（五）从源码了解字符串";
+    var disqus_url = "http://localhost:4000/2018/10/05/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E4%BA%94-%E4%BB%8E%E6%BA%90%E7%A0%81%E4%BA%86%E8%A7%A3%E5%AD%97%E7%AC%A6%E4%B8%B2/";
 
     (function() {
         var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;

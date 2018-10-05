@@ -68,5 +68,3 @@ tags:
 这里有一个关于 Git 开发流程的 [Gist](https://gist.github.com/yesmeck/4245406)，里面定义了各种功能的分支的命名方式
 
 其实我也没怎么经历过 GitHub Flow，还是去找一些项目练手吧
-
-<p><img src="https://upload-images.jianshu.io/upload_images/3426615-79919768b5365766.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" width="40%" height="40%" /></p>
