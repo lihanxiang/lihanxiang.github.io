@@ -5,9 +5,294 @@
     <description>你问我什么咖啡最好，我当然觉得是 Java</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Fri, 05 Oct 2018 17:09:58 -0700</pubDate>
-    <lastBuildDate>Fri, 05 Oct 2018 17:09:58 -0700</lastBuildDate>
+    <pubDate>Sun, 07 Oct 2018 07:29:30 -0700</pubDate>
+    <lastBuildDate>Sun, 07 Oct 2018 07:29:30 -0700</lastBuildDate>
     <generator>Jekyll v3.8.0</generator>
+    
+      <item>
+        <title>Java基础知识梳理（六）—— 初识 HashMap</title>
+        <description>&lt;h3 id=&quot;正文之前&quot;&gt;正文之前&lt;/h3&gt;
+
+&lt;p&gt;虽然平时也都有用到 HashMap（JDK 1.8），但一直都是处于只会用的状态，一直不知道操作是如何实现的，以及扩容的方式等等，刚好在周末的空闲时间，来学习一下它的源码，一篇肯定说不完，这一篇就先做个介绍吧：&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;ol&gt;
+    &lt;li&gt;基本概念&lt;/li&gt;
+    &lt;li&gt;容量&lt;/li&gt;
+    &lt;li&gt;基本结构&lt;/li&gt;
+    &lt;li&gt;成员变量&lt;/li&gt;
+    &lt;li&gt;构造器&lt;/li&gt;
+    &lt;li&gt;插入和查找&lt;/li&gt;
+    &lt;li&gt;总结&lt;/li&gt;
+  &lt;/ol&gt;
+&lt;/blockquote&gt;
+
+&lt;h3 id=&quot;正文&quot;&gt;正文&lt;/h3&gt;
+
+&lt;h4 id=&quot;1-基本概念&quot;&gt;1. 基本概念&lt;/h4&gt;
+
+&lt;p&gt;在 HashMap 一开始的一段注释中，已经对这个类解释的很清楚了：&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;提供所有的 map 操作&lt;/li&gt;
+  &lt;li&gt;可以有空的 key-value 对&lt;/li&gt;
+  &lt;li&gt;与 Hashtable 大致相同（除了非线程安全和允许空值）&lt;/li&gt;
+  &lt;li&gt;元素顺序不保证&lt;/li&gt;
+  &lt;li&gt;如果元素散列得当，get 和 put 操作的时间是固定的&lt;/li&gt;
+  &lt;li&gt;性能受初始容量和负载系数的影响&lt;/li&gt;
+  &lt;li&gt;当前容量 * 负载系数 &amp;lt; 元素数量时，就扩容&lt;/li&gt;
+  &lt;li&gt;负载系数默认为 0.75，这是时间消耗和空间消耗的一个折衷点&lt;/li&gt;
+  &lt;li&gt;非线程安全，如有需要，用 &lt;code class=&quot;highlighter-rouge&quot;&gt;Collections.synchronizedMap&lt;/code&gt; 包装&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;2-容量&quot;&gt;2. 容量&lt;/h4&gt;
+
+&lt;p&gt;关于容量，源码中的注释说到了一定要为 2 的幂次，这样有利于解决哈希碰撞（实现均匀分布），在文末会有关于为什么的链接：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    //默认的初始化容量
+    static final int DEFAULT_INITIAL_CAPACITY = 1 &amp;lt;&amp;lt; 4; // aka 16
+    //最大容量
+    static final int MAXIMUM_CAPACITY = 1 &amp;lt;&amp;lt; 30;
+    //默认负载系数
+    static final float DEFAULT_LOAD_FACTOR = 0.75f;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;在链表和红黑树之间转化时，有这么两个参数：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    //超过 8 时进化为红黑树
+    static final int TREEIFY_THRESHOLD = 8;
+    //小于 6 时退化为链表
+    static final int UNTREEIFY_THRESHOLD = 6;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h4 id=&quot;3-基本结构&quot;&gt;3. 基本结构&lt;/h4&gt;
+
+&lt;p&gt;在普通桶中使用的单链表的基本结构，存储哈希值，键值对以及下一个节点的引用：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    static class Node&amp;lt;K,V&amp;gt; implements Map.Entry&amp;lt;K,V&amp;gt; {
+        final int hash;
+        final K key;
+        V value;
+        Node&amp;lt;K,V&amp;gt; next;
+
+        Node(int hash, K key, V value, Node&amp;lt;K,V&amp;gt; next) {
+            this.hash = hash;
+            this.key = key;
+            this.value = value;
+            this.next = next;
+        }
+
+        public final K getKey()        { return key; }
+        public final V getValue()      { return value; }
+        public final String toString() { return key + &quot;=&quot; + value; }
+
+        //节点的哈希值为 key 的哈希值异或 value 的哈希值 
+        public final int hashCode() {
+            return Objects.hashCode(key) ^ Objects.hashCode(value);
+        }
+
+        public final V setValue(V newValue) {
+            V oldValue = value;
+            value = newValue;
+            return oldValue;
+        }
+
+        public final boolean equals(Object o) {
+            if (o == this)
+                return true;
+            if (o instanceof Map.Entry) {
+                Map.Entry&amp;lt;?,?&amp;gt; e = (Map.Entry&amp;lt;?,?&amp;gt;)o;
+                if (Objects.equals(key, e.getKey()) &amp;amp;&amp;amp;
+                    Objects.equals(value, e.getValue()))
+                    return true;
+            }
+            return false;
+        }
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h4 id=&quot;4-成员变量&quot;&gt;4. 成员变量&lt;/h4&gt;
+
+&lt;p&gt;HashMap 中有几个成员变量，在下文中会用到，这里就不解释，下面的方法中会有说明：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    //table 的大小是要为 2 的幂次，在初次使用时才初始化（延迟加载）
+    transient Node&amp;lt;K,V&amp;gt;[] table;
+
+    transient Set&amp;lt;Map.Entry&amp;lt;K,V&amp;gt;&amp;gt; entrySet;
+
+    transient int size;
+
+    transient int modCount;
+
+    int threshold;
+
+    final float loadFactor;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h4 id=&quot;5-构造器&quot;&gt;5. 构造器&lt;/h4&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    //自定义容量以及负载系数的初始化
+    public HashMap(int initialCapacity, float loadFactor) {
+        if (initialCapacity &amp;lt; 0)
+            throw new IllegalArgumentException(&quot;Illegal initial capacity: &quot; +
+                                               initialCapacity);
+        if (initialCapacity &amp;gt; MAXIMUM_CAPACITY)
+            initialCapacity = MAXIMUM_CAPACITY;
+        if (loadFactor &amp;lt;= 0 || Float.isNaN(loadFactor))
+            throw new IllegalArgumentException(&quot;Illegal load factor: &quot; +
+                                               loadFactor);
+        this.loadFactor = loadFactor;
+        this.threshold = tableSizeFor(initialCapacity);
+    }
+
+    //自定义容量
+    public HashMap(int initialCapacity) {
+        this(initialCapacity, DEFAULT_LOAD_FACTOR);
+    }
+
+    //默认容量 16 以及负载系数 0.75
+    public HashMap() {
+        this.loadFactor = DEFAULT_LOAD_FACTOR; // all other fields defaulted
+    }
+
+    //复制一个 Map
+    public HashMap(Map&amp;lt;? extends K, ? extends V&amp;gt; m) {
+        this.loadFactor = DEFAULT_LOAD_FACTOR;
+        putMapEntries(m, false);
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;tableSizeFor() 这个方法单独拎出来说一下：&lt;/p&gt;
+
+&lt;p&gt;前面说到 table 的值要是 2 的幂次，如果输入的数字不符合要求呢？那就找到比这个数大的&lt;strong&gt;最小的&lt;/strong&gt;2次幂，接下来给出源码，并用数字 9 举个例子：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    /**
+     * Returns a power of two size for the given target capacity.
+     */
+    static final int tableSizeFor(int cap) {
+        int n = cap - 1;
+        n |= n &amp;gt;&amp;gt;&amp;gt; 1;
+        n |= n &amp;gt;&amp;gt;&amp;gt; 2;
+        n |= n &amp;gt;&amp;gt;&amp;gt; 4;
+        n |= n &amp;gt;&amp;gt;&amp;gt; 8;
+        n |= n &amp;gt;&amp;gt;&amp;gt; 16;
+        return (n &amp;lt; 0) ? 1 : (n &amp;gt;= MAXIMUM_CAPACITY) ? MAXIMUM_CAPACITY : n + 1;
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-a45bdce464503061.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;6-插入和查找&quot;&gt;6. 插入和查找&lt;/h4&gt;
+
+&lt;p&gt;插入操作，代码中有分为单链表和红黑树两种情况：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;
+    public V put(K key, V value) {
+        return putVal(hash(key), key, value, false, true);
+    }
+
+    final V putVal(int hash, K key, V value, boolean onlyIfAbsent,
+                   boolean evict) {
+        Node&amp;lt;K,V&amp;gt;[] tab; Node&amp;lt;K,V&amp;gt; p; int n, i;
+        //若 table 还未分配空间，就初始化
+        if ((tab = table) == null || (n = tab.length) == 0)
+            n = (tab = resize()).length;
+        //将节点散列至相应位置
+        if ((p = tab[i = (n - 1) &amp;amp; hash]) == null)
+            tab[i] = newNode(hash, key, value, null);
+        else {
+            Node&amp;lt;K,V&amp;gt; e; K k;
+            if (p.hash == hash &amp;amp;&amp;amp;
+                ((k = p.key) == key || (key != null &amp;amp;&amp;amp; key.equals(k))))
+                e = p;
+            //插入至红黑树
+            else if (p instanceof TreeNode)
+                e = ((TreeNode&amp;lt;K,V&amp;gt;)p).putTreeVal(this, tab, hash, key, value);
+            else {
+                for (int binCount = 0; ; ++binCount) {
+                    //插入至链表
+                    if ((e = p.next) == null) {
+                        p.next = newNode(hash, key, value, null);
+                        //转化为红黑树
+                        if (binCount &amp;gt;= TREEIFY_THRESHOLD - 1) // -1 for 1st
+                            treeifyBin(tab, hash);
+                        break;
+                    }
+                    if (e.hash == hash &amp;amp;&amp;amp;
+                        ((k = e.key) == key || (key != null &amp;amp;&amp;amp; key.equals(k))))
+                        break;
+                    p = e;
+                }
+            }
+            //已经存在对应的值，就更新
+            if (e != null) { // existing mapping for key
+                V oldValue = e.value;
+                if (!onlyIfAbsent || oldValue == null)
+                    e.value = value;
+                afterNodeAccess(e);
+                return oldValue;
+            }
+        }
+        ++modCount;
+        //扩容
+        if (++size &amp;gt; threshold)
+            resize();
+        afterNodeInsertion(evict);
+        return null;
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;查找操作：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    public V get(Object key) {
+        Node&amp;lt;K,V&amp;gt; e;
+        return (e = getNode(hash(key), key)) == null ? null : e.value;
+    }
+
+    final Node&amp;lt;K,V&amp;gt; getNode(int hash, Object key) {
+        Node&amp;lt;K,V&amp;gt;[] tab; Node&amp;lt;K,V&amp;gt; first, e; int n; K k;
+        if ((tab = table) != null &amp;amp;&amp;amp; (n = tab.length) &amp;gt; 0 &amp;amp;&amp;amp;
+            (first = tab[(n - 1) &amp;amp; hash]) != null) {
+            //总是先检查根节点
+            if (first.hash == hash &amp;amp;&amp;amp; // always check first node
+                ((k = first.key) == key || (key != null &amp;amp;&amp;amp; key.equals(k))))
+                return first;
+            if ((e = first.next) != null) {
+                //在红黑树中查找
+                if (first instanceof TreeNode)
+                    return ((TreeNode&amp;lt;K,V&amp;gt;)first).getTreeNode(hash, key);
+                do {
+                    //在链表中查找
+                    if (e.hash == hash &amp;amp;&amp;amp;
+                        ((k = e.key) == key || (key != null &amp;amp;&amp;amp; key.equals(k))))
+                        return e;
+                } while ((e = e.next) != null);
+            }
+        }
+        return null;
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h4 id=&quot;7-总结&quot;&gt;7. 总结&lt;/h4&gt;
+
+&lt;p&gt;其实这一篇只能算是科普文，因为最重点的扩容、红黑树的转化等操作都还没说，接下来的文章将会全面说明这些重点内容&lt;/p&gt;
+
+&lt;p&gt;参考资料：&lt;/p&gt;
+
+&lt;p&gt;容量为什么是 2 的幂次：&lt;a href=&quot;https://blog.csdn.net/qq_36523667/article/details/79657400&quot;&gt;https://blog.csdn.net/qq_36523667/article/details/79657400&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;关于负载系数：&lt;a href=&quot;https://www.jianshu.com/p/64f6de3ffcc1&quot;&gt;https://www.jianshu.com/p/64f6de3ffcc1&lt;/a&gt;&lt;/p&gt;
+</description>
+        <pubDate>Sun, 07 Oct 2018 00:00:00 -0700</pubDate>
+        <link>http://localhost:4000/2018/10/07/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E5%85%AD-%E5%88%9D%E8%AF%86-HashMap/</link>
+        <guid isPermaLink="true">http://localhost:4000/2018/10/07/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E5%85%AD-%E5%88%9D%E8%AF%86-HashMap/</guid>
+        
+        <category>Java基础</category>
+        
+        <category>集合类</category>
+        
+        
+      </item>
     
       <item>
         <title>Java基础知识梳理（五）从源码了解字符串</title>
@@ -2002,93 +2287,6 @@ git push&lt;br /&gt;&lt;/p&gt;
         <pubDate>Thu, 09 Aug 2018 00:00:00 -0700</pubDate>
         <link>http://localhost:4000/2018/08/09/Git-%E7%B3%BB%E5%88%97%E6%96%87%E7%AB%A0-%E4%BA%8C-Git-%E5%9F%BA%E6%9C%AC%E7%94%A8%E6%B3%95/</link>
         <guid isPermaLink="true">http://localhost:4000/2018/08/09/Git-%E7%B3%BB%E5%88%97%E6%96%87%E7%AB%A0-%E4%BA%8C-Git-%E5%9F%BA%E6%9C%AC%E7%94%A8%E6%B3%95/</guid>
-        
-        <category>Git</category>
-        
-        
-      </item>
-    
-      <item>
-        <title>Git 系列文章（一）</title>
-        <description>&lt;h3 id=&quot;正文之前&quot;&gt;正文之前&lt;/h3&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;相信大部分都人都知道 GitHub，对，就是被微软收购的全球最大交友网站。目前博主还处于学生阶段，所以一直处于这样的循环中：&lt;/p&gt;
-
-  &lt;p&gt;git add&lt;br /&gt;
-git commit&lt;br /&gt;
-git pull&lt;br /&gt;
-git push&lt;br /&gt;&lt;/p&gt;
-
-  &lt;p&gt;但是本着要深入学习的心态，以及目前参加&lt;a href=&quot;https://github.com/xitu/gold-miner&quot;&gt;掘金翻译计划&lt;/a&gt;，翻译的工作都是在 GitHub 上进行的，所以打算从头开始写 Git 系列文章来温故知新一下&lt;/p&gt;
-
-  &lt;p&gt;那么这第一篇文章就是介绍一下 Git 和 GitHub，下一篇会用一个例子来讲述 GitHub 上进行协同开发的基本流程&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;h3 id=&quot;正文之前-1&quot;&gt;正文之前&lt;/h3&gt;
-
-&lt;h4 id=&quot;git&quot;&gt;Git&lt;/h4&gt;
-
-&lt;p&gt;先介绍一下什么是 Git，引用维基百科的介绍：&lt;/p&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;Git 是一个分布式版本控制软件，最初由 Linus Torvalds 创作（对，就是那个英语不是他母语的林纳斯），于 2005 年以 GPL 发布。最初是为了更好地管理 Linux 内核开发而设计。&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;在上面的一段话中，有一个需要解释一下的概念 —— 分布式版本控制：&lt;/p&gt;
-
-&lt;p&gt;分布式版本控制是版本控制的方式之一，顾名思义，分布式就代表协同开发者不需要连接同一个网络，一个项目可以由许多国家的程序员来完成&lt;/p&gt;
-
-&lt;p&gt;关于 Git 这个名字，来自英国俚语，意思大约是“混账”&lt;/p&gt;
-
-&lt;p&gt;具体的 Git 操作等到下一篇讲到协作开发时会说明&lt;/p&gt;
-
-&lt;h4 id=&quot;github&quot;&gt;GitHub&lt;/h4&gt;
-
-&lt;p&gt;GitHub 是一个通过 Git 进行版本控制的软件源代码托管服务网站，说白了，就是一个网站，里面放着许多用 Git 进行版本控制的项目。因为它有着社交网站的功能 —— watch, star, fork, follow 等功能，也被戏称作“全球最大（同性）交友网站。不过我更喜欢把它当作一个社区，在 GitHub 里有一些很有意思的项目，也有一些很好用的开源软件。&lt;/p&gt;
-
-&lt;p&gt;关于 GitHub 账户的创建过程不讲述，付费用户能够拥有私有 (private) 仓库的使用权，学生可以免费使用私有仓库&lt;/p&gt;
-
-&lt;p&gt;这里有几个关于 GitHub 的功能是需要了解一下的：&lt;/p&gt;
-
-&lt;h5 id=&quot;1-fork&quot;&gt;1. fork&lt;/h5&gt;
-&lt;p&gt;这里拿 spring 的仓库来截图说明一下：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-31bccd70465091bb.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;fork 就表示在你的名下创建一个项目的副本，如果你想要学习一下某一个项目，或者想对别人的项目做一些改动时，都需要先将项目 fork 到自己的账户中，然后再进行进一步的操作&lt;/p&gt;
-
-&lt;h5 id=&quot;2--issues-和-pull-requests&quot;&gt;2.  Issues 和 Pull requests&lt;/h5&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-48bd341e3737a835.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Issue 的目的是为了给开发者提供意见或建议的，开发者可以根据 Issues 中出现的内容来对项目进行改动。但是现在的 Issues 好像变成了讨论区，尤其是前一段事件的 Issues 出现“求不要更新了，老子学不动了”，真是丢脸&lt;/p&gt;
-
-&lt;p&gt;Pull requests（简称 PR）是你在 fork 别人的仓库之后，如果有改动想要通知开发者，就发起一个 PR，开发者审核之后，如果开发者同意了这个 PR，就会将 PR 合并到项目中去，你也算为这个项目做了贡献&lt;/p&gt;
-
-&lt;h5 id=&quot;3-wiki&quot;&gt;3. Wiki&lt;/h5&gt;
-
-&lt;p&gt;Wiki 是一种在网络上开放且可供多人协同创作的超文本系统，支持那些面向社群的协作式写作，为协作式写作提供了必要的帮助&lt;/p&gt;
-
-&lt;h5 id=&quot;4-gists&quot;&gt;4. Gists&lt;/h5&gt;
-
-&lt;p&gt;上面讲述的都是基于仓库的，这里说的 Gist 是 GitHub 的一个子服务，用于小型代码片段的分享，比如说你有一些不错的代码片段，但是又没必要创建一个仓库来存放，就可以用 Gist 来存放&lt;/p&gt;
-
-&lt;h5 id=&quot;5-contributions&quot;&gt;5. Contributions&lt;/h5&gt;
-
-&lt;p&gt;在你的公有仓库中进行代码提交，就会在个人信息页面的 Contribution 栏中出现标记，拿我自己的来做个示范：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-9754f66f95061748.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;两三个 Java Web 项目、掘金翻译计划、个人博客和 LeetCode 记录基本构成了我的 GitHub 的全部贡献，几乎在某一段时间内都有每天做一些&lt;/p&gt;
-
-&lt;h4 id=&quot;中国人在-github&quot;&gt;中国人在 GitHub&lt;/h4&gt;
-
-&lt;p&gt;在最后说明一下，听说现在国内的培训机构有包装 GitHub 的行为，中国人还真是什么都敢干，先是大闹 Issues，然后是抄袭行为和刻意包装行为。在这里强烈鄙视那些在 GitHub 上抄袭的人。就个人而言，它只是一个有着开发功能的社区，即使包装的再好，连基本的协同开发流程都不知道是怎样的，不就是衣着光鲜亮丽的原始人吗？GitHub 带给我们这些普通开发者的最明显的好处就是十分便利的分布式协作开发流程，以及发现一些有趣项目的机会。目光短浅的人往往会走偏，去刻意包装一下，是太没自信了吗？&lt;/p&gt;
-</description>
-        <pubDate>Thu, 02 Aug 2018 00:00:00 -0700</pubDate>
-        <link>http://localhost:4000/2018/08/02/Git-%E7%B3%BB%E5%88%97%E6%96%87%E7%AB%A0-%E4%B8%80-GitHub-%E4%BB%8B%E7%BB%8D/</link>
-        <guid isPermaLink="true">http://localhost:4000/2018/08/02/Git-%E7%B3%BB%E5%88%97%E6%96%87%E7%AB%A0-%E4%B8%80-GitHub-%E4%BB%8B%E7%BB%8D/</guid>
         
         <category>Git</category>
         

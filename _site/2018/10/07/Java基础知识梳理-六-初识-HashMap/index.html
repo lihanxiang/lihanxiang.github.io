@@ -19,9 +19,9 @@
     <meta name="keyword"  content="Java">
     <link rel="shortcut icon" href="/img/favicon.ico">
 
-    <title>拦截器和过滤器验证登录 - 李汉祥的博客 | L Blog</title>
+    <title>Java基础知识梳理（六）—— 初识 HashMap - 李汉祥的博客 | L Blog</title>
 
-    <link rel="canonical" href="http://localhost:4000/2018/08/31/%E6%8B%A6%E6%88%AA%E5%99%A8%E5%92%8C%E8%BF%87%E6%BB%A4%E5%99%A8%E9%AA%8C%E8%AF%81%E7%99%BB%E5%BD%95/">
+    <link rel="canonical" href="http://localhost:4000/2018/10/07/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E5%85%AD-%E5%88%9D%E8%AF%86-HashMap/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -143,12 +143,12 @@
 
 
     <!-- Image to hack wechat -->
-<!-- <img src="/img/post/2018-08/31.jpg" width="0" height="0"> -->
+<!-- <img src="/img/post/2018-10/07.jpg" width="0" height="0"> -->
 
 <!-- Post Header -->
 <style type="text/css">
     header.intro-header{
-        background-image: url('/img/post/2018-08/31.jpg')
+        background-image: url('/img/post/2018-10/07.jpg')
     }
 </style>
 <header class="intro-header" >
@@ -158,19 +158,17 @@
                 <div class="post-heading">
                     <div class="tags">
                         
-                        <a class="tag" href="/tags/#Spring MVC" title="Spring MVC">Spring MVC</a>
+                        <a class="tag" href="/tags/#Java基础" title="Java基础">Java基础</a>
                         
-                        <a class="tag" href="/tags/#Java Web" title="Java Web">Java Web</a>
-                        
-                        <a class="tag" href="/tags/#Spring" title="Spring">Spring</a>
+                        <a class="tag" href="/tags/#集合类" title="集合类">集合类</a>
                         
                     </div>
-                    <h1>拦截器和过滤器验证登录</h1>
+                    <h1>Java基础知识梳理（六）—— 初识 HashMap</h1>
                     
                     
-                    <h2 class="subheading">练手项目</h2>
+                    <h2 class="subheading">知识点回顾</h2>
                     
-                    <span class="meta">Posted by L on August 31, 2018</span>
+                    <span class="meta">Posted by L on October 7, 2018</span>
                 </div>
             </div>
         </div>
@@ -188,138 +186,277 @@
                 col-md-10 col-md-offset-1
                 post-container">
 
-				<p>之前的版本是 <a href="https://github.com/lihanxiang/Registration-login-interface2/tree/v0.2.1">v0.2.1</a> 保持登录状态的版本，这一次 v0.2.2 是对验证登录过程的一个更新，用拦截器和过滤器来进行，发现这种方式省去了一些逻辑的实现</p>
+				<h3 id="正文之前">正文之前</h3>
 
-<h3 id="registration-login-interface2"><a href="https://github.com/lihanxiang/Registration-login-interface2">Registration-login-interface2</a></h3>
+<p>虽然平时也都有用到 HashMap（JDK 1.8），但一直都是处于只会用的状态，一直不知道操作是如何实现的，以及扩容的方式等等，刚好在周末的空闲时间，来学习一下它的源码，一篇肯定说不完，这一篇就先做个介绍吧：</p>
 
-<h3 id="version-022">Version 0.2.2</h3>
+<blockquote>
+  <ol>
+    <li>基本概念</li>
+    <li>容量</li>
+    <li>基本结构</li>
+    <li>成员变量</li>
+    <li>构造器</li>
+    <li>插入和查找</li>
+    <li>总结</li>
+  </ol>
+</blockquote>
 
-<h4 id="新增的功能都是在-v021-的基础上进行修改删去部分代码">新增的功能都是在 v0.2.1 的基础上进行修改，删去部分代码</h4>
+<h3 id="正文">正文</h3>
 
-<p>可通过点击 tag 来查看之前的代码：</p>
+<h4 id="1-基本概念">1. 基本概念</h4>
 
-<p><img src="https://upload-images.jianshu.io/upload_images/3426615-a2a86f9628363959.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
-
-<h4 id="1-新增功能">1. 新增功能</h4>
-
-<ul>
-  <li>
-    <p>使用 mvc 的拦截器来对特定页面进行拦截，拦截之后跳转至登录界面</p>
-  </li>
-  <li>
-    <p>使用过滤器来进行相同功能的拦截</p>
-  </li>
-</ul>
-
-<h4 id="2-删去的代码">2. 删去的代码</h4>
-
-<p>先删除 ExceptionService 中的 statusException 方法，删去对应的实现，然后在 UserServiceImpl 和 Controller 中删去调用它的代码</p>
-
-<p>这样，就变成了不检测用户是否登录</p>
-
-<h4 id="3-拦截器">3. 拦截器</h4>
-
-<p>首先新建一个包：interceptor</p>
-
-<p>然后新建一个类：LoginInterceptor，实现了 HandlerInterceptor 接口：</p>
-
-<p>关于 HandlerInterceptor 的使用这里不讲述，如果在 session 中没有获得 <strong>username</strong> 属性，就跳转到登录页面</p>
-
-<p><strong>拦截是有范围的，在下文的配置文件中自行配置需要拦截的页面</strong></p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    public class LoginInterceptor implements org.springframework.web.servlet.HandlerInterceptor {
-    @Override
-    public boolean preHandle(HttpServletRequest httpServletRequest,
-                             HttpServletResponse httpServletResponse, Object o) throws Exception {
-        HttpSession session = httpServletRequest.getSession();
-        if (session.getAttribute("username") == null){
-            httpServletResponse.sendRedirect("preLogin.action");
-        } else {
-            return true;
-        }
-        return false;
-    }
-
-    @Override
-    public void postHandle(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse,
-                           Object o, ModelAndView modelAndView) throws Exception {
-
-    }
-
-    @Override
-    public void afterCompletion(HttpServletRequest httpServletRequest,
-                                HttpServletResponse httpServletResponse, Object o, Exception e) throws Exception {
-
-    }
-</code></pre></div></div>
-
-<p>在 spring-mvc.xml 中添加拦截器的配置：</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    &lt;mvc:interceptors&gt;
-        &lt;mvc:interceptor&gt;
-            &lt;mvc:mapping path="/userStatus.action"/&gt;
-            &lt;mvc:mapping path="/showInfo.action"/&gt;
-            &lt;mvc:mapping path="/setUserInfo.action"/&gt;
-            &lt;bean class="interceptor.LoginInterceptor"/&gt;
-        &lt;/mvc:interceptor&gt;
-    &lt;/mvc:interceptors&gt;
-</code></pre></div></div>
-
-<p>对指定路径进行映射，LoginInterceptor 中的操作就是对映射的路径而言的，然后指定一下拦截器所在位置，就完成了</p>
-
-<h5 id="效果">效果</h5>
-
-<p>运行之后，在浏览器地址栏输入</p>
+<p>在 HashMap 一开始的一段注释中，已经对这个类解释的很清楚了：</p>
 
 <ul>
-  <li><strong>localhost:8080/userStatus.action</strong></li>
-  <li><strong>localhost:8080/showInfo.action</strong></li>
-  <li><strong>localhost:8080/setUserInfo.action</strong></li>
+  <li>提供所有的 map 操作</li>
+  <li>可以有空的 key-value 对</li>
+  <li>与 Hashtable 大致相同（除了非线程安全和允许空值）</li>
+  <li>元素顺序不保证</li>
+  <li>如果元素散列得当，get 和 put 操作的时间是固定的</li>
+  <li>性能受初始容量和负载系数的影响</li>
+  <li>当前容量 * 负载系数 &lt; 元素数量时，就扩容</li>
+  <li>负载系数默认为 0.75，这是时间消耗和空间消耗的一个折衷点</li>
+  <li>非线程安全，如有需要，用 <code class="highlighter-rouge">Collections.synchronizedMap</code> 包装</li>
 </ul>
 
-<p>就会跳转到 http://localhost:8080/preLogin.action</p>
+<h4 id="2-容量">2. 容量</h4>
 
-<p>拦截器的部分就结束了</p>
+<p>关于容量，源码中的注释说到了一定要为 2 的幂次，这样有利于解决哈希碰撞（实现均匀分布），在文末会有关于为什么的链接：</p>
 
-<h4 id="4-过滤器">4. 过滤器</h4>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    //默认的初始化容量
+    static final int DEFAULT_INITIAL_CAPACITY = 1 &lt;&lt; 4; // aka 16
+    //最大容量
+    static final int MAXIMUM_CAPACITY = 1 &lt;&lt; 30;
+    //默认负载系数
+    static final float DEFAULT_LOAD_FACTOR = 0.75f;
+</code></pre></div></div>
 
-<p>将 spring-mvc.xml 中配置的拦截器信息注释掉，然后新建包：filter，包中新建类 LoginFilter，实现 <strong>javax.servlet.Filter</strong> 接口：</p>
+<p>在链表和红黑树之间转化时，有这么两个参数：</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public class LoginFilter implements Filter {
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    //超过 8 时进化为红黑树
+    static final int TREEIFY_THRESHOLD = 8;
+    //小于 6 时退化为链表
+    static final int UNTREEIFY_THRESHOLD = 6;
+</code></pre></div></div>
 
-    @Override
-    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, 
-                         FilterChain filterChain) throws IOException, ServletException {
-        if (((HttpServletRequest) servletRequest).getSession().
-                getAttribute("username") == null){
-            ((HttpServletResponse)servletResponse).sendRedirect("preLogin.action");
-        } else {
-            filterChain.doFilter(servletRequest,
-                    servletResponse);
+<h4 id="3-基本结构">3. 基本结构</h4>
+
+<p>在普通桶中使用的单链表的基本结构，存储哈希值，键值对以及下一个节点的引用：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    static class Node&lt;K,V&gt; implements Map.Entry&lt;K,V&gt; {
+        final int hash;
+        final K key;
+        V value;
+        Node&lt;K,V&gt; next;
+
+        Node(int hash, K key, V value, Node&lt;K,V&gt; next) {
+            this.hash = hash;
+            this.key = key;
+            this.value = value;
+            this.next = next;
+        }
+
+        public final K getKey()        { return key; }
+        public final V getValue()      { return value; }
+        public final String toString() { return key + "=" + value; }
+
+        //节点的哈希值为 key 的哈希值异或 value 的哈希值 
+        public final int hashCode() {
+            return Objects.hashCode(key) ^ Objects.hashCode(value);
+        }
+
+        public final V setValue(V newValue) {
+            V oldValue = value;
+            value = newValue;
+            return oldValue;
+        }
+
+        public final boolean equals(Object o) {
+            if (o == this)
+                return true;
+            if (o instanceof Map.Entry) {
+                Map.Entry&lt;?,?&gt; e = (Map.Entry&lt;?,?&gt;)o;
+                if (Objects.equals(key, e.getKey()) &amp;&amp;
+                    Objects.equals(value, e.getValue()))
+                    return true;
+            }
+            return false;
         }
     }
-}
 </code></pre></div></div>
 
-<p>如果检测出没有登录，就会跳转到登录界面，<strong>有一点要注意</strong>：<code class="highlighter-rouge"> filterChain.doFilter(servletRequest,
-                    servletResponse);</code>
-是一定要写的，如果不写，在登录之后，就不能访问那些需要登录才能访问的页面的，相当于请求已经被过滤器中断了，如果检测出已登录，就要加上这一行代码才能方位个人信息页面</p>
+<h4 id="4-成员变量">4. 成员变量</h4>
 
-<p>然后在 web.xml 中添加一个过滤器的配置：</p>
+<p>HashMap 中有几个成员变量，在下文中会用到，这里就不解释，下面的方法中会有说明：</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    &lt;filter&gt;
-        &lt;filter-name&gt;loginFilter&lt;/filter-name&gt;
-        &lt;filter-class&gt;filter.LoginFilter&lt;/filter-class&gt;
-    &lt;/filter&gt;
-    &lt;filter-mapping&gt;
-        &lt;filter-name&gt;loginFilter&lt;/filter-name&gt;
-        &lt;url-pattern&gt;/showInfo.action&lt;/url-pattern&gt;
-        &lt;url-pattern&gt;/userStatus.action&lt;/url-pattern&gt;
-        &lt;url-pattern&gt;/setUserInfo.action&lt;/url-pattern&gt;
-    &lt;/filter-mapping&gt;
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    //table 的大小是要为 2 的幂次，在初次使用时才初始化（延迟加载）
+    transient Node&lt;K,V&gt;[] table;
+
+    transient Set&lt;Map.Entry&lt;K,V&gt;&gt; entrySet;
+
+    transient int size;
+
+    transient int modCount;
+
+    int threshold;
+
+    final float loadFactor;
 </code></pre></div></div>
 
-<p>这样子，不同于 v0.2.1 的验证登录方式就做完了</p>
+<h4 id="5-构造器">5. 构造器</h4>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    //自定义容量以及负载系数的初始化
+    public HashMap(int initialCapacity, float loadFactor) {
+        if (initialCapacity &lt; 0)
+            throw new IllegalArgumentException("Illegal initial capacity: " +
+                                               initialCapacity);
+        if (initialCapacity &gt; MAXIMUM_CAPACITY)
+            initialCapacity = MAXIMUM_CAPACITY;
+        if (loadFactor &lt;= 0 || Float.isNaN(loadFactor))
+            throw new IllegalArgumentException("Illegal load factor: " +
+                                               loadFactor);
+        this.loadFactor = loadFactor;
+        this.threshold = tableSizeFor(initialCapacity);
+    }
+
+    //自定义容量
+    public HashMap(int initialCapacity) {
+        this(initialCapacity, DEFAULT_LOAD_FACTOR);
+    }
+
+    //默认容量 16 以及负载系数 0.75
+    public HashMap() {
+        this.loadFactor = DEFAULT_LOAD_FACTOR; // all other fields defaulted
+    }
+
+    //复制一个 Map
+    public HashMap(Map&lt;? extends K, ? extends V&gt; m) {
+        this.loadFactor = DEFAULT_LOAD_FACTOR;
+        putMapEntries(m, false);
+    }
+</code></pre></div></div>
+
+<p>tableSizeFor() 这个方法单独拎出来说一下：</p>
+
+<p>前面说到 table 的值要是 2 的幂次，如果输入的数字不符合要求呢？那就找到比这个数大的<strong>最小的</strong>2次幂，接下来给出源码，并用数字 9 举个例子：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    /**
+     * Returns a power of two size for the given target capacity.
+     */
+    static final int tableSizeFor(int cap) {
+        int n = cap - 1;
+        n |= n &gt;&gt;&gt; 1;
+        n |= n &gt;&gt;&gt; 2;
+        n |= n &gt;&gt;&gt; 4;
+        n |= n &gt;&gt;&gt; 8;
+        n |= n &gt;&gt;&gt; 16;
+        return (n &lt; 0) ? 1 : (n &gt;= MAXIMUM_CAPACITY) ? MAXIMUM_CAPACITY : n + 1;
+    }
+</code></pre></div></div>
+
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-a45bdce464503061.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
+
+<h4 id="6-插入和查找">6. 插入和查找</h4>
+
+<p>插入操作，代码中有分为单链表和红黑树两种情况：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+    public V put(K key, V value) {
+        return putVal(hash(key), key, value, false, true);
+    }
+
+    final V putVal(int hash, K key, V value, boolean onlyIfAbsent,
+                   boolean evict) {
+        Node&lt;K,V&gt;[] tab; Node&lt;K,V&gt; p; int n, i;
+        //若 table 还未分配空间，就初始化
+        if ((tab = table) == null || (n = tab.length) == 0)
+            n = (tab = resize()).length;
+        //将节点散列至相应位置
+        if ((p = tab[i = (n - 1) &amp; hash]) == null)
+            tab[i] = newNode(hash, key, value, null);
+        else {
+            Node&lt;K,V&gt; e; K k;
+            if (p.hash == hash &amp;&amp;
+                ((k = p.key) == key || (key != null &amp;&amp; key.equals(k))))
+                e = p;
+            //插入至红黑树
+            else if (p instanceof TreeNode)
+                e = ((TreeNode&lt;K,V&gt;)p).putTreeVal(this, tab, hash, key, value);
+            else {
+                for (int binCount = 0; ; ++binCount) {
+                    //插入至链表
+                    if ((e = p.next) == null) {
+                        p.next = newNode(hash, key, value, null);
+                        //转化为红黑树
+                        if (binCount &gt;= TREEIFY_THRESHOLD - 1) // -1 for 1st
+                            treeifyBin(tab, hash);
+                        break;
+                    }
+                    if (e.hash == hash &amp;&amp;
+                        ((k = e.key) == key || (key != null &amp;&amp; key.equals(k))))
+                        break;
+                    p = e;
+                }
+            }
+            //已经存在对应的值，就更新
+            if (e != null) { // existing mapping for key
+                V oldValue = e.value;
+                if (!onlyIfAbsent || oldValue == null)
+                    e.value = value;
+                afterNodeAccess(e);
+                return oldValue;
+            }
+        }
+        ++modCount;
+        //扩容
+        if (++size &gt; threshold)
+            resize();
+        afterNodeInsertion(evict);
+        return null;
+    }
+</code></pre></div></div>
+
+<p>查找操作：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    public V get(Object key) {
+        Node&lt;K,V&gt; e;
+        return (e = getNode(hash(key), key)) == null ? null : e.value;
+    }
+
+    final Node&lt;K,V&gt; getNode(int hash, Object key) {
+        Node&lt;K,V&gt;[] tab; Node&lt;K,V&gt; first, e; int n; K k;
+        if ((tab = table) != null &amp;&amp; (n = tab.length) &gt; 0 &amp;&amp;
+            (first = tab[(n - 1) &amp; hash]) != null) {
+            //总是先检查根节点
+            if (first.hash == hash &amp;&amp; // always check first node
+                ((k = first.key) == key || (key != null &amp;&amp; key.equals(k))))
+                return first;
+            if ((e = first.next) != null) {
+                //在红黑树中查找
+                if (first instanceof TreeNode)
+                    return ((TreeNode&lt;K,V&gt;)first).getTreeNode(hash, key);
+                do {
+                    //在链表中查找
+                    if (e.hash == hash &amp;&amp;
+                        ((k = e.key) == key || (key != null &amp;&amp; key.equals(k))))
+                        return e;
+                } while ((e = e.next) != null);
+            }
+        }
+        return null;
+    }
+</code></pre></div></div>
+
+<h4 id="7-总结">7. 总结</h4>
+
+<p>其实这一篇只能算是科普文，因为最重点的扩容、红黑树的转化等操作都还没说，接下来的文章将会全面说明这些重点内容</p>
+
+<p>参考资料：</p>
+
+<p>容量为什么是 2 的幂次：<a href="https://blog.csdn.net/qq_36523667/article/details/79657400">https://blog.csdn.net/qq_36523667/article/details/79657400</a></p>
+
+<p>关于负载系数：<a href="https://www.jianshu.com/p/64f6de3ffcc1">https://www.jianshu.com/p/64f6de3ffcc1</a></p>
 
 
                 <hr>
@@ -330,13 +467,9 @@
                 <ul class="pager">
                     
                     <li class="previous">
-                        <a href="/2018/08/30/%E4%BF%9D%E6%8C%81%E7%99%BB%E5%BD%95%E7%8A%B6%E6%80%81%E7%9A%84%E6%B3%A8%E5%86%8C%E7%99%BB%E9%99%86%E7%95%8C%E9%9D%A2/" data-toggle="tooltip" data-placement="top" title="保持登录状态的注册登陆界面">&larr; Previous Post</a>
+                        <a href="/2018/10/05/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E4%BA%94-%E4%BB%8E%E6%BA%90%E7%A0%81%E4%BA%86%E8%A7%A3%E5%AD%97%E7%AC%A6%E4%B8%B2/" data-toggle="tooltip" data-placement="top" title="Java基础知识梳理（五）从源码了解字符串">&larr; Previous Post</a>
                     </li>
                     
-                    
-                    <li class="next">
-                        <a href="/2018/09/14/%E5%A4%A7%E5%AD%A6%E4%B8%A4%E5%B9%B4%E7%9A%84%E4%B8%80%E7%82%B9%E6%80%BB%E7%BB%93/" data-toggle="tooltip" data-placement="top" title="大学两年的一点总结">Next Post &rarr;</a>
-                    </li>
                     
                 </ul>
 
@@ -472,8 +605,8 @@
 <script type="text/javascript">
     /* * * CONFIGURATION VARIABLES * * */
     var disqus_shortname = "http-hxblog-site";
-    var disqus_identifier = "/2018/08/31/拦截器和过滤器验证登录";
-    var disqus_url = "http://localhost:4000/2018/08/31/%E6%8B%A6%E6%88%AA%E5%99%A8%E5%92%8C%E8%BF%87%E6%BB%A4%E5%99%A8%E9%AA%8C%E8%AF%81%E7%99%BB%E5%BD%95/";
+    var disqus_identifier = "/2018/10/07/Java基础知识梳理（六）—— 初识 HashMap";
+    var disqus_url = "http://localhost:4000/2018/10/07/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E5%85%AD-%E5%88%9D%E8%AF%86-HashMap/";
 
     (function() {
         var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
