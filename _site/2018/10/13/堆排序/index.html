@@ -19,9 +19,9 @@
     <meta name="keyword"  content="Java">
     <link rel="shortcut icon" href="/img/favicon.ico">
 
-    <title>保持登录状态的注册登陆界面 - 李汉祥的博客 | L Blog</title>
+    <title>堆排序 - 李汉祥的博客 | L Blog</title>
 
-    <link rel="canonical" href="http://localhost:4000/2018/08/30/%E4%BF%9D%E6%8C%81%E7%99%BB%E5%BD%95%E7%8A%B6%E6%80%81%E7%9A%84%E6%B3%A8%E5%86%8C%E7%99%BB%E9%99%86%E7%95%8C%E9%9D%A2/">
+    <link rel="canonical" href="http://localhost:4000/2018/10/13/%E5%A0%86%E6%8E%92%E5%BA%8F/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -143,12 +143,12 @@
 
 
     <!-- Image to hack wechat -->
-<!-- <img src="/img/post/2018-08/30.jpg" width="0" height="0"> -->
+<!-- <img src="/img/post/2018-10/13.jpg" width="0" height="0"> -->
 
 <!-- Post Header -->
 <style type="text/css">
     header.intro-header{
-        background-image: url('/img/post/2018-08/30.jpg')
+        background-image: url('/img/post/2018-10/13.jpg')
     }
 </style>
 <header class="intro-header" >
@@ -158,19 +158,15 @@
                 <div class="post-heading">
                     <div class="tags">
                         
-                        <a class="tag" href="/tags/#Spring MVC" title="Spring MVC">Spring MVC</a>
-                        
-                        <a class="tag" href="/tags/#Java Web" title="Java Web">Java Web</a>
-                        
-                        <a class="tag" href="/tags/#Spring" title="Spring">Spring</a>
+                        <a class="tag" href="/tags/#八大排序" title="八大排序">八大排序</a>
                         
                     </div>
-                    <h1>保持登录状态的注册登陆界面</h1>
+                    <h1>堆排序</h1>
                     
                     
-                    <h2 class="subheading">练手项目</h2>
+                    <h2 class="subheading"></h2>
                     
-                    <span class="meta">Posted by L on August 30, 2018</span>
+                    <span class="meta">Posted by L on October 13, 2018</span>
                 </div>
             </div>
         </div>
@@ -190,242 +186,159 @@
 
 				<h3 id="正文之前">正文之前</h3>
 
+<p>这一篇文章介绍一下堆的概念，以及堆排序</p>
+
 <blockquote>
-  <p>前两天写了<a href="https://lihanxiang.github.io/2018/08/26/SSM-%E9%87%8D%E6%9E%84%E6%B3%A8%E5%86%8C%E7%99%BB%E9%99%86%E7%95%8C%E9%9D%A2/">SSM 重构注册登陆界面</a>，然后添加了一点功能：保持登录状态，修改当前登录用户信息，查看登录状态</p>
+  <ol>
+    <li>基本概念、最大/最小堆</li>
+    <li>堆排序</li>
+    <li>分析</li>
+  </ol>
 </blockquote>
 
 <h3 id="正文">正文</h3>
 
-<h3 id="version-021">Version 0.2.1</h3>
+<h4 id="1-什么是堆">1. 什么是堆</h4>
 
-<h4 id="新增的功能都是在原有的基础上添加代码基本没有删去版本-01-的代码">新增的功能都是在原有的基础上添加代码，基本没有删去版本 0.1 的代码</h4>
-
-<p>可通过点击 tag 来查看 v0.1：</p>
-
-<p><img src="https://upload-images.jianshu.io/upload_images/3426615-a2a86f9628363959.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
-
-<h4 id="1-新增功能截图">1. 新增功能截图</h4>
-
-<p>登录成功后主页面：</p>
-
-<p><img src="https://upload-images.jianshu.io/upload_images/3426615-e89ae45825fa5ff5.PNG?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
-
-<p>修改用户信息（用户名无法修改）：</p>
-
-<p><img src="https://upload-images.jianshu.io/upload_images/3426615-a95449255a2f23c2.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
-
-<p>电话号码和邮箱不能为空：</p>
-
-<p><img src="https://upload-images.jianshu.io/upload_images/3426615-619e57307bb9bd2b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
-
-<p>修改成功：</p>
-
-<p><img src="https://upload-images.jianshu.io/upload_images/3426615-2955b3d0ca2d9c26.PNG?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
-
-<p>检测登录状态：</p>
-
-<p><img src="https://upload-images.jianshu.io/upload_images/3426615-16eb325efa37d0f3.PNG?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
-
-<p>若未登录就检测登录状态：</p>
-
-<p><img src="https://upload-images.jianshu.io/upload_images/3426615-4299278f99f6f2af.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
-
-<h4 id="2-实体类">2. 实体类</h4>
-
-<p>用户的信息添加了电话号码和描述，所以要在实体类和数据库中都做一点改动：</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    private String gender;
-    private String description;
-    public void setGender(String gender) {
-        this.gender = gender;
-    }
-    public String getGender() {
-        return gender;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-    public String getDescription() {
-        return description;
-    }
-</code></pre></div></div>
-
-<p>MySQL 中对表做一点改动：</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>alter table user add gender varchar(10), add description varchar(200);
-</code></pre></div></div>
-
-<h4 id="3-mybatis">3. Mybatis</h4>
-
-<p>为了添加新功能，需要在 MyBatis 映射器中添加两步：</p>
+<p>堆不是单独的一种结构，而是一种树状数据结构，通过二叉堆来实现，二叉堆也就是二叉树的一种，讲白了就是类似二叉树，只不过满足：</p>
 
 <ul>
-  <li>查找用户信息：</li>
+  <li>
+    <p>除了最底层，其他层全满，最底层按照从左至右的顺序填入节点（完全二叉树）</p>
+  </li>
+  <li>
+    <p>父节点大于等于或小于等于子节点，这两种情况就成为了最大堆/最小堆的定义：</p>
+  </li>
 </ul>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    &lt;select id="showInfo" parameterType="String" resultType="domain.User"&gt;
-        SELECT *
-        FROM user
-        WHERE username = #{username}
-    &lt;/select&gt;
+<p>最大堆：任意节点大于等于它的所有后裔（不仅是子节点，还有子节点的子节点等等），最大节点在堆顶</p>
+
+<p>最小堆：任意节点小于等于它的所有后裔，最小节点在堆顶</p>
+
+<p>还有一种叫法是<strong>大顶堆/小顶堆</strong></p>
+
+<p>给个图吧：</p>
+
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-8f9e9c630f59b4cc.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
+
+<h4 id="2-堆排序">2. 堆排序</h4>
+
+<p>堆排序的步骤是这样的：</p>
+
+<blockquote>
+  <ol>
+    <li>用给定数组构建堆<br /></li>
+    <li>一个循环，每次选择堆顶元素，调换至末尾，然后缩小范围（相当于取出队首元素，添加至末尾，一轮循环后，数组就有序了）<br /></li>
+  </ol>
+</blockquote>
+
+<p>首先我们先来写一下确定节点位置的代码：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    /**
+     *  因为下标是从 0 开始的，在获取节点
+     *  的时候要多 + 1
+     * @param node 给定节点的位置
+     * @return 对应节点位置
+     */
+    public int leftNode(int node){
+        return 2 * node + 1;
+    }
+    public int rightNode(int node){
+        return 2 * node + 2;
+    }
+    public int parentNode(int node){
+        return (node - 1) / 2;
+    }
 </code></pre></div></div>
+
+<p>这里的 parentNode() 方法没有用到，但是这个计算父节点的方式下面要用到，然后我们来写调整堆的方法，采用递归的方法，每一次递归我们只针对某个节点以及它的子节点：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    public void maxHeapify(int[] heap, int length, int node){
+        //获取左右节点
+        int left = leftNode(node);
+        int right = rightNode(node);
+        //当前最大节点（堆顶）
+        int largest = node;
+        //如果左子节点的值大于父节点的值，就改变 largest 的指向
+        if (left &lt; length &amp;&amp; heap[left] &gt; heap[largest]){
+            largest = left;
+        }
+        //如果右子节点的值大于父节点的值，就改变 largest 的指向
+        if (right &lt; length &amp;&amp; heap[right] &gt; heap[largest]){
+            largest = right;
+        }
+        //如果 largest 的指向改变了，就说明要调整堆，调换两个元素的位置
+        if (largest != node){
+            int temp = heap[node];
+            heap[node] = heap[largest];
+            heap[largest] = temp;
+        } else {
+            return;
+        }
+        maxHeapify(heap, length, largest);
+    }
+</code></pre></div></div>
+
+<p>然后是构建堆的方法，就像在上面的代码中定义的寻找父节点位置的方法一样，(heap.length - 1) 代表的是堆中最后一个节点位置，(heap.length - 1) / 2 是最后一个节点的父节点的位置，从这里开始构建堆，避免多次不必要的递归，提高效率：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    public void buildHeap(int[] heap){
+        for (int i = (heap.length - 1) / 2; i &gt;= 0 ; i--) {
+            maxHeapify(heap, heap.length, i);
+        }
+    }
+</code></pre></div></div>
+
+<p>最后便是堆排序的代码：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    public void heapSort(int[] heap){
+        for (int i = heap.length - 1; i &gt; 0; i--) {
+            int temp = heap[0];
+            heap[0] = heap[i];
+            heap[i] = temp;
+            maxHeapify(heap, i, 0);
+        }
+    }
+</code></pre></div></div>
+
+<p><strong>划重点</strong>：这里之所以要用 i 来代替 heap.length，是因为我们要模拟从堆顶删除节点，实际上并没有删除，只是把它换到了末尾，所以通过堆大小 - 1 来达到模拟删除的效果</p>
+
+<p>画了个堆排序的过程图：</p>
+
+<p>数组 [3,5,2,6,4,1,10,7,9,8] 构建完后就是图中 1 的堆，然后把 4 和 10 对调，再调整堆，得到图中 2 的堆，把 6 和 9 对调，然后调整堆，以此类推：</p>
+
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-9d707114a7c33d35.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
+
+<p>接下来是计算的结果：</p>
+
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-7ce8609bcf365753.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
+
+<p><strong>构建最大堆进行排序的结果是升序，因为大的节点在末尾，如果要降序排列，就构建最小堆</strong></p>
+
+<h4 id="3-分析">3. 分析</h4>
 
 <ul>
-  <li>修改用户信息：</li>
+  <li>时间复杂度：</li>
 </ul>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    &lt;update id="setUserInfo" parameterType="domain.User"&gt;
-        UPDATE user SET phone = #{phone}, email = #{email},
-        gender = #{gender}, description = #{description}
-    &lt;/update&gt;
-</code></pre></div></div>
+<p>时间都花在了一开始的构建堆和接下来的调整堆过程，对于 n 个数：</p>
 
-<p>然后在接口中添加对应方法：</p>
+<p>首先是新建堆，时间复杂度 O(n)</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    User showInfo(String username);
-    void setUserInfo(User user);
-</code></pre></div></div>
+<p>每一次的调整堆都是 logn，总共有 n - 1 次，为 (n - 1) * logn = nlogn - logn</p>
 
-<h4 id="3-service">3. Service</h4>
+<p>所以堆排序的时间复杂度是 O(nlogn)</p>
 
-<p>先写异常的接口 ExceptionService 吧：</p>
+<ul>
+  <li>空间复杂度</li>
+</ul>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    void setInfoException(User user) throws UserException;
+<p>O(1)，因为是原地排序，没有借助其它辅助结构</p>
 
-    void statusException(String username) throws UserException;
-</code></pre></div></div>
+<ul>
+  <li>稳定性</li>
+</ul>
 
-<p>然后写实现类：</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    //重置信息检测，关键信息不能为空
-    @Override
-    public void setInfoException(User user) throws UserException {
-        if (user.getPhone() == null || user.getPhone().trim().isEmpty()){
-            throw new UserException("电话号码不能为空");
-        } else if (user.getEmail() == null || user.getEmail().trim().isEmpty()){
-            throw new UserException("邮箱不能为空");
-        }
-    }
-
-    //用户状态检测，如果在 Session 中未找到有用户登陆，就抛出异常
-    @Override
-    public void statusException(String username) throws UserException {
-        if (username == null){
-            throw new UserException("请先登录");
-        }
-    }
-</code></pre></div></div>
-
-<p>在 UserService 中新增三个功能，其中有两个有异常检测：</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    User showInfo(String username);
-    String getStatus(String username) throws UserException;
-    void setUserInfo(User user) throws UserException;
-</code></pre></div></div>
-
-<p>然后是实现类：</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    //显示用户信息
-    @Override
-    public User showInfo(String username) {
-        return userMapper.showInfo(username);
-    }
-
-    //显示当前登录状态
-    @Override
-    public String getStatus(String username) throws UserException {
-        exceptionService.statusException(username);
-        return username;
-    }
-
-    //修改用户信息
-    @Override
-    public void setUserInfo(User user) throws UserException{
-        exceptionService.setInfoException(user);
-        userMapper.setUserInfo(user);
-    }
-</code></pre></div></div>
-
-<h4 id="4-controller">4. Controller</h4>
-
-<p>在登录时，需要添加一点代码，将用户名写入 Session，以保持登录状态：</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    public ModelAndView login(User user, HttpServletRequest request) {
-        ModelAndView modelAndView = new ModelAndView("main");
-        try {
-            userService.login(user);
-            userService.verifyCode(request.getParameter("verifyCode"), verifyCode.getText());
-            //创建 Session，保持登录状态
-            request.getSession().setAttribute("username", user.getUsername());
-            //在模型中添加对象，用于 JSP 读取
-            modelAndView.addObject("username", request.getSession().getAttribute("username"));
-        } catch (UserException e){
-            //如果未登录成功，就重新登录
-            modelAndView.setViewName("login");
-            modelAndView.addObject("message", e.getMessage());
-        }
-        return modelAndView;
-</code></pre></div></div>
-
-<p>然后是登出的操作：</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    //登出账户，不需要具体用户名称，直接废除 session 就行
-    @RequestMapping("/logout")
-    public ModelAndView logout(HttpServletRequest request){
-        request.getSession().invalidate();
-        return new ModelAndView("login").addObject("message", "已登出");
-    }
-</code></pre></div></div>
-
-<p>新增查看用户状态的功能：</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    //查看用户状态，显示是哪个用户在登录，如果没有登录的用户，就会提示你先登录
-    @RequestMapping("/userStatus")
-    public ModelAndView userState(HttpServletRequest request){
-        ModelAndView modelAndView = new ModelAndView("userStatus");
-        try {
-            modelAndView.addObject("username",
-                    userService.getStatus((String)request.getSession().getAttribute("username")));
-        } catch (UserException e){
-            modelAndView.addObject("message", e.getMessage());
-        }
-        return modelAndView;
-    }
-</code></pre></div></div>
-
-<p>然后是用户信息相关的操作，如果在修改信息时抛出异常，就带着错误信息回到信息修改页面：</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    //显示用户信息
-    @RequestMapping("showInfo")
-    public ModelAndView showInfo(HttpServletRequest request){
-        return new ModelAndView("userInfo")
-                .addObject("user", userService.showInfo(
-                        ((String)request.getSession().getAttribute("username"))));
-    }
-
-    //对用户信息进行修改
-    @RequestMapping("setUserInfo")
-    public ModelAndView setUserInfo(User user){
-        ModelAndView modelAndView = new ModelAndView("userInfo");
-        try {
-            userService.setUserInfo(user);
-            //设置提示信息
-            modelAndView.addObject("message", "修改成功");
-            //跳转
-            modelAndView.setViewName("main");
-        } catch (UserException e){
-            modelAndView.addObject("message", e.getMessage());
-        }
-        return modelAndView;
-    }
-</code></pre></div></div>
-
-<h4 id="5-jsp">5. JSP</h4>
-
-<p>新增两个前端页面：userInfo.jsp 和 userStatus.jsp，都是差不多的页面，这里就不演示了</p>
-
-<p>接下来的 v0.2.2 是采用过滤器来实现相同功能</p>
+<p>不稳定</p>
 
 
                 <hr>
@@ -436,13 +349,9 @@
                 <ul class="pager">
                     
                     <li class="previous">
-                        <a href="/2018/08/26/SSM-%E9%87%8D%E6%9E%84%E6%B3%A8%E5%86%8C%E7%99%BB%E9%99%86%E7%95%8C%E9%9D%A2/" data-toggle="tooltip" data-placement="top" title="SSM 重构注册登陆界面">&larr; Previous Post</a>
+                        <a href="/2018/10/07/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E5%85%AD-%E5%88%9D%E8%AF%86-HashMap/" data-toggle="tooltip" data-placement="top" title="Java基础知识梳理（六）—— 初识 HashMap">&larr; Previous Post</a>
                     </li>
                     
-                    
-                    <li class="next">
-                        <a href="/2018/08/31/%E6%8B%A6%E6%88%AA%E5%99%A8%E5%92%8C%E8%BF%87%E6%BB%A4%E5%99%A8%E9%AA%8C%E8%AF%81%E7%99%BB%E5%BD%95/" data-toggle="tooltip" data-placement="top" title="拦截器和过滤器验证登录">Next Post &rarr;</a>
-                    </li>
                     
                 </ul>
 
@@ -584,8 +493,8 @@
 <script type="text/javascript">
     /* * * CONFIGURATION VARIABLES * * */
     var disqus_shortname = "http-hxblog-site";
-    var disqus_identifier = "/2018/08/30/保持登录状态的注册登陆界面";
-    var disqus_url = "http://localhost:4000/2018/08/30/%E4%BF%9D%E6%8C%81%E7%99%BB%E5%BD%95%E7%8A%B6%E6%80%81%E7%9A%84%E6%B3%A8%E5%86%8C%E7%99%BB%E9%99%86%E7%95%8C%E9%9D%A2/";
+    var disqus_identifier = "/2018/10/13/堆排序";
+    var disqus_url = "http://localhost:4000/2018/10/13/%E5%A0%86%E6%8E%92%E5%BA%8F/";
 
     (function() {
         var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
