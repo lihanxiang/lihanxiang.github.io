@@ -19,9 +19,9 @@
     <meta name="keyword"  content="Java">
     <link rel="shortcut icon" href="/img/favicon.ico">
 
-    <title>Java基础知识梳理（三）异常处理基础知识 - 李汉祥的博客 | L Blog</title>
+    <title>二叉树的几种遍历方式（附 LeetCode 水题） - 李汉祥的博客 | L Blog</title>
 
-    <link rel="canonical" href="http://localhost:4000/2018/04/24/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E4%B8%89-%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/">
+    <link rel="canonical" href="http://localhost:4000/2018/10/17/%E4%BA%8C%E5%8F%89%E6%A0%91%E7%9A%84%E5%87%A0%E7%A7%8D%E9%81%8D%E5%8E%86%E6%96%B9%E5%BC%8F-%E9%99%84-LeetCode-%E6%B0%B4%E9%A2%98/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -143,12 +143,12 @@
 
 
     <!-- Image to hack wechat -->
-<!-- <img src="/img/post/2018-04/24.jpg" width="0" height="0"> -->
+<!-- <img src="/img/post/2018-10/17.jpg" width="0" height="0"> -->
 
 <!-- Post Header -->
 <style type="text/css">
     header.intro-header{
-        background-image: url('/img/post/2018-04/24.jpg')
+        background-image: url('/img/post/2018-10/17.jpg')
     }
 </style>
 <header class="intro-header" >
@@ -158,15 +158,15 @@
                 <div class="post-heading">
                     <div class="tags">
                         
-                        <a class="tag" href="/tags/#Java基础" title="Java基础">Java基础</a>
+                        <a class="tag" href="/tags/#数据结构" title="数据结构">数据结构</a>
                         
                     </div>
-                    <h1>Java基础知识梳理（三）异常处理基础知识</h1>
+                    <h1>二叉树的几种遍历方式（附 LeetCode 水题）</h1>
                     
                     
-                    <h2 class="subheading">知识点回顾</h2>
+                    <h2 class="subheading">数据结构</h2>
                     
-                    <span class="meta">Posted by L on April 24, 2018</span>
+                    <span class="meta">Posted by L on October 17, 2018</span>
                 </div>
             </div>
         </div>
@@ -186,156 +186,220 @@
 
 				<h3 id="正文之前">正文之前</h3>
 
-<p>有句话说的不错，来自《Java核心技术 卷一》：</p>
-
-<blockquote>
-  <p>在理想状态下，用户输入数据的格式永远都是正确的，选择打开的文件也一定存在，并且永远不会出现bug</p>
-</blockquote>
-
-<p>相信这个，你就天真了，这次我们来介绍以下Java异常处理的基本知识：</p>
+<p>闲得无聊去刷 LeetCode 的时候做了一点深搜和广搜的题，但是树的遍历方式还没有写过总结，今天刚好总结一下：</p>
 
 <blockquote>
   <ol>
-    <li>异常分类</li>
-    <li>抛出异常</li>
-    <li>捕获异常</li>
-    <li>处理异常</li>
-    <li>异常说明</li>
-    <li>throw 和 throws的区别</li>
+    <li>深度优先搜索
+      <ul>
+        <li>前序遍历</li>
+        <li>中序遍历</li>
+        <li>后序遍历</li>
+      </ul>
+    </li>
+    <li>广度优先搜索</li>
   </ol>
 </blockquote>
 
-<hr />
-
 <h3 id="正文">正文</h3>
 
-<h4 id="1-异常分类">1. 异常分类</h4>
+<h4 id="1-节点的定义">1. 节点的定义</h4>
 
-<p>在Java中，每个异常都是一个名叫<strong>Throwable</strong>的类的一个实例</p>
+<p>这里定义树的节点的方式就按照 LeetCode 上给出的吧：</p>
 
-<p><img src="http://upload-images.jianshu.io/upload_images/3426615-5482653285cf17fa.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
-
-<p>在《Java核心技术 卷一》有这么一句话：“如果出现runtime exception异常,那么就一定是你的问题”，具体都有哪些异常，这里就不赘述</p>
-
-<h4 id="2-抛出异常">2. 抛出异常</h4>
-
-<p>在抛出异常之前，要先确定异常的类型，举个例子：</p>
-
-<p><strong>EOFException</strong>：在输入过程，遇到了预期之外的EOF之后的信号</p>
-
-<p><img src="http://upload-images.jianshu.io/upload_images/3426615-44b796cb99af6c76.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
-
-<h4 id="3-捕获异常">3. 捕获异常</h4>
-
-<p>使用 try-catch 语句来进行异常的捕获：</p>
-
-<p>基本格式：</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>try{
-    //一段代码
-}
-catch(Exception Type){
-    //另一段代码
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>class TreeNode {
+     int val;
+     TreeNode left;
+     TreeNode right;
+     TreeNode(int x) { val = x; }
 }
 </code></pre></div></div>
 
-<p>这个语句块的意思就是，尝试去执行<strong>try</strong>语句块里的内容，如果没有异常当然是最好的，如果有异常，将其捕获，并执行<strong>catch</strong>语句块中的代码</p>
+<p>接下来给出用例：</p>
 
-<p>以打开文件的操作来举个例子：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-9528be9c4169ff78.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>        TreeNode node10 = new TreeNode(10);
+        TreeNode node7 = new TreeNode(7);
+        TreeNode node8 = new TreeNode(8);
+        TreeNode node1 = new TreeNode(1);
+        TreeNode node3 = new TreeNode(3);
+        TreeNode node0 = new TreeNode(0);
+        TreeNode node2 = new TreeNode(2);
+        TreeNode node4 = new TreeNode(4);
+        TreeNode node6 = new TreeNode(6);
+        node10.left = node7;
+        node10.right = node8;
+        node7.left = node1;
+        node7.right = node3;
+        node3.left = node0;
+        node3.right = node2;
+        node8.left = node4;
+        node8.right = node6;
+</code></pre></div></div>
 
-public class Test {
-    public static void main(String[] args){
-        try{
-            FileInputStream in = new FileInputStream("text.txt");
-        }catch(FileNotFoundException e){
-            System.out.println("未找到文件");
+<p>在遍历时用 ArrayList 来存放根节点的值，</p>
+
+<h4 id="2-深度优先搜索">2. 深度优先搜索</h4>
+
+<p>分别有三种方式，前序先访问根节点，中序第二个访问根节点，后序最后访问根节点，这里写给出三种方法，然后统一测试一下：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    //前序遍历
+    public void preOrderTraversal(TreeNode node, ArrayList&lt;Integer&gt; list){
+        if (node == null){
+            return;
+        }
+        //先访问根节点
+        list.add(node.val);
+        //然后是左子节点和右子节点
+        preOrderTraversal(node.left, list);
+        preOrderTraversal(node.right, list);
+    }
+
+    //中序遍历
+    public void inOrderTraversal(TreeNode node, ArrayList&lt;Integer&gt; list){
+        if (node == null){
+            return;
+        }
+        //先访问左子节点，然后是根节点，最后是右子节点
+        inOrderTraversal(node.left, list);
+        list.add(node.val);
+        inOrderTraversal(node.right, list);
+    }
+
+    //后序遍历
+    public void postOrderTraversal(TreeNode node, ArrayList&lt;Integer&gt; list){
+        if (node == null){
+            return;
+        }
+        postOrderTraversal(node.left, list);
+        postOrderTraversal(node.right, list);
+        list.add(node.val);
+    }
+</code></pre></div></div>
+
+<p>根据我们定义的用例，三种遍历方式的输出分别是这样的：</p>
+
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-225b9e29bcfa2b97.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>        ArrayList&lt;Integer&gt; list = new ArrayList&lt;&gt;();
+
+        System.out.print("前序遍历：");
+        s.preOrderTraversal(node10, list);
+        for (Integer i: list) {
+            System.out.print(i + " ");
+        }
+        list.clear();
+        System.out.println();
+
+        System.out.print("中序遍历：");
+        s.inOrderTraversal(node10, list);
+        for (Integer i: list) {
+            System.out.print(i + " ");
+        }
+        list.clear();
+        System.out.println();
+
+        System.out.print("后序遍历：");
+        s.postOrderTraversal(node10, list);
+        for (Integer i: list) {
+            System.out.print(i + " ");
+        }
+</code></pre></div></div>
+
+<p>得到输出：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>前序遍历：10 7 1 3 0 2 8 4 6
+中序遍历：1 7 0 3 2 10 4 8 6
+后序遍历：1 0 2 3 7 4 6 8 10
+</code></pre></div></div>
+
+<h4 id="3-广度优先搜索">3. 广度优先搜索</h4>
+
+<p>广搜的方式就是一层一层的访问节点，又叫做层次遍历，用队列来实现：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    public void BFS(TreeNode node, ArrayList&lt;Integer&gt; list){
+        Queue&lt;TreeNode&gt; queue = new LinkedList&lt;&gt;();
+        if (node != null){
+            //根节点作为第一层，先加入
+            queue.add(node);
+            while (!queue.isEmpty()){
+                TreeNode cur = queue.poll();
+                list.add(cur.val);
+                //依次加入左右子节点
+                if (cur.left != null){
+                    queue.offer(cur.left);
+                }
+                if (cur.right != null){
+                    queue.offer(cur.right);
+                }
+            }
         }
     }
-}
 </code></pre></div></div>
 
-<p>在这个源文件的同级目录下，没有文件”text.txt”，所以如果不适用try-catch语句就会提示可能产生异常，我们来运行一下：</p>
+<p>遍历的结果是：</p>
 
-<p><img src="https://upload-images.jianshu.io/upload_images/3426615-3b4d182c4e201ee3.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>层次遍历：10 7 8 1 3 4 6 0 2 
+</code></pre></div></div>
 
-<p>运行了catch语句中的代码</p>
+<p>我用图来走一遍流程：</p>
 
-<p>在catch语句的参数中我们定义了具体的异常类型，但是这些具体的异常都是Exception的子类，所以我们可以通过将参数改为<strong>Exception e</strong> 来捕获所有异常<strong>（但是不建议这么做，或者把捕获异常基类放到最后，因为有的时候你需要针对不同的异常做出一些不同的动作）</strong>：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-d93a2174e56363db.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
 
-<p><img src="https://upload-images.jianshu.io/upload_images/3426615-89231daa5fb26d69.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
+<p>每次出队列一个节点，然后把它的子节点（如果存在）加入到队列，循环往复，直到队列为空</p>
 
-<h4 id="4-处理异常">4. 处理异常</h4>
+<h4 id="4-leetcode-水题">4. LeetCode 水题</h4>
 
-<p>在捕获了异常之后，我们还需要处理这些异常，我们可以将这些异常的消息输出，或者在捕获之后再抛出另外的异常：</p>
+<p>既然介绍了树的遍历，就随便拿两个简单的题来做个例子吧：</p>
 
-<p>常用的消息输出方式就是<strong>getMessage()</strong>以及<strong>printStackTrace()</strong></p>
+<p><a href="https://leetcode.com/problems/binary-tree-paths/description/">257. Binary Tree Paths</a></p>
 
-<p>我们来做个实验：</p>
+<p>求二叉树的所有路径，这一题可能和遍历有一点区别（因为是路径，根节点会出现多次），不过想法是一样的，用的前序，先访问根节点，然后是左右子节点：</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-
-public class Test {
-    public static void main(String[] args) throws FileNotFoundException {
-        try{
-            FileInputStream in = new FileInputStream("test.txt");
-        }catch (FileNotFoundException e){
-            System.out.println(e.getMessage());
-            e.printStackTrace();
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    public List&lt;String&gt; binaryTreePaths(TreeNode root) {
+        String s = "";
+        List&lt;String&gt; list = new ArrayList&lt;&gt;();
+        if (root != null){
+            DFS(s, root, list);
         }
-
+        
+        return list;
+        
     }
-}
-</code></pre></div></div>
-
-<p>打印出来结果是这样的：</p>
-
-<p><img src="https://upload-images.jianshu.io/upload_images/3426615-f040d1cbd3eb25ed.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
-
-<p>异常所输出的信息是<strong>test.txt (系统找不到指定的文件。)</strong></p>
-
-<p><strong>printStackTrace()</strong>的目的是打印栈轨迹，也就是将抛出异常的位置到诉你，包括输出了异常信息，就像如图所示，Main()函数的第七行有问题，在程序调试的时候经常用<strong>printStackTrace()</strong></p>
-
-<h4 id="5-异常说明">5. 异常说明</h4>
-
-<p>如果有别人需要阅读你的代码，就需要知道你的代码会抛出什么异常，那么你就要写异常说明，形式通常为：</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>void method() throws ....{
-
-}
-</code></pre></div></div>
-
-<p>首先，我们在原先的代码的方法名后加上可能会出现的异常：</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-
-public class Test {
-    public void input() throws FileNotFoundException {
-            //不需要try-catch语句块，因为我们没有在此处捕获异常
-            FileInputStream in = new FileInputStream("test.txt");
+    public void DFS(String s, TreeNode node, List&lt;String&gt; list){
+        if (node.left == null &amp;&amp; node.right == null){
+            list.add(s + node.val);
+        }
+        if (node.left != null){
+            DFS(s + node.val + "-&gt;", node.left, list);
+        }
+        if (node.right != null){
+            DFS(s + node.val + "-&gt;", node.right, list);
+        }
     }
-}
 </code></pre></div></div>
 
-<p>然后，我们新建一个类，创建Test类的实例，会发现有提示：</p>
+<p><a href="https://leetcode.com/problems/find-bottom-left-tree-value/description/">513. Find Bottom Left Tree Value</a></p>
 
-<p><img src="https://upload-images.jianshu.io/upload_images/3426615-1fb40d6ea2bf8eab.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
+<p>求二叉树最底层的最左边节点，用的层次遍历，只不过这次是从右往左，最后一个出队列的就是目标节点了：</p>
 
-<p>因为我们写方法时，告诉外界可能会产生什么样的异常了，其他人在调用的时候就能够发现</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    public int findBottomLeftValue(TreeNode root) {
+        Queue&lt;TreeNode&gt; queue = new LinkedList&lt;&gt;();
+        queue.add(root);
+        while (!queue.isEmpty()){
+            root = queue.poll();
+            if (root.right != null){
+                queue.add(root.right);
+            }if (root.left != null){
+                queue.add(root.left);
+            }
+        }
+        return root.val;
+    }
+</code></pre></div></div>
 
-<h4 id="6-throw-和-throws的区别">6. throw 和 throws的区别</h4>
-
-<p>关于这两个的区别，其实在于究竟在哪个地方处理异常，举个例子来说：</p>
-
-<p>在方法A中，如果在产生异常的时候，不需要马上捕获，在方法B调用方法A的时候再进行捕获，那么就在A的方法名后添加<strong>throws</strong>，如果需要在方法A中进行捕获，则直接使用<strong>throw</strong></p>
-
-<p>看捕获异常的对象是谁，再决定应该如何来使用</p>
-
-<p>那么，关于Java异常处理的基本介绍就结束了，接下来会有针对异常信息的专题文章会发布</p>
+<p>关于树的遍历就到这里了</p>
 
 
                 <hr>
@@ -346,13 +410,9 @@ public class Test {
                 <ul class="pager">
                     
                     <li class="previous">
-                        <a href="/2018/04/23/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E4%BA%8C-%E5%AD%97%E7%AC%A6%E4%B8%B2/" data-toggle="tooltip" data-placement="top" title="Java基础知识梳理（二）字符串">&larr; Previous Post</a>
+                        <a href="/2018/10/13/%E5%A0%86%E6%8E%92%E5%BA%8F/" data-toggle="tooltip" data-placement="top" title="堆排序">&larr; Previous Post</a>
                     </li>
                     
-                    
-                    <li class="next">
-                        <a href="/2018/04/25/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E5%9B%9B-%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86%E8%BF%9B%E9%98%B6/" data-toggle="tooltip" data-placement="top" title="Java基础知识梳理（四）异常处理进阶">Next Post &rarr;</a>
-                    </li>
                     
                 </ul>
 
@@ -500,8 +560,8 @@ public class Test {
 <script type="text/javascript">
     /* * * CONFIGURATION VARIABLES * * */
     var disqus_shortname = "http-hxblog-site";
-    var disqus_identifier = "/2018/04/24/Java基础知识梳理（三）异常处理基础知识";
-    var disqus_url = "http://localhost:4000/2018/04/24/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E4%B8%89-%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/";
+    var disqus_identifier = "/2018/10/17/二叉树的几种遍历方式（附 LeetCode 水题）";
+    var disqus_url = "http://localhost:4000/2018/10/17/%E4%BA%8C%E5%8F%89%E6%A0%91%E7%9A%84%E5%87%A0%E7%A7%8D%E9%81%8D%E5%8E%86%E6%96%B9%E5%BC%8F-%E9%99%84-LeetCode-%E6%B0%B4%E9%A2%98/";
 
     (function() {
         var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;

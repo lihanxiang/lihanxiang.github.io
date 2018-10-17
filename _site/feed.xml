@@ -5,9 +5,237 @@
     <description>你问我什么咖啡最好，我当然觉得是 Java</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Sat, 13 Oct 2018 03:12:27 -0700</pubDate>
-    <lastBuildDate>Sat, 13 Oct 2018 03:12:27 -0700</lastBuildDate>
+    <pubDate>Wed, 17 Oct 2018 01:27:05 -0700</pubDate>
+    <lastBuildDate>Wed, 17 Oct 2018 01:27:05 -0700</lastBuildDate>
     <generator>Jekyll v3.8.0</generator>
+    
+      <item>
+        <title>二叉树的几种遍历方式（附 LeetCode 水题）</title>
+        <description>&lt;h3 id=&quot;正文之前&quot;&gt;正文之前&lt;/h3&gt;
+
+&lt;p&gt;闲得无聊去刷 LeetCode 的时候做了一点深搜和广搜的题，但是树的遍历方式还没有写过总结，今天刚好总结一下：&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;ol&gt;
+    &lt;li&gt;深度优先搜索
+      &lt;ul&gt;
+        &lt;li&gt;前序遍历&lt;/li&gt;
+        &lt;li&gt;中序遍历&lt;/li&gt;
+        &lt;li&gt;后序遍历&lt;/li&gt;
+      &lt;/ul&gt;
+    &lt;/li&gt;
+    &lt;li&gt;广度优先搜索&lt;/li&gt;
+  &lt;/ol&gt;
+&lt;/blockquote&gt;
+
+&lt;h3 id=&quot;正文&quot;&gt;正文&lt;/h3&gt;
+
+&lt;h4 id=&quot;1-节点的定义&quot;&gt;1. 节点的定义&lt;/h4&gt;
+
+&lt;p&gt;这里定义树的节点的方式就按照 LeetCode 上给出的吧：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;class TreeNode {
+     int val;
+     TreeNode left;
+     TreeNode right;
+     TreeNode(int x) { val = x; }
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;接下来给出用例：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-9528be9c4169ff78.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;        TreeNode node10 = new TreeNode(10);
+        TreeNode node7 = new TreeNode(7);
+        TreeNode node8 = new TreeNode(8);
+        TreeNode node1 = new TreeNode(1);
+        TreeNode node3 = new TreeNode(3);
+        TreeNode node0 = new TreeNode(0);
+        TreeNode node2 = new TreeNode(2);
+        TreeNode node4 = new TreeNode(4);
+        TreeNode node6 = new TreeNode(6);
+        node10.left = node7;
+        node10.right = node8;
+        node7.left = node1;
+        node7.right = node3;
+        node3.left = node0;
+        node3.right = node2;
+        node8.left = node4;
+        node8.right = node6;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;在遍历时用 ArrayList 来存放根节点的值，&lt;/p&gt;
+
+&lt;h4 id=&quot;2-深度优先搜索&quot;&gt;2. 深度优先搜索&lt;/h4&gt;
+
+&lt;p&gt;分别有三种方式，前序先访问根节点，中序第二个访问根节点，后序最后访问根节点，这里写给出三种方法，然后统一测试一下：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    //前序遍历
+    public void preOrderTraversal(TreeNode node, ArrayList&amp;lt;Integer&amp;gt; list){
+        if (node == null){
+            return;
+        }
+        //先访问根节点
+        list.add(node.val);
+        //然后是左子节点和右子节点
+        preOrderTraversal(node.left, list);
+        preOrderTraversal(node.right, list);
+    }
+
+    //中序遍历
+    public void inOrderTraversal(TreeNode node, ArrayList&amp;lt;Integer&amp;gt; list){
+        if (node == null){
+            return;
+        }
+        //先访问左子节点，然后是根节点，最后是右子节点
+        inOrderTraversal(node.left, list);
+        list.add(node.val);
+        inOrderTraversal(node.right, list);
+    }
+
+    //后序遍历
+    public void postOrderTraversal(TreeNode node, ArrayList&amp;lt;Integer&amp;gt; list){
+        if (node == null){
+            return;
+        }
+        postOrderTraversal(node.left, list);
+        postOrderTraversal(node.right, list);
+        list.add(node.val);
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;根据我们定义的用例，三种遍历方式的输出分别是这样的：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-225b9e29bcfa2b97.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;        ArrayList&amp;lt;Integer&amp;gt; list = new ArrayList&amp;lt;&amp;gt;();
+
+        System.out.print(&quot;前序遍历：&quot;);
+        s.preOrderTraversal(node10, list);
+        for (Integer i: list) {
+            System.out.print(i + &quot; &quot;);
+        }
+        list.clear();
+        System.out.println();
+
+        System.out.print(&quot;中序遍历：&quot;);
+        s.inOrderTraversal(node10, list);
+        for (Integer i: list) {
+            System.out.print(i + &quot; &quot;);
+        }
+        list.clear();
+        System.out.println();
+
+        System.out.print(&quot;后序遍历：&quot;);
+        s.postOrderTraversal(node10, list);
+        for (Integer i: list) {
+            System.out.print(i + &quot; &quot;);
+        }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;得到输出：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;前序遍历：10 7 1 3 0 2 8 4 6
+中序遍历：1 7 0 3 2 10 4 8 6
+后序遍历：1 0 2 3 7 4 6 8 10
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h4 id=&quot;3-广度优先搜索&quot;&gt;3. 广度优先搜索&lt;/h4&gt;
+
+&lt;p&gt;广搜的方式就是一层一层的访问节点，又叫做层次遍历，用队列来实现：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    public void BFS(TreeNode node, ArrayList&amp;lt;Integer&amp;gt; list){
+        Queue&amp;lt;TreeNode&amp;gt; queue = new LinkedList&amp;lt;&amp;gt;();
+        if (node != null){
+            //根节点作为第一层，先加入
+            queue.add(node);
+            while (!queue.isEmpty()){
+                TreeNode cur = queue.poll();
+                list.add(cur.val);
+                //依次加入左右子节点
+                if (cur.left != null){
+                    queue.offer(cur.left);
+                }
+                if (cur.right != null){
+                    queue.offer(cur.right);
+                }
+            }
+        }
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;遍历的结果是：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;层次遍历：10 7 8 1 3 4 6 0 2 
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;我用图来走一遍流程：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-d93a2174e56363db.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;每次出队列一个节点，然后把它的子节点（如果存在）加入到队列，循环往复，直到队列为空&lt;/p&gt;
+
+&lt;h4 id=&quot;4-leetcode-水题&quot;&gt;4. LeetCode 水题&lt;/h4&gt;
+
+&lt;p&gt;既然介绍了树的遍历，就随便拿两个简单的题来做个例子吧：&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://leetcode.com/problems/binary-tree-paths/description/&quot;&gt;257. Binary Tree Paths&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;求二叉树的所有路径，这一题可能和遍历有一点区别（因为是路径，根节点会出现多次），不过想法是一样的，用的前序，先访问根节点，然后是左右子节点：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    public List&amp;lt;String&amp;gt; binaryTreePaths(TreeNode root) {
+        String s = &quot;&quot;;
+        List&amp;lt;String&amp;gt; list = new ArrayList&amp;lt;&amp;gt;();
+        if (root != null){
+            DFS(s, root, list);
+        }
+        
+        return list;
+        
+    }
+    public void DFS(String s, TreeNode node, List&amp;lt;String&amp;gt; list){
+        if (node.left == null &amp;amp;&amp;amp; node.right == null){
+            list.add(s + node.val);
+        }
+        if (node.left != null){
+            DFS(s + node.val + &quot;-&amp;gt;&quot;, node.left, list);
+        }
+        if (node.right != null){
+            DFS(s + node.val + &quot;-&amp;gt;&quot;, node.right, list);
+        }
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://leetcode.com/problems/find-bottom-left-tree-value/description/&quot;&gt;513. Find Bottom Left Tree Value&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;求二叉树最底层的最左边节点，用的层次遍历，只不过这次是从右往左，最后一个出队列的就是目标节点了：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    public int findBottomLeftValue(TreeNode root) {
+        Queue&amp;lt;TreeNode&amp;gt; queue = new LinkedList&amp;lt;&amp;gt;();
+        queue.add(root);
+        while (!queue.isEmpty()){
+            root = queue.poll();
+            if (root.right != null){
+                queue.add(root.right);
+            }if (root.left != null){
+                queue.add(root.left);
+            }
+        }
+        return root.val;
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;关于树的遍历就到这里了&lt;/p&gt;
+</description>
+        <pubDate>Wed, 17 Oct 2018 00:00:00 -0700</pubDate>
+        <link>http://localhost:4000/2018/10/17/%E4%BA%8C%E5%8F%89%E6%A0%91%E7%9A%84%E5%87%A0%E7%A7%8D%E9%81%8D%E5%8E%86%E6%96%B9%E5%BC%8F-%E9%99%84-LeetCode-%E6%B0%B4%E9%A2%98/</link>
+        <guid isPermaLink="true">http://localhost:4000/2018/10/17/%E4%BA%8C%E5%8F%89%E6%A0%91%E7%9A%84%E5%87%A0%E7%A7%8D%E9%81%8D%E5%8E%86%E6%96%B9%E5%BC%8F-%E9%99%84-LeetCode-%E6%B0%B4%E9%A2%98/</guid>
+        
+        <category>数据结构</category>
+        
+        
+      </item>
     
       <item>
         <title>堆排序</title>
@@ -2165,119 +2393,6 @@ london eye
         <guid isPermaLink="true">http://localhost:4000/2018/08/12/%E8%AF%91-%E8%87%AA%E7%84%B6%E8%AF%AD%E8%A8%80%E5%A4%84%E7%90%86%E7%9C%9F%E6%98%AF%E6%9C%89%E8%B6%A3/</guid>
         
         <category>掘金翻译计划</category>
-        
-        
-      </item>
-    
-      <item>
-        <title>Git 系列文章（三）</title>
-        <description>&lt;h3 id=&quot;正文之前&quot;&gt;正文之前&lt;/h3&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;上一篇文章中讲述了 Git 的基本操作，这一篇文章着重讲其中的分支相关的操作&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;h3 id=&quot;正文&quot;&gt;正文&lt;/h3&gt;
-
-&lt;p&gt;在 GitHub 的仓库中，展现给世人的仓库内容都是 master 主分支的，在团队成员对仓库进行改动时，需要将此仓库 fork 至自己的账户中，并创建分支，在自己创建的分支中对仓库进行修改，然后对源仓库的 master 进行 pull request&lt;/p&gt;
-
-&lt;p&gt;一句话，对仓库做贡献就三个步骤：&lt;/p&gt;
-
-&lt;ol&gt;
-  &lt;li&gt;
-    &lt;p&gt;fork 到自己仓库&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;做改动&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;pull request&lt;/p&gt;
-  &lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;p&gt;&lt;strong&gt;注意的是&lt;/strong&gt;，在创建了 pull request，在拥有者还没确认之前，如果还有改动，就别再创建 pull request，直接在你自己的分支上提交就可以（下文会验证），之前没有这个概念，在自己的项目里，一项功能用了 3 个 PR，汗颜：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-345bd6188d258c13.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;h4 id=&quot;实战演练&quot;&gt;实战演练&lt;/h4&gt;
-
-&lt;h5 id=&quot;创建分支&quot;&gt;创建分支&lt;/h5&gt;
-
-&lt;p&gt;还是用上次创建的 Git-test 仓库来做演示：&lt;/p&gt;
-
-&lt;p&gt;首先我们先看到本地仓库和远程仓库都只有 master 分支：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-536c77d06e4eece7.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;然后我们在本地仓库新建一个分支：&lt;/p&gt;
-
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;git checkout -b A&lt;/code&gt;&lt;/p&gt;
-
-&lt;p&gt;推送至远程仓库：&lt;/p&gt;
-
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;git push origin A&lt;/code&gt;&lt;/p&gt;
-
-&lt;p&gt;就会发现远程仓库有了分支 A：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-93627ab5f4429538.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;h5 id=&quot;创建-pr&quot;&gt;创建 PR&lt;/h5&gt;
-
-&lt;p&gt;这时候我们切换到分支 A 中，将 README.md 的内容修改为：test from branch A&lt;/p&gt;
-
-&lt;p&gt;修改完之后回到仓库界面，会发现有个提示，我们按照提示创建 pull request：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-49f1afb818bfd7c8.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;填写信息，并观察此次合并有哪些文件改动，在最下方发现了 README.md 文档的改动：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-19b380200f4a1b76.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;然后创建 pull request：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-677f56e9692b864f.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;h5 id=&quot;需要说明的是&quot;&gt;需要说明的是&lt;/h5&gt;
-
-&lt;p&gt;因为这里是我一个人操作的，所以拥有者和贡献者都是我，但是在其他情况下，贡献者一般不是本人，所以在这里需要说明一点，贡献完了之后，需要拥有者来点击 &lt;code class=&quot;highlighter-rouge&quot;&gt;Merge pull request&lt;/code&gt; 这个按钮，才能将分支合并，贡献者是看不见这个按钮的&lt;/p&gt;
-
-&lt;p&gt;这里先不急着合并，来验证一下上面的说法，在创建 pull request 之后，如果有更新怎么办：&lt;/p&gt;
-
-&lt;p&gt;将 README.md 中添加一行：Git-test，然后提交至分支 A：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-507e46d61448ee68.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;然后我们再到刚才创建的 pull request 中查看一下：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-15b1ad0ccfa6b3d9.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;点击 &lt;code class=&quot;highlighter-rouge&quot;&gt;Files changed&lt;/code&gt; 就会发现创建 pull request 之前的文件和现在的文件有什么区别：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-7af89c0a5e79cb63.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;h5 id=&quot;合并&quot;&gt;合并&lt;/h5&gt;
-
-&lt;p&gt;点击合并之后，PR 就处于关闭状态，仓库的文件也改变了：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-e45f063adc3acf6a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;h4 id=&quot;从远程仓库拉取分支&quot;&gt;从远程仓库拉取分支&lt;/h4&gt;
-
-&lt;p&gt;我们在远程仓库创建一个分支 B，然后用 &lt;code class=&quot;highlighter-rouge&quot;&gt;git checkout -b B origin/B&lt;/code&gt; 从远程仓库拉取分支并切换到该分支：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-c04f232d56f0c03d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;其他的操作都是一样的，本地改文件，提交，GitHub 上 PR&lt;/p&gt;
-
-&lt;p&gt;到此，分支的基本操作就结束了&lt;/p&gt;
-
-&lt;p&gt;GitHub 就是用来进行团队合作开发的，所以在团队使用 GitHub 时有一些注意事项，下一篇文章会讲述&lt;/p&gt;
-</description>
-        <pubDate>Sat, 11 Aug 2018 00:00:00 -0700</pubDate>
-        <link>http://localhost:4000/2018/08/11/Git-%E7%B3%BB%E5%88%97%E6%96%87%E7%AB%A0-%E4%B8%89-%E5%88%86%E6%94%AF/</link>
-        <guid isPermaLink="true">http://localhost:4000/2018/08/11/Git-%E7%B3%BB%E5%88%97%E6%96%87%E7%AB%A0-%E4%B8%89-%E5%88%86%E6%94%AF/</guid>
-        
-        <category>Git</category>
         
         
       </item>
