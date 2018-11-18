@@ -19,9 +19,9 @@
     <meta name="keyword"  content="Java">
     <link rel="shortcut icon" href="/img/favicon.ico">
 
-    <title>Java基础知识梳理（三）异常处理基础知识 - 李汉祥的博客 | L Blog</title>
+    <title>上线，上线！ - 李汉祥的博客 | L Blog</title>
 
-    <link rel="canonical" href="http://localhost:4000/2018/04/24/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E4%B8%89-%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/">
+    <link rel="canonical" href="http://localhost:4000/2018/11/17/%E4%B8%8A%E7%BA%BF-%E4%B8%8A%E7%BA%BF/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -143,12 +143,12 @@
 
 
     <!-- Image to hack wechat -->
-<!-- <img src="/img/post/2018-04/24.jpg" width="0" height="0"> -->
+<!-- <img src="/img/post/2018-11/17.jpg" width="0" height="0"> -->
 
 <!-- Post Header -->
 <style type="text/css">
     header.intro-header{
-        background-image: url('/img/post/2018-04/24.jpg')
+        background-image: url('/img/post/2018-11/17.jpg')
     }
 </style>
 <header class="intro-header" >
@@ -158,15 +158,15 @@
                 <div class="post-heading">
                     <div class="tags">
                         
-                        <a class="tag" href="/tags/#Java基础" title="Java基础">Java基础</a>
+                        <a class="tag" href="/tags/#随笔" title="随笔">随笔</a>
                         
                     </div>
-                    <h1>Java基础知识梳理（三）异常处理基础知识</h1>
+                    <h1>上线，上线！</h1>
                     
                     
-                    <h2 class="subheading">知识点回顾</h2>
+                    <h2 class="subheading"></h2>
                     
-                    <span class="meta">Posted by L on April 24, 2018</span>
+                    <span class="meta">Posted by L on November 17, 2018</span>
                 </div>
             </div>
         </div>
@@ -184,158 +184,84 @@
                 col-md-10 col-md-offset-1
                 post-container">
 
-				<h3 id="正文之前">正文之前</h3>
-
-<p>有句话说的不错，来自《Java核心技术 卷一》：</p>
+				<h2 id="关于">关于</h2>
 
 <blockquote>
-  <p>在理想状态下，用户输入数据的格式永远都是正确的，选择打开的文件也一定存在，并且永远不会出现bug</p>
-</blockquote>
+  <p>前几天正值双 11，刚好想把课程设计以及自己做的 web demo 上线，并且想做一个自己的主页，就参团购买了阿里云的服务器。不得不说，能够让自己的成果上线，整个人都通透了 :)</p>
 
-<p>相信这个，你就天真了，这次我们来介绍以下Java异常处理的基本知识：</p>
-
-<blockquote>
   <ol>
-    <li>异常分类</li>
-    <li>抛出异常</li>
-    <li>捕获异常</li>
-    <li>处理异常</li>
-    <li>异常说明</li>
-    <li>throw 和 throws的区别</li>
+    <li>关于阿里云服务器</li>
+    <li>域名与服务器</li>
+    <li>相关环境搭建</li>
+    <li>部署 web 项目</li>
   </ol>
+
+  <p>这篇文章没有涉及到什么技术，但是需要你自己开发过 web 项目（至少要有 demo），整篇文章只是一个流程</p>
 </blockquote>
 
-<hr />
+<h2 id="正文">正文</h2>
 
-<h3 id="正文">正文</h3>
+<h3 id="1-关于阿里云服务器">1. 关于阿里云服务器</h3>
 
-<h4 id="1-异常分类">1. 异常分类</h4>
+<p>购买阿里云服务器，选项就按默认的，地点选离你最近的就行，买完之后，手机就会收到短信，里面有登录密码，开启远程连接后要登录（root/xxxx 之类的），你也可以自己建用户和用户组，不过部署项目还是直接 root 登录方便些</p>
 
-<p>在Java中，每个异常都是一个名叫<strong>Throwable</strong>的类的一个实例</p>
+<p>然后在第一次进行远程连接时，系统会给你一个密码，<strong>这个密码只出现一次</strong>，用手机拍下来吧，免得以后出问题麻烦：</p>
 
-<p><img src="http://upload-images.jianshu.io/upload_images/3426615-5482653285cf17fa.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-54648b402eef3ed2.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
 
-<p>在《Java核心技术 卷一》有这么一句话：“如果出现runtime exception异常,那么就一定是你的问题”，具体都有哪些异常，这里就不赘述</p>
+<p><strong>另外，阿里云有个麻烦的地方：安全组</strong></p>
 
-<h4 id="2-抛出异常">2. 抛出异常</h4>
+<p>这里面把你服务器对外的端口给限制了，你需要修改一下，至少要添加 80 端口（Http）和 21 端口（FTP）</p>
 
-<p>在抛出异常之前，要先确定异常的类型，举个例子：</p>
+<h3 id="2-域名与服务器">2. 域名与服务器</h3>
 
-<p><strong>EOFException</strong>：在输入过程，遇到了预期之外的EOF之后的信号</p>
+<p>购买服务器之后，你收到的短信里还有公网 ip，你就拿着这个，去解析域名。关于域名解析，阿里云给出了文档，照做就行：<a href="https://help.aliyun.com/document_detail/29716.html">https://help.aliyun.com/document_detail/29716.html</a></p>
 
-<p><img src="http://upload-images.jianshu.io/upload_images/3426615-44b796cb99af6c76.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
+<p>解析之后，你还要去备案，这个就有点麻烦了，通过阿里云可能比较方便一点，在阿里云官网搜备案，准备好证件，写完申请书，第二天就能接到电话，如果你的信息写的不太好，他就会帮你改一下</p>
 
-<h4 id="3-捕获异常">3. 捕获异常</h4>
+<blockquote>
+  <p>这里说一下我的经历，那天下午正在上课，他打电话来没接，然后就发短信说一个小时后再打，我怕错过了，一个小时后就去外面等着接电话了。他说我办网站的目的写的不明确，我写的“项目部署”，后来想了想，违规网站也算项目部署，然后工作人员就把我的目的写了网站测试</p>
+</blockquote>
 
-<p>使用 try-catch 语句来进行异常的捕获：</p>
+<p>过了大概一周，备案审批下来了，给了个备案号，打算加到自己网站下面</p>
 
-<p>基本格式：</p>
+<p><strong>在你域名解析到服务器之后，短时间内能访问，但是一开始备案，域名就停了，还写着该域名正在进行备案，充满着犯罪气息</strong></p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>try{
-    //一段代码
-}
-catch(Exception Type){
-    //另一段代码
-}
-</code></pre></div></div>
+<h3 id="3-相关环境搭建">3. 相关环境搭建</h3>
 
-<p>这个语句块的意思就是，尝试去执行<strong>try</strong>语句块里的内容，如果没有异常当然是最好的，如果有异常，将其捕获，并执行<strong>catch</strong>语句块中的代码</p>
+<p>web 相关环境的搭建其实很简单，你只要知道你要什么，然后去网上搜一波资料，很快就搭好了</p>
 
-<p>以打开文件的操作来举个例子：</p>
+<ol>
+  <li>JDK (1.8)</li>
+  <li>Tomcat (9)</li>
+  <li>MySQL (5.x)</li>
+</ol>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+<p>直接搜索 Linux 安装/配置 xxx，照着教程来，很快就装好了</p>
 
-public class Test {
-    public static void main(String[] args){
-        try{
-            FileInputStream in = new FileInputStream("text.txt");
-        }catch(FileNotFoundException e){
-            System.out.println("未找到文件");
-        }
-    }
-}
-</code></pre></div></div>
+<h3 id="4-部署-web-项目">4. 部署 web 项目</h3>
 
-<p>在这个源文件的同级目录下，没有文件”text.txt”，所以如果不适用try-catch语句就会提示可能产生异常，我们来运行一下：</p>
+<p>在部署 web 项目之前还需要安装 FTP 服务，这分为本地和服务器两个软件，在你电脑上，个人推荐安装 FileZilla，图形化界面非常方便，何乐而不为。在服务器上，使用 vsFTPd，鸟哥的网站上有一篇介绍：<a href="http://cn.linux.vbird.org/linux_server/0410vsftpd/0410vsftpd-centos4.php">http://cn.linux.vbird.org/linux_server/0410vsftpd/0410vsftpd-centos4.php</a></p>
 
-<p><img src="https://upload-images.jianshu.io/upload_images/3426615-3b4d182c4e201ee3.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
+<p>在服务器搭建好 FTP 之后，开启端口，在 FileZilla 连接你公网 ip 的 21 端口，就能读取到服务器上的目录了</p>
 
-<p>运行了catch语句中的代码</p>
+<p>接下来，把你的 Java 项目打成 war 包，直接在 FileZilla 界面拖到 Tomcat/webapps 下面就行了，在 Tomcat 启动时，会自动解压 war 包，生成同名目录</p>
 
-<p>在catch语句的参数中我们定义了具体的异常类型，但是这些具体的异常都是Exception的子类，所以我们可以通过将参数改为<strong>Exception e</strong> 来捕获所有异常<strong>（但是不建议这么做，或者把捕获异常基类放到最后，因为有的时候你需要针对不同的异常做出一些不同的动作）</strong>：</p>
+<p><strong>如果你在移动 war 包时，webapps 目录下已经有同名目录，是不会再解压的</strong></p>
 
-<p><img src="https://upload-images.jianshu.io/upload_images/3426615-89231daa5fb26d69.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
+<p>这里有几个步骤是我个人建议的：</p>
 
-<h4 id="4-处理异常">4. 处理异常</h4>
+<ol>
+  <li>修改 tomcat 端口</li>
+  <li>配置虚拟路径，存放静态文件</li>
+  <li>修改主页</li>
+</ol>
 
-<p>在捕获了异常之后，我们还需要处理这些异常，我们可以将这些异常的消息输出，或者在捕获之后再抛出另外的异常：</p>
+<p>第 1、2 步都是通过修改 server.xml 文件来完成，第 3 步通过修改 webapps 目录下 ROOT 目录的文件来完成（我把 ROOT 下东西全删了，留一个我自己的 index.html，然后通过域名就能访问到我的主页了）</p>
 
-<p>常用的消息输出方式就是<strong>getMessage()</strong>以及<strong>printStackTrace()</strong></p>
+<h2 id="最后">最后</h2>
 
-<p>我们来做个实验：</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-
-public class Test {
-    public static void main(String[] args) throws FileNotFoundException {
-        try{
-            FileInputStream in = new FileInputStream("test.txt");
-        }catch (FileNotFoundException e){
-            System.out.println(e.getMessage());
-            e.printStackTrace();
-        }
-
-    }
-}
-</code></pre></div></div>
-
-<p>打印出来结果是这样的：</p>
-
-<p><img src="https://upload-images.jianshu.io/upload_images/3426615-f040d1cbd3eb25ed.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
-
-<p>异常所输出的信息是<strong>test.txt (系统找不到指定的文件。)</strong></p>
-
-<p><strong>printStackTrace()</strong>的目的是打印栈轨迹，也就是将抛出异常的位置到诉你，包括输出了异常信息，就像如图所示，Main()函数的第七行有问题，在程序调试的时候经常用<strong>printStackTrace()</strong></p>
-
-<h4 id="5-异常说明">5. 异常说明</h4>
-
-<p>如果有别人需要阅读你的代码，就需要知道你的代码会抛出什么异常，那么你就要写异常说明，形式通常为：</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>void method() throws ....{
-
-}
-</code></pre></div></div>
-
-<p>首先，我们在原先的代码的方法名后加上可能会出现的异常：</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-
-public class Test {
-    public void input() throws FileNotFoundException {
-            //不需要try-catch语句块，因为我们没有在此处捕获异常
-            FileInputStream in = new FileInputStream("test.txt");
-    }
-}
-</code></pre></div></div>
-
-<p>然后，我们新建一个类，创建Test类的实例，会发现有提示：</p>
-
-<p><img src="https://upload-images.jianshu.io/upload_images/3426615-1fb40d6ea2bf8eab.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
-
-<p>因为我们写方法时，告诉外界可能会产生什么样的异常了，其他人在调用的时候就能够发现</p>
-
-<h4 id="6-throw-和-throws的区别">6. throw 和 throws的区别</h4>
-
-<p>关于这两个的区别，其实在于究竟在哪个地方处理异常，举个例子来说：</p>
-
-<p>在方法A中，如果在产生异常的时候，不需要马上捕获，在方法B调用方法A的时候再进行捕获，那么就在A的方法名后添加<strong>throws</strong>，如果需要在方法A中进行捕获，则直接使用<strong>throw</strong></p>
-
-<p>看捕获异常的对象是谁，再决定应该如何来使用</p>
-
-<p>那么，关于Java异常处理的基本介绍就结束了，接下来会有针对异常信息的专题文章会发布</p>
+<p>其实，这些步骤都不算难，你只要有做过 web 项目的 demo，知道这过程是怎样的，然后按照你的思路去寻找你需要的资料，很快就能够完成，祝大家都能有个属于自己的网站</p>
 
 
                 <hr>
@@ -346,13 +272,9 @@ public class Test {
                 <ul class="pager">
                     
                     <li class="previous">
-                        <a href="/2018/04/23/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E4%BA%8C-%E5%AD%97%E7%AC%A6%E4%B8%B2/" data-toggle="tooltip" data-placement="top" title="Java基础知识梳理（二）字符串">&larr; Previous Post</a>
+                        <a href="/2018/10/17/%E4%BA%8C%E5%8F%89%E6%A0%91%E7%9A%84%E5%87%A0%E7%A7%8D%E9%81%8D%E5%8E%86%E6%96%B9%E5%BC%8F-%E9%99%84-LeetCode-%E6%B0%B4%E9%A2%98/" data-toggle="tooltip" data-placement="top" title="二叉树的几种遍历方式（附 LeetCode 水题）">&larr; Previous Post</a>
                     </li>
                     
-                    
-                    <li class="next">
-                        <a href="/2018/04/25/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E5%9B%9B-%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86%E8%BF%9B%E9%98%B6/" data-toggle="tooltip" data-placement="top" title="Java基础知识梳理（四）异常处理进阶">Next Post &rarr;</a>
-                    </li>
                     
                 </ul>
 
@@ -500,8 +422,8 @@ public class Test {
 <script type="text/javascript">
     /* * * CONFIGURATION VARIABLES * * */
     var disqus_shortname = "http-hxblog-site";
-    var disqus_identifier = "/2018/04/24/Java基础知识梳理（三）异常处理基础知识";
-    var disqus_url = "http://localhost:4000/2018/04/24/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86-%E4%B8%89-%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/";
+    var disqus_identifier = "/2018/11/17/上线，上线！";
+    var disqus_url = "http://localhost:4000/2018/11/17/%E4%B8%8A%E7%BA%BF-%E4%B8%8A%E7%BA%BF/";
 
     (function() {
         var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
