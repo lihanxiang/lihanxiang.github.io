@@ -19,9 +19,9 @@
     <meta name="keyword"  content="Java">
     <link rel="shortcut icon" href="/img/favicon.ico">
 
-    <title>Git 系列文章（一） - 李汉祥的博客 | L Blog</title>
+    <title>被忽略的 fail-fast - 李汉祥的博客 | L Blog</title>
 
-    <link rel="canonical" href="http://localhost:4000/2018/08/02/Git-%E7%B3%BB%E5%88%97%E6%96%87%E7%AB%A0-%E4%B8%80-GitHub-%E4%BB%8B%E7%BB%8D/">
+    <link rel="canonical" href="http://localhost:4000/2018/12/15/%E8%A2%AB%E5%BF%BD%E7%95%A5%E7%9A%84-fail-fast/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -143,12 +143,12 @@
 
 
     <!-- Image to hack wechat -->
-<!-- <img src="/img/post/2018-08/02.jpg" width="0" height="0"> -->
+<!-- <img src="/img/post/2018-12/15.jpg" width="0" height="0"> -->
 
 <!-- Post Header -->
 <style type="text/css">
     header.intro-header{
-        background-image: url('/img/post/2018-08/02.jpg')
+        background-image: url('/img/post/2018-12/15.jpg')
     }
 </style>
 <header class="intro-header" >
@@ -158,15 +158,15 @@
                 <div class="post-heading">
                     <div class="tags">
                         
-                        <a class="tag" href="/tags/#Git" title="Git">Git</a>
+                        <a class="tag" href="/tags/#Java基础" title="Java基础">Java基础</a>
                         
                     </div>
-                    <h1>Git 系列文章（一）</h1>
+                    <h1>被忽略的 fail-fast</h1>
                     
                     
-                    <h2 class="subheading">GitHub 介绍</h2>
+                    <h2 class="subheading"></h2>
                     
-                    <span class="meta">Posted by L on August 2, 2018</span>
+                    <span class="meta">Posted by L on December 15, 2018</span>
                 </div>
             </div>
         </div>
@@ -186,79 +186,130 @@
 
 				<h3 id="正文之前">正文之前</h3>
 
-<blockquote>
-  <p>相信大部分都人都知道 GitHub，对，就是被微软收购的全球最大交友网站。目前博主还处于学生阶段，所以一直处于这样的循环中：</p>
+<p>之前在阅读 List 的源码时，忽略掉了一件事情，就是 fail-fast (快速失败机制)，这一篇就作为一篇补充说明的小短文了（基于 JDK1.8）</p>
 
-  <p>git add<br />
-git commit<br />
-git pull<br />
-git push<br /></p>
-
-  <p>但是本着要深入学习的心态，以及目前参加<a href="https://github.com/xitu/gold-miner">掘金翻译计划</a>，翻译的工作都是在 GitHub 上进行的，所以打算从头开始写 Git 系列文章来温故知新一下</p>
-
-  <p>那么这第一篇文章就是介绍一下 Git 和 GitHub，下一篇会用一个例子来讲述 GitHub 上进行协同开发的基本流程</p>
-</blockquote>
-
-<h3 id="正文之前-1">正文之前</h3>
-
-<h4 id="git">Git</h4>
-
-<p>先介绍一下什么是 Git，引用维基百科的介绍：</p>
+<p>有这么几个概念：</p>
 
 <blockquote>
-  <p>Git 是一个分布式版本控制软件，最初由 Linus Torvalds 创作（对，就是那个英语不是他母语的林纳斯），于 2005 年以 GPL 发布。最初是为了更好地管理 Linux 内核开发而设计。</p>
+  <ol>
+    <li>
+      <p>fail-fast 基本介绍</p>
+    </li>
+    <li>
+      <p>单线程下的 fail-fast</p>
+    </li>
+    <li>
+      <p>多线程下的 fail-fast</p>
+    </li>
+    <li>
+      <p>关于 ConcurrentModificationException</p>
+    </li>
+  </ol>
 </blockquote>
 
-<p>在上面的一段话中，有一个需要解释一下的概念 —— 分布式版本控制：</p>
+<h3 id="正文">正文</h3>
 
-<p>分布式版本控制是版本控制的方式之一，顾名思义，分布式就代表协同开发者不需要连接同一个网络，一个项目可以由许多国家的程序员来完成</p>
+<h4 id="1-fail-fast-的出处">1. fail-fast 的出处</h4>
 
-<p>关于 Git 这个名字，来自英国俚语，意思大约是“混账”</p>
+<p>在 ArrayList、LinkedList、Vector 中，都有 fail-fast 机制，他们都继承自 <strong>AbstractList</strong>，在这个抽象类中定义了 <strong>modCount</strong>，用于触发 fail-fast：</p>
 
-<p>具体的 Git 操作等到下一篇讲到协作开发时会说明</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>protected transient int modCount = 0;
+</code></pre></div></div>
 
-<h4 id="github">GitHub</h4>
+<p>在用<strong>迭代器</strong>遍历一个集合的时候，如果你修改了它的结构，在检测同步修改时，就会执行这一段代码：</p>
 
-<p>GitHub 是一个通过 Git 进行版本控制的软件源代码托管服务网站，说白了，就是一个网站，里面放着许多用 Git 进行版本控制的项目。因为它有着社交网站的功能 —— watch, star, fork, follow 等功能，也被戏称作“全球最大（同性）交友网站。不过我更喜欢把它当作一个社区，在 GitHub 里有一些很有意思的项目，也有一些很好用的开源软件。</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    private void checkForComodification() {
+        if (this.modCount != l.modCount)
+            throw new ConcurrentModificationException();
+    }
+</code></pre></div></div>
 
-<p>关于 GitHub 账户的创建过程不讲述，付费用户能够拥有私有 (private) 仓库的使用权，学生可以免费使用私有仓库</p>
+<p>在 JDK 中对于 modCount 的注释写道：</p>
 
-<p>这里有几个关于 GitHub 的功能是需要了解一下的：</p>
+<blockquote>
+  <p>modCount 是用来记录列表被结构性修改的次数，结构性修改指的是改变列表大小（扩容）或以其它方式扰乱它，使得正在进行的迭代可能产生不正确的结果</p>
+</blockquote>
 
-<h5 id="1-fork">1. fork</h5>
-<p>这里拿 spring 的仓库来截图说明一下：</p>
+<p>至于为什么叫 fail-fast，我猜应该是为了能够快速检测出并发修改吧</p>
 
-<p><img src="https://upload-images.jianshu.io/upload_images/3426615-31bccd70465091bb.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
+<h4 id="2-单线程下的-fail-fast">2. 单线程下的 fail-fast</h4>
 
-<p>fork 就表示在你的名下创建一个项目的副本，如果你想要学习一下某一个项目，或者想对别人的项目做一些改动时，都需要先将项目 fork 到自己的账户中，然后再进行进一步的操作</p>
+<p>前面说到的并发修改是多数情况，但是单线程的情况下也有可能出现，我们写一个在遍历时添加元素的例子：</p>
 
-<h5 id="2--issues-和-pull-requests">2.  Issues 和 Pull requests</h5>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public class Test {
+    public static void main(String[] args) {
+        ArrayList&lt;Integer&gt; list = new ArrayList&lt;&gt;();
+        list.add(1);
+        list.add(2);
+        list.add(3);
+        list.add(4);
+        Iterator iterator = list.iterator();
+        while (iterator.hasNext()){
+            System.out.println((int)iterator.next());
+            list.add(0);
+        }
+    }
+}
+</code></pre></div></div>
 
-<p><img src="https://upload-images.jianshu.io/upload_images/3426615-48bd341e3737a835.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
+<p>在第一次取值时就抛出异常了：</p>
 
-<p>Issue 的目的是为了给开发者提供意见或建议的，开发者可以根据 Issues 中出现的内容来对项目进行改动。但是现在的 Issues 好像变成了讨论区，尤其是前一段事件的 Issues 出现“求不要更新了，老子学不动了”，真是丢脸</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-fad77ecee3378504.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
 
-<p>Pull requests（简称 PR）是你在 fork 别人的仓库之后，如果有改动想要通知开发者，就发起一个 PR，开发者审核之后，如果开发者同意了这个 PR，就会将 PR 合并到项目中去，你也算为这个项目做了贡献</p>
+<h4 id="3-多线程下的-fail-fast">3. 多线程下的 fail-fast</h4>
 
-<h5 id="3-wiki">3. Wiki</h5>
+<p>创建两个线程，一个用于遍历，另一个用于进行一次添加元素操作：</p>
 
-<p>Wiki 是一种在网络上开放且可供多人协同创作的超文本系统，支持那些面向社群的协作式写作，为协作式写作提供了必要的帮助</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public class Test {
+    private static ArrayList&lt;Integer&gt; list = new ArrayList&lt;&gt;();
+    public static void main(String[] args) {
+        list.add(1);
+        list.add(2);
+        list.add(3);
+        list.add(4);
+        new Thread1().run();
+        new Thread2().run();
+    }
 
-<h5 id="4-gists">4. Gists</h5>
+    static class Thread1 extends Thread{
+        @Override
+        public void run() {
+            Iterator iterator = list.iterator();
+            while (iterator.hasNext()){
+                System.out.println((int)iterator.next());
+                list.add(0);
+            }
+        }
+    }
 
-<p>上面讲述的都是基于仓库的，这里说的 Gist 是 GitHub 的一个子服务，用于小型代码片段的分享，比如说你有一些不错的代码片段，但是又没必要创建一个仓库来存放，就可以用 Gist 来存放</p>
+    static class Thread2 extends Thread{
+        @Override
+        public void run(){
+            list.add(0);
+        }
+    }
+}
+</code></pre></div></div>
 
-<h5 id="5-contributions">5. Contributions</h5>
+<p>结果是一样的，就不放截图了</p>
 
-<p>在你的公有仓库中进行代码提交，就会在个人信息页面的 Contribution 栏中出现标记，拿我自己的来做个示范：</p>
+<h4 id="4-关于-concurrentmodificationexception">4. 关于 ConcurrentModificationException</h4>
 
-<p><img src="https://upload-images.jianshu.io/upload_images/3426615-9754f66f95061748.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
+<p>关于同步修改所抛出的异常，先看看 JDK 里的注释是怎么说的（大致翻译一下）：</p>
 
-<p>两三个 Java Web 项目、掘金翻译计划、个人博客和 LeetCode 记录基本构成了我的 GitHub 的全部贡献，几乎在某一段时间内都有每天做一些</p>
+<blockquote>
+  <p>检测到对象的并发修改的方法可能抛出此异常</p>
 
-<h4 id="中国人在-github">中国人在 GitHub</h4>
+  <p>通常来说，一个线程遍历，一个线程修改，这样的操作是不允许的，有一些迭代器的实现类能够在检测到这种情况时抛出异常，这些迭代器就是“快速失败”迭代器（fail-fast iterators）</p>
 
-<p>在最后说明一下，听说现在国内的培训机构有包装 GitHub 的行为，中国人还真是什么都敢干，先是大闹 Issues，然后是抄袭行为和刻意包装行为。在这里强烈鄙视那些在 GitHub 上抄袭的人。就个人而言，它只是一个有着开发功能的社区，即使包装的再好，连基本的协同开发流程都不知道是怎样的，不就是衣着光鲜亮丽的原始人吗？GitHub 带给我们这些普通开发者的最明显的好处就是十分便利的分布式协作开发流程，以及发现一些有趣项目的机会。目光短浅的人往往会走偏，去刻意包装一下，是太没自信了吗？</p>
+  <p>当并发修改发生时，并不能保证会抛出异常，所以，不能够依赖此机制来编写程序，它应只用于检测错误</p>
+</blockquote>
+
+<p>注释里讲的很明白了，不能够保证会检测到非法操作，最好只用来做测试，而不是指望在捕获异常后做一些其它操作</p>
+
+<h3 id="最后">最后</h3>
+
+<p>在容器类中，不仅有 fail-fast，还有 fail-safe，但是笔者现在还未开始学习同步容器类，接下来学完了会做补充</p>
 
 
                 <hr>
@@ -269,13 +320,9 @@ git push<br /></p>
                 <ul class="pager">
                     
                     <li class="previous">
-                        <a href="/2018/07/28/LeetCode-%E6%B7%B1%E6%90%9C%E6%B0%B4%E9%A2%98%E8%AE%B0%E5%BD%95/" data-toggle="tooltip" data-placement="top" title="LeetCode —— 深搜水题记录">&larr; Previous Post</a>
+                        <a href="/2018/11/17/%E4%B8%8A%E7%BA%BF-%E4%B8%8A%E7%BA%BF/" data-toggle="tooltip" data-placement="top" title="上线，上线！">&larr; Previous Post</a>
                     </li>
                     
-                    
-                    <li class="next">
-                        <a href="/2018/08/09/Git-%E7%B3%BB%E5%88%97%E6%96%87%E7%AB%A0-%E4%BA%8C-Git-%E5%9F%BA%E6%9C%AC%E7%94%A8%E6%B3%95/" data-toggle="tooltip" data-placement="top" title="Git 系列文章（二）">Next Post &rarr;</a>
-                    </li>
                     
                 </ul>
 
@@ -423,8 +470,8 @@ git push<br /></p>
 <script type="text/javascript">
     /* * * CONFIGURATION VARIABLES * * */
     var disqus_shortname = "http-hxblog-site";
-    var disqus_identifier = "/2018/08/02/Git 系列文章（一）——GitHub 介绍";
-    var disqus_url = "http://localhost:4000/2018/08/02/Git-%E7%B3%BB%E5%88%97%E6%96%87%E7%AB%A0-%E4%B8%80-GitHub-%E4%BB%8B%E7%BB%8D/";
+    var disqus_identifier = "/2018/12/15/被忽略的 fail-fast";
+    var disqus_url = "http://localhost:4000/2018/12/15/%E8%A2%AB%E5%BF%BD%E7%95%A5%E7%9A%84-fail-fast/";
 
     (function() {
         var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;

@@ -5,9 +5,147 @@
     <description>你问我什么咖啡最好，我当然觉得是 Java</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Sat, 17 Nov 2018 20:46:18 -0800</pubDate>
-    <lastBuildDate>Sat, 17 Nov 2018 20:46:18 -0800</lastBuildDate>
+    <pubDate>Sat, 15 Dec 2018 01:37:07 -0800</pubDate>
+    <lastBuildDate>Sat, 15 Dec 2018 01:37:07 -0800</lastBuildDate>
     <generator>Jekyll v3.8.0</generator>
+    
+      <item>
+        <title>被忽略的 fail-fast</title>
+        <description>&lt;h3 id=&quot;正文之前&quot;&gt;正文之前&lt;/h3&gt;
+
+&lt;p&gt;之前在阅读 List 的源码时，忽略掉了一件事情，就是 fail-fast (快速失败机制)，这一篇就作为一篇补充说明的小短文了（基于 JDK1.8）&lt;/p&gt;
+
+&lt;p&gt;有这么几个概念：&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;ol&gt;
+    &lt;li&gt;
+      &lt;p&gt;fail-fast 基本介绍&lt;/p&gt;
+    &lt;/li&gt;
+    &lt;li&gt;
+      &lt;p&gt;单线程下的 fail-fast&lt;/p&gt;
+    &lt;/li&gt;
+    &lt;li&gt;
+      &lt;p&gt;多线程下的 fail-fast&lt;/p&gt;
+    &lt;/li&gt;
+    &lt;li&gt;
+      &lt;p&gt;关于 ConcurrentModificationException&lt;/p&gt;
+    &lt;/li&gt;
+  &lt;/ol&gt;
+&lt;/blockquote&gt;
+
+&lt;h3 id=&quot;正文&quot;&gt;正文&lt;/h3&gt;
+
+&lt;h4 id=&quot;1-fail-fast-的出处&quot;&gt;1. fail-fast 的出处&lt;/h4&gt;
+
+&lt;p&gt;在 ArrayList、LinkedList、Vector 中，都有 fail-fast 机制，他们都继承自 &lt;strong&gt;AbstractList&lt;/strong&gt;，在这个抽象类中定义了 &lt;strong&gt;modCount&lt;/strong&gt;，用于触发 fail-fast：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;protected transient int modCount = 0;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;在用&lt;strong&gt;迭代器&lt;/strong&gt;遍历一个集合的时候，如果你修改了它的结构，在检测同步修改时，就会执行这一段代码：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    private void checkForComodification() {
+        if (this.modCount != l.modCount)
+            throw new ConcurrentModificationException();
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;在 JDK 中对于 modCount 的注释写道：&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;modCount 是用来记录列表被结构性修改的次数，结构性修改指的是改变列表大小（扩容）或以其它方式扰乱它，使得正在进行的迭代可能产生不正确的结果&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;至于为什么叫 fail-fast，我猜应该是为了能够快速检测出并发修改吧&lt;/p&gt;
+
+&lt;h4 id=&quot;2-单线程下的-fail-fast&quot;&gt;2. 单线程下的 fail-fast&lt;/h4&gt;
+
+&lt;p&gt;前面说到的并发修改是多数情况，但是单线程的情况下也有可能出现，我们写一个在遍历时添加元素的例子：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public class Test {
+    public static void main(String[] args) {
+        ArrayList&amp;lt;Integer&amp;gt; list = new ArrayList&amp;lt;&amp;gt;();
+        list.add(1);
+        list.add(2);
+        list.add(3);
+        list.add(4);
+        Iterator iterator = list.iterator();
+        while (iterator.hasNext()){
+            System.out.println((int)iterator.next());
+            list.add(0);
+        }
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;在第一次取值时就抛出异常了：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-fad77ecee3378504.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;3-多线程下的-fail-fast&quot;&gt;3. 多线程下的 fail-fast&lt;/h4&gt;
+
+&lt;p&gt;创建两个线程，一个用于遍历，另一个用于进行一次添加元素操作：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public class Test {
+    private static ArrayList&amp;lt;Integer&amp;gt; list = new ArrayList&amp;lt;&amp;gt;();
+    public static void main(String[] args) {
+        list.add(1);
+        list.add(2);
+        list.add(3);
+        list.add(4);
+        new Thread1().run();
+        new Thread2().run();
+    }
+
+    static class Thread1 extends Thread{
+        @Override
+        public void run() {
+            Iterator iterator = list.iterator();
+            while (iterator.hasNext()){
+                System.out.println((int)iterator.next());
+                list.add(0);
+            }
+        }
+    }
+
+    static class Thread2 extends Thread{
+        @Override
+        public void run(){
+            list.add(0);
+        }
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;结果是一样的，就不放截图了&lt;/p&gt;
+
+&lt;h4 id=&quot;4-关于-concurrentmodificationexception&quot;&gt;4. 关于 ConcurrentModificationException&lt;/h4&gt;
+
+&lt;p&gt;关于同步修改所抛出的异常，先看看 JDK 里的注释是怎么说的（大致翻译一下）：&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;检测到对象的并发修改的方法可能抛出此异常&lt;/p&gt;
+
+  &lt;p&gt;通常来说，一个线程遍历，一个线程修改，这样的操作是不允许的，有一些迭代器的实现类能够在检测到这种情况时抛出异常，这些迭代器就是“快速失败”迭代器（fail-fast iterators）&lt;/p&gt;
+
+  &lt;p&gt;当并发修改发生时，并不能保证会抛出异常，所以，不能够依赖此机制来编写程序，它应只用于检测错误&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;注释里讲的很明白了，不能够保证会检测到非法操作，最好只用来做测试，而不是指望在捕获异常后做一些其它操作&lt;/p&gt;
+
+&lt;h3 id=&quot;最后&quot;&gt;最后&lt;/h3&gt;
+
+&lt;p&gt;在容器类中，不仅有 fail-fast，还有 fail-safe，但是笔者现在还未开始学习同步容器类，接下来学完了会做补充&lt;/p&gt;
+</description>
+        <pubDate>Sat, 15 Dec 2018 00:00:00 -0800</pubDate>
+        <link>http://localhost:4000/2018/12/15/%E8%A2%AB%E5%BF%BD%E7%95%A5%E7%9A%84-fail-fast/</link>
+        <guid isPermaLink="true">http://localhost:4000/2018/12/15/%E8%A2%AB%E5%BF%BD%E7%95%A5%E7%9A%84-fail-fast/</guid>
+        
+        <category>Java基础</category>
+        
+        
+      </item>
     
       <item>
         <title>上线，上线！</title>
@@ -1925,55 +2063,6 @@ public interface ExceptionService {
         <category>Java Web</category>
         
         <category>Spring</category>
-        
-        
-      </item>
-    
-      <item>
-        <title>Git 系列文章（四）</title>
-        <description>&lt;p&gt;&lt;a href=&quot;https://upload-images.jianshu.io/upload_images/3426615-19a920f541db41bc.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot;&gt;&lt;/a&gt;&lt;/p&gt;
-
-&lt;h3 id=&quot;正文之前&quot;&gt;正文之前&lt;/h3&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;因为我现在还是学生，所以参加过的 GitHub 团队合作项目就只有&lt;a href=&quot;https://github.com/xitu/gold-miner&quot;&gt;掘金翻译计划&lt;/a&gt;，所以这一篇文章所讲述的内容是从我目前的经历和《GitHub入门与实践》([日]大塚弘记著) 中总结而来&lt;/p&gt;
-
-  &lt;p&gt;GitHub Flow，是一种开发流程，是一种概念，而不是什么框架&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;h3 id=&quot;正文&quot;&gt;正文&lt;/h3&gt;
-
-&lt;h4 id=&quot;分支&quot;&gt;分支&lt;/h4&gt;
-
-&lt;p&gt;之前说过，如果要给别人的仓库做贡献，就要先将这个仓库 fork 到自己的账号里，然后再进行改动，再 PR&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-1c96ffebc795f426.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;但是，在 GitHub Flow 中，变得更加简单，不 fork，直接在源仓库创建分支：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-0172a93ccb7c17f2.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;有几个要求：&lt;/p&gt;
-
-&lt;blockquote&gt;
-  &lt;ol&gt;
-    &lt;li&gt;master 分支是稳定的一个分支（也就是对外部署的分支）&lt;/li&gt;
-    &lt;li&gt;创建的其他分支的命名要具有描述性（别起一些乱七八糟的名字，害人害己）&lt;/li&gt;
-    &lt;li&gt;你所创建的分支，要在&lt;strong&gt;本地仓库&lt;/strong&gt;和&lt;strong&gt;远程仓库&lt;/strong&gt;同时存在（为了备份，同时也为了能让别人看到你的进展）&lt;/li&gt;
-    &lt;li&gt;提交的粒度要小，最好每次提交只针对某个功能，而不是一次提交中新增好几个功能&lt;/li&gt;
-    &lt;li&gt;定期 Push，不仅是备份代码，也能让别人看到你的进展&lt;/li&gt;
-  &lt;/ol&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;这里有一个关于 Git 开发流程的 &lt;a href=&quot;https://gist.github.com/yesmeck/4245406&quot;&gt;Gist&lt;/a&gt;，里面定义了各种功能的分支的命名方式&lt;/p&gt;
-
-&lt;p&gt;其实我也没怎么经历过 GitHub Flow，还是去找一些项目练手吧&lt;/p&gt;
-</description>
-        <pubDate>Mon, 13 Aug 2018 00:00:00 -0700</pubDate>
-        <link>http://localhost:4000/2018/08/13/Git-%E7%B3%BB%E5%88%97%E6%96%87%E7%AB%A0-%E5%9B%9B-GitHub-Flow/</link>
-        <guid isPermaLink="true">http://localhost:4000/2018/08/13/Git-%E7%B3%BB%E5%88%97%E6%96%87%E7%AB%A0-%E5%9B%9B-GitHub-Flow/</guid>
-        
-        <category>Git</category>
         
         
       </item>
