@@ -19,9 +19,9 @@
     <meta name="keyword"  content="Java">
     <link rel="shortcut icon" href="/img/favicon.ico">
 
-    <title>LinkedList源码分析（二） - 李汉祥的博客 | L Blog</title>
+    <title>从输入 URL 到获取页面的过程 - 李汉祥的博客 | L Blog</title>
 
-    <link rel="canonical" href="http://localhost:4000/2018/05/28/LinkedList%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E4%BA%8C/">
+    <link rel="canonical" href="http://localhost:4000/2019/02/06/%E4%BB%8E%E8%BE%93%E5%85%A5-URL-%E5%88%B0%E8%8E%B7%E5%8F%96%E9%A1%B5%E9%9D%A2%E7%9A%84%E8%BF%87%E7%A8%8B/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -143,12 +143,12 @@
 
 
     <!-- Image to hack wechat -->
-<!-- <img src="/img/post/2018-05/28.jpg" width="0" height="0"> -->
+<!-- <img src="/img/post/2019-02/06.jpg" width="0" height="0"> -->
 
 <!-- Post Header -->
 <style type="text/css">
     header.intro-header{
-        background-image: url('/img/post/2018-05/28.jpg')
+        background-image: url('/img/post/2019-02/06.jpg')
     }
 </style>
 <header class="intro-header" >
@@ -158,17 +158,15 @@
                 <div class="post-heading">
                     <div class="tags">
                         
-                        <a class="tag" href="/tags/#Java源码解析" title="Java源码解析">Java源码解析</a>
-                        
-                        <a class="tag" href="/tags/#集合类" title="集合类">集合类</a>
+                        <a class="tag" href="/tags/#计算机网络" title="计算机网络">计算机网络</a>
                         
                     </div>
-                    <h1>LinkedList源码分析（二）</h1>
+                    <h1>从输入 URL 到获取页面的过程</h1>
                     
                     
-                    <h2 class="subheading">读读源码</h2>
+                    <h2 class="subheading"></h2>
                     
-                    <span class="meta">Posted by L on May 28, 2018</span>
+                    <span class="meta">Posted by L on February 6, 2019</span>
                 </div>
             </div>
         </div>
@@ -189,312 +187,149 @@
 				<h3 id="正文之前">正文之前</h3>
 
 <blockquote>
-  <p>在上一篇文章中已经讲述了<a href="http://hxblog.site/2018/05/22/LinkedList%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E4%B8%80/">链表基于列表的基本用法</a>，所以，这一篇文章要讲述链表基于队列的基本用法</p>
-</blockquote>
+  <p>最近正好在学习计算机网络，先整理个最入门，但是包含很多知识点的问题 —— 从输入域名或 URL 到获取页面，究竟经历了什么。把这个问题弄懂，也就代表着我们可以初步地明白<strong>网上冲浪</strong>是如何进行的的</p>
 
-<p>主要内容</p>
-
-<blockquote>
+  <p>这个过程，如果要概括，也就几句话的事，但是其中包含的知识点还是比较多的：</p>
   <ol>
-    <li>基本概念</li>
-    <li>基于单向队列的操作</li>
-    <li>基于双向队列的操作</li>
+    <li>域名、URL 和 URI</li>
+    <li>域名 和 IP 地址</li>
+    <li>DNS 查询</li>
+    <li>TCP 连接建立</li>
+    <li>HTTP 请求与响应</li>
+    <li>TCP 连接关闭</li>
+    <li>服务器渲染页面</li>
   </ol>
+
+  <p>这篇文章讲述 1、2、3、5 四个部分，关于 TCP 的部分，由于篇幅较大，需要另起一篇文章</p>
 </blockquote>
 
 <h3 id="正文">正文</h3>
 
-<h4 id="1-基本概念">1. 基本概念</h4>
+<h4 id="1-域名url-和-uri">1. 域名、URL 和 URI</h4>
 
-<p>既然是基于队列的操作，就要介绍一下队列的概念：</p>
+<p>首先要搞清楚这两个概念，<strong>域名</strong>，是一台计算机，或一组计算机在<strong>网络上</strong>的名称。<strong>Domain Name</strong>，顾名思义，Domain 代表着你的计算机，或者你的计算机组，<strong>Name</strong> 就代表着名称</p>
 
-<p>单向队列(Queue)是先进先出(First-In-First-Out)的线性结构，就好比我们生活中的排队，先来排队的人先办理事务，队列只支持在队尾添加元素，在队首删除元素</p>
+<p>关于 URL(Uniform Resource Locator) 和 URI(Uniform Resource Identifier)，这两者都是用于定位资源的，区别就是：URI 是统一资源标志符，单凭 URI 就能够精准定位某个资源（比如用身份证号就能够识别中国的每一个居民），而 URL，是统一资源定位符，就是有考虑范围的资源（比如身份证号的前六位，就是根据地区来分的）</p>
 
-<p>双向队列(Deque，double-ended queue)，也叫做双端队列，是基于队列和栈的结构，可以在队列两边进行添加和删除操作</p>
+<p>举个例子：据说全中国有 29 万个张伟，那么，除了用身份证号来确定是哪一个张伟，还能怎么判断呢？这时候就需要划分地区了，比如福建省福州市的张伟，这时候可能还是有好多个张伟，那就加上比如 xxxx 年 xx 月 xx 日出生的张伟，如果这时候还能有重复，那就再加上一些其他条件（学历，政治面貌等等），就能够定位到具体的某一个张伟了，这些条件组合在一起，就是一条 URL</p>
 
-<p>在链表中使用基于队列的方法时，其实是调用上一篇文章中定义的方法，只不过在不同的位置使用来达到模拟的效果
-<br /></p>
+<p>URL 是 URI 的一个子集，每条 URL 都能够定位到一个独一无二的资源，它符合 URI 的定义，但是 URL != URI，这一点需要记清楚</p>
 
-<h4 id="2-基于单向队列的操作">2. 基于单向队列的操作</h4>
+<p>现在回到网页上，域名只是网站的入口（比如说主页），如果你要在这主页上点击一个链接，进行页面跳转，就需要靠 URL 来指定资源的位置，这样才能获取，如果 URL 无效，就会弹出 <strong>404 Not Found</strong>，比如你进入 https://cn.bing.com/，这时候就是依据域名来找到主页，然后你搜索张伟，就会有一条挺长的 URL 来跳转到搜索结果页面</p>
 
-<p>主要内容：</p>
+<h4 id="2-域名-和-ip-地址">2. 域名 和 IP 地址</h4>
 
-<blockquote>
-  <ul>
-    <li>添加节点
-      <ul>
-        <li>offer()</li>
-      </ul>
-    </li>
-    <li>删除节点
-      <ul>
-        <li>poll()</li>
-        <li>remove()</li>
-      </ul>
-    </li>
-    <li>查找元素
-      <ul>
-        <li>peek()</li>
-        <li>element()</li>
-      </ul>
-    </li>
-  </ul>
-</blockquote>
+<p>前面说到，域名是计算机或计算机组在网络上的名称，但是并不是每一台计算机都有绑定了域名，但是，每一台<strong>接入网络</strong>的计算机都有一个 IP 地址 (Internet Protocol address)，用这个 IP 地址就能够定位到一台服务器，或一组服务器，如果服务器没有绑定域名，只要有它的 IP 地址，还是可以进行访问的</p>
 
-<p>在这几个基本的操作中，添加和删除是针对节点而言，而查找虽然是针对节点，但是查询的结果是返回节点中的元素的</p>
+<p>我们在上网时，如果要直接访问某个网站，都是输入域名就可以了，但是在定位服务器时，都是要靠 IP 地址来进行的，从域名到 IP 地址，这二者的转换就引出了一个新的概念 —— DNS(Domain Name System)</p>
 
-<h5 id="1-添加节点">1. 添加节点</h5>
+<p>当我们输入域名时，浏览器会根据这个域名在浏览去缓存的 IP 地址中去查找，如果找不到，就到 OS 中去查找缓存的 IP 地址，如果还是找不到，就会去 ISP（Internet service provider），也就是运营商（电信，铁通之类的）的服务器里查找，如果还是找不到，就要去根域名服务器查找</p>
 
-<p>使用add()，在add()中又有linkLast()，结果就是在末尾添加节点：</p>
+<p>关于运营商域名服务器以及根域名服务器的 IP 地址，在你电脑的网络设置里可以看到：</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    /**
-     * Adds the specified element as the tail (last element) of this list.
-     *
-     * @param e the element to add
-     * @return {@code true} (as specified by {@link Queue#offer})
-     * @since 1.5
-     */
-    public boolean offer(E e) {
-        return add(e);
-    }
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-e50598f8b81b8412.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
+
+<p>DNS 服务器里有两个 IP 地址，一个是中国电信的 (ISP)，一个是位于美国的服务器（根域名服务器）</p>
+
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-1a759f618a4f90ec.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
+
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-bfa0361e4e4e43f7.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
+
+<p>另外，关于 DNS 缓存，每一次的查询，都会缓存下来，先说浏览器缓存，这里以 Chrome 为例，输入 <strong>chrome://net-internals/#dns</strong> 就会得到 Chrome 的 DNS 缓存。然后是 OS 的缓存，在命令行中输入 <strong>ipconfig /displaydns</strong> 就会得到 OS 中的缓存：</p>
+
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-9f839dd421780b02.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
+
+<h4 id="3-dns-查询">3. DNS 查询</h4>
+
+<p>在说 DNS 查询之前，需要先说一下域名服务器的种类，有根服务器、顶级域名服务器、权威域名服务器和本地域名服务器</p>
+
+<p>在 DNS 查询的时候，首先查询本地域名服务器，也就是 ISP 提供的 DNS 服务器，如果找不到，这时候就有两种查询方式：</p>
+
+<ol>
+  <li>递归查询
+ 客户端发出请求，本地 DNS 服务器代替客户端去查询其它 DNS 服务器，然后由本地 DNS 返回最终结果给客户端</li>
+  <li>迭代查询
+ 本地 DNS 服务器并不能返回完整的结果，它只能给你一部分信息（比如它只知道要去 yyy 服务器上才找得到 xxx），然后又带着这个信息去 yyy 服务器上查找</li>
+</ol>
+
+<p>手绘一张草图，意思一下：</p>
+
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-ba4ea5930ea9512e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
+
+<p>至于 DNS 解析，上面介绍的只是最基本的知识，关于 DNS，还会另起一篇文章来说明</p>
+
+<h4 id="4-tcp-连接建立">4. TCP 连接建立</h4>
+
+<p>在找到目标服务器的 IP 地址之后，就要开始通信了，既然是通信，就要双方消息同步（如果双方说话都不在一个频道，这不能叫通信），这里就要引出另一个应用层协议 —— TCP(Transmission Control Protocol)，传输控制协议</p>
+
+<p>TCP 是基于连接的 —— 在通信开始之前建立连接，结束时断开连接</p>
+
+<h4 id="5-http-请求与响应">5. HTTP 请求与响应</h4>
+
+<p>连接建立之后，就可以开始传输了，采用 Http 协议，这里简单分析一下 Http 请求和响应的报文：</p>
+
+<p>Http 请求报文，一共有 4 个部分（包含一个空行）：</p>
+
+<p><strong>1. 请求行 (request-line)</strong></p>
+
+<p>请求行包含了请求的方法，资源的位置，以及协议的版本，举个例子：</p>
+
+<p><code class="highlighter-rouge">GET /index.html HTTP/1.1</code></p>
+
+<p>采用 GET 的方式，请求得到 index.html 这个页面，采用 HTTP/1.1 版本的协议</p>
+
+<p><strong>2. 请求头部 (headers)</strong></p>
+
+<p>头部是有多个 Key-Value 组成的，常见的有：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Accept:xxx （接受的数据类型）
+Accept-Charset:xxx （接受的编码格式）
+Accept-Language:xxx （接受的语言）
+User-Agent:xxx （浏览器类型）
+Cookie:xxx=yyy （所使用的 Cookie）
+Connection:close/keep-alive （连接状态：关闭/保持连接）
+......
 </code></pre></div></div>
 
-<h5 id="2-删除节点">2. 删除节点</h5>
+<p><strong>3. 空行 (blank line)</strong></p>
 
-<p>删除元素有两种方法，区别就是，一个先判断元素是否为null，而另一个不进行判断：</p>
+<p>这个空行是一定要有的，它是用来区分请求头部和请求数据的，它代表着不再有头部的 Key-Value 键值对，接下来是请求数据了</p>
 
-<ul>
-  <li>poll()</li>
-</ul>
+<p><strong>4. 请求数据 (request-body)</strong></p>
 
-<p>先判断元素是否存在，然后调用unlinkFirst()，删除第一个节点：</p>
+<p>请求主体一般是用于 POST 方法提交数据，例如最常见的表单提交，就是在请求主体写入 <code class="highlighter-rouge">Content-Type= multipart/form-data</code>`</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    /**
-     * Retrieves and removes the head (first element) of this list.
-     *
-     * @return the head of this list, or {@code null} if this list is empty
-     * @since 1.5
-     */
-    public E poll() {
-        final Node&lt;E&gt; f = first;
-        return (f == null) ? null : unlinkFirst(f);
-    }
+<p>Http 响应报文，也是分为 4 个部分（包含一个空行）：</p>
+
+<p><strong>1. 状态行 (status-line)</strong></p>
+
+<p>状态行中包含着协议版本，状态码以及文本描述，状态码和文本描述就代表了服务器所返回的响应结果是怎样的，这里给出大致的描述：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>2XX：成功
+3XX：重定向
+4XX：客户端错误
+5XX：服务器错误
 </code></pre></div></div>
 
-<ul>
-  <li>remove()</li>
-</ul>
+<p>最常见的就是：200 (OK) 和 404 (Not Found) 了</p>
 
-<p>调用removeFirst()，最终也是调用unlinkFirst()，删除第一个节点：</p>
+<p><strong>2. 响应头部 (headers)</strong></p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    /**
-     * Retrieves and removes the head (first element) of this list.
-     *
-     * @return the head of this list
-     * @throws NoSuchElementException if this list is empty
-     * @since 1.5
-     */
-    public E remove() {
-        return removeFirst();
-    }
-</code></pre></div></div>
+<p>与请求头部类似，也是 Key-Value 键值对的组合</p>
 
-<h5 id="3-修改元素">3. 修改元素</h5>
+<p><strong>3. 空行 (blank line)</strong></p>
 
-<p>在基于队列的操作中是没有修改元素的方法的，不管是单向还是双向队列：</p>
+<p>用来分隔响应头部和响应正文</p>
 
-<h5 id="4-查找元素">4. 查找元素</h5>
+<p><strong>4. 响应正文</strong></p>
 
-<ul>
-  <li>peek()</li>
-</ul>
+<p>响应正文中，如果之前请求的是数据，就返回数据，如果请求的是网页，就返回 HTML 代码</p>
 
-<p>先检查节点是否为空，若不为空就返回第一个节点的元素：</p>
+<h4 id="6-tcp-连接关闭">6. TCP 连接关闭</h4>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    /**
-     * Retrieves, but does not remove, the head (first element) of this list.
-     *
-     * @return the head of this list, or {@code null} if this list is empty
-     * @since 1.5
-     */
-    public E peek() {
-        final Node&lt;E&gt; f = first;
-        return (f == null) ? null : f.item;
-    }
-</code></pre></div></div>
+<p>在通信结束之后，需要将连接关闭，这时候就是 TCP 四次挥手的场景了</p>
 
-<ul>
-  <li>element()</li>
-</ul>
-
-<p>直接返回第一个节点的元素，可能会抛出异常：</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    /**
-     * Retrieves, but does not remove, the head (first element) of this list.
-     *
-     * @return the head of this list
-     * @throws NoSuchElementException if this list is empty
-     * @since 1.5
-     */
-    public E element() {
-        return getFirst();
-    }
-</code></pre></div></div>
-
-<p><br /></p>
-
-<h4 id="3-基于双向队列的操作">3. 基于双向队列的操作</h4>
-
-<p>主要内容：</p>
-
-<blockquote>
-  <ul>
-    <li>添加节点
-      <ul>
-        <li>offerFirst()</li>
-        <li>offerLast()</li>
-        <li>push()</li>
-      </ul>
-    </li>
-    <li>删除节点
-      <ul>
-        <li>pollFirst()</li>
-        <li>pollLast()</li>
-        <li>pop()</li>
-        <li>removeFirstOccurrence()</li>
-        <li>removeLastOccurrence()</li>
-      </ul>
-    </li>
-    <li>查找元素
-      <ul>
-        <li>peekFirst()</li>
-        <li>peekLast()</li>
-      </ul>
-    </li>
-  </ul>
-</blockquote>
-
-<h5 id="1-添加节点-1">1. 添加节点</h5>
-
-<ul>
-  <li>添加节点至队首</li>
-</ul>
-
-<p>调用addFirst()，然后是linkFirst()，添加节点至队首：</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    public boolean offerFirst(E e) {
-        addFirst(e);
-        return true;
-    }
-</code></pre></div></div>
-
-<ul>
-  <li>添加节点至队尾</li>
-</ul>
-
-<p>和上述一样，都是连着再次调用其他方法来达到效果：</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    public boolean offerLast(E e) {
-        addLast(e);
-        return true;
-    }
-</code></pre></div></div>
-
-<ul>
-  <li>模拟栈操作的添加一个节点至队首，最终还是调用linkFirst()：</li>
-</ul>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    public void push(E e) {
-        addFirst(e);
-    }
-</code></pre></div></div>
-
-<h5 id="2-删除节点-1">2. 删除节点</h5>
-
-<ul>
-  <li>删除第一个节点，调用unlinkFirst()：</li>
-</ul>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    public E pollFirst() {
-        final Node&lt;E&gt; f = first;
-        return (f == null) ? null : unlinkFirst(f);
-    }
-</code></pre></div></div>
-
-<ul>
-  <li>删除最后一个节点， 调用unlinkLast()：</li>
-</ul>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    public E pollLast() {
-        final Node&lt;E&gt; l = last;
-        return (l == null) ? null : unlinkLast(l);
-    }
-</code></pre></div></div>
-
-<ul>
-  <li>模拟栈操作的删除第一个节点，最终还是调用unlinkFirst()：</li>
-</ul>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    public E pop() {
-        return removeFirst();
-    }
-</code></pre></div></div>
-
-<ul>
-  <li>删除某个节点的元素，在它第一次出现的位置</li>
-</ul>
-
-<p>remove()方法是从队首还是进行遍历，如果找到与指定元素相同的节点元素，就返回，所以是在元素第一次出现的位置将其删除：</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   public boolean removeFirstOccurrence(Object o) {
-        return remove(o);
-    }
-</code></pre></div></div>
-
-<ul>
-  <li>删除某个节点的元素，在它最后一次出现的位置</li>
-</ul>
-
-<p>其实这个方法的写法和remove()是类似的，只不过是从队尾开始遍历：</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    public boolean removeLastOccurrence(Object o) {
-        if (o == null) {
-            for (Node&lt;E&gt; x = last; x != null; x = x.prev) {
-                if (x.item == null) {
-                    unlink(x);
-                    return true;
-                }
-            }
-        } else {
-            for (Node&lt;E&gt; x = last; x != null; x = x.prev) {
-                if (o.equals(x.item)) {
-                    unlink(x);
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-</code></pre></div></div>
-
-<h5 id="3-查找元素">3. 查找元素</h5>
-
-<ul>
-  <li>得到队首、队尾的节点的元素</li>
-</ul>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    public E peekFirst() {
-        final Node&lt;E&gt; f = first;
-        return (f == null) ? null : f.item;
-    }
-
-    public E peekLast() {
-        final Node&lt;E&gt; l = last;
-        return (l == null) ? null : l.item;
-    }
-</code></pre></div></div>
-
-<p>这一篇文章就结束了，接下来会是迭代器的分析，作为链表系列文章的最后一篇，然后会有一个关于<strong>ArrayList</strong>和<strong>LinkedList</strong>的对比分析</p>
+<p>从输入 URL 到获取页面的过程，看上去就短短几个步骤，其中涵盖的知识点还是挺多的，接下来就是 TCP 的三握四挥以及状态转换图的文章了</p>
 
 
                 <hr>
@@ -505,13 +340,9 @@
                 <ul class="pager">
                     
                     <li class="previous">
-                        <a href="/2018/05/22/LinkedList%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E4%B8%80/" data-toggle="tooltip" data-placement="top" title="LinkedList源码分析（一）">&larr; Previous Post</a>
+                        <a href="/2018/12/15/%E8%A2%AB%E5%BF%BD%E7%95%A5%E7%9A%84-fail-fast/" data-toggle="tooltip" data-placement="top" title="被忽略的 fail-fast">&larr; Previous Post</a>
                     </li>
                     
-                    
-                    <li class="next">
-                        <a href="/2018/05/29/Github-Pages-+-Jekyll-%E5%88%9B%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/" data-toggle="tooltip" data-placement="top" title="Github Pages + Jekyll 创建个人博客">Next Post &rarr;</a>
-                    </li>
                     
                 </ul>
 
@@ -665,8 +496,8 @@
 <script type="text/javascript">
     /* * * CONFIGURATION VARIABLES * * */
     var disqus_shortname = "http-hxblog-site";
-    var disqus_identifier = "/2018/05/28/LinkedList源码分析（二）";
-    var disqus_url = "http://localhost:4000/2018/05/28/LinkedList%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E4%BA%8C/";
+    var disqus_identifier = "/2019/02/06/从输入 URL 到获取页面的过程";
+    var disqus_url = "http://localhost:4000/2019/02/06/%E4%BB%8E%E8%BE%93%E5%85%A5-URL-%E5%88%B0%E8%8E%B7%E5%8F%96%E9%A1%B5%E9%9D%A2%E7%9A%84%E8%BF%87%E7%A8%8B/";
 
     (function() {
         var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;

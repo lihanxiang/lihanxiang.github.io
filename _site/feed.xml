@@ -5,9 +5,167 @@
     <description>你问我什么咖啡最好，我当然觉得是 Java</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Sat, 15 Dec 2018 01:37:07 -0800</pubDate>
-    <lastBuildDate>Sat, 15 Dec 2018 01:37:07 -0800</lastBuildDate>
-    <generator>Jekyll v3.8.0</generator>
+    <pubDate>Wed, 06 Feb 2019 06:08:00 -0800</pubDate>
+    <lastBuildDate>Wed, 06 Feb 2019 06:08:00 -0800</lastBuildDate>
+    <generator>Jekyll v3.7.4</generator>
+    
+      <item>
+        <title>从输入 URL 到获取页面的过程</title>
+        <description>&lt;h3 id=&quot;正文之前&quot;&gt;正文之前&lt;/h3&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;最近正好在学习计算机网络，先整理个最入门，但是包含很多知识点的问题 —— 从输入域名或 URL 到获取页面，究竟经历了什么。把这个问题弄懂，也就代表着我们可以初步地明白&lt;strong&gt;网上冲浪&lt;/strong&gt;是如何进行的的&lt;/p&gt;
+
+  &lt;p&gt;这个过程，如果要概括，也就几句话的事，但是其中包含的知识点还是比较多的：&lt;/p&gt;
+  &lt;ol&gt;
+    &lt;li&gt;域名、URL 和 URI&lt;/li&gt;
+    &lt;li&gt;域名 和 IP 地址&lt;/li&gt;
+    &lt;li&gt;DNS 查询&lt;/li&gt;
+    &lt;li&gt;TCP 连接建立&lt;/li&gt;
+    &lt;li&gt;HTTP 请求与响应&lt;/li&gt;
+    &lt;li&gt;TCP 连接关闭&lt;/li&gt;
+    &lt;li&gt;服务器渲染页面&lt;/li&gt;
+  &lt;/ol&gt;
+
+  &lt;p&gt;这篇文章讲述 1、2、3、5 四个部分，关于 TCP 的部分，由于篇幅较大，需要另起一篇文章&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h3 id=&quot;正文&quot;&gt;正文&lt;/h3&gt;
+
+&lt;h4 id=&quot;1-域名url-和-uri&quot;&gt;1. 域名、URL 和 URI&lt;/h4&gt;
+
+&lt;p&gt;首先要搞清楚这两个概念，&lt;strong&gt;域名&lt;/strong&gt;，是一台计算机，或一组计算机在&lt;strong&gt;网络上&lt;/strong&gt;的名称。&lt;strong&gt;Domain Name&lt;/strong&gt;，顾名思义，Domain 代表着你的计算机，或者你的计算机组，&lt;strong&gt;Name&lt;/strong&gt; 就代表着名称&lt;/p&gt;
+
+&lt;p&gt;关于 URL(Uniform Resource Locator) 和 URI(Uniform Resource Identifier)，这两者都是用于定位资源的，区别就是：URI 是统一资源标志符，单凭 URI 就能够精准定位某个资源（比如用身份证号就能够识别中国的每一个居民），而 URL，是统一资源定位符，就是有考虑范围的资源（比如身份证号的前六位，就是根据地区来分的）&lt;/p&gt;
+
+&lt;p&gt;举个例子：据说全中国有 29 万个张伟，那么，除了用身份证号来确定是哪一个张伟，还能怎么判断呢？这时候就需要划分地区了，比如福建省福州市的张伟，这时候可能还是有好多个张伟，那就加上比如 xxxx 年 xx 月 xx 日出生的张伟，如果这时候还能有重复，那就再加上一些其他条件（学历，政治面貌等等），就能够定位到具体的某一个张伟了，这些条件组合在一起，就是一条 URL&lt;/p&gt;
+
+&lt;p&gt;URL 是 URI 的一个子集，每条 URL 都能够定位到一个独一无二的资源，它符合 URI 的定义，但是 URL != URI，这一点需要记清楚&lt;/p&gt;
+
+&lt;p&gt;现在回到网页上，域名只是网站的入口（比如说主页），如果你要在这主页上点击一个链接，进行页面跳转，就需要靠 URL 来指定资源的位置，这样才能获取，如果 URL 无效，就会弹出 &lt;strong&gt;404 Not Found&lt;/strong&gt;，比如你进入 https://cn.bing.com/，这时候就是依据域名来找到主页，然后你搜索张伟，就会有一条挺长的 URL 来跳转到搜索结果页面&lt;/p&gt;
+
+&lt;h4 id=&quot;2-域名-和-ip-地址&quot;&gt;2. 域名 和 IP 地址&lt;/h4&gt;
+
+&lt;p&gt;前面说到，域名是计算机或计算机组在网络上的名称，但是并不是每一台计算机都有绑定了域名，但是，每一台&lt;strong&gt;接入网络&lt;/strong&gt;的计算机都有一个 IP 地址 (Internet Protocol address)，用这个 IP 地址就能够定位到一台服务器，或一组服务器，如果服务器没有绑定域名，只要有它的 IP 地址，还是可以进行访问的&lt;/p&gt;
+
+&lt;p&gt;我们在上网时，如果要直接访问某个网站，都是输入域名就可以了，但是在定位服务器时，都是要靠 IP 地址来进行的，从域名到 IP 地址，这二者的转换就引出了一个新的概念 —— DNS(Domain Name System)&lt;/p&gt;
+
+&lt;p&gt;当我们输入域名时，浏览器会根据这个域名在浏览去缓存的 IP 地址中去查找，如果找不到，就到 OS 中去查找缓存的 IP 地址，如果还是找不到，就会去 ISP（Internet service provider），也就是运营商（电信，铁通之类的）的服务器里查找，如果还是找不到，就要去根域名服务器查找&lt;/p&gt;
+
+&lt;p&gt;关于运营商域名服务器以及根域名服务器的 IP 地址，在你电脑的网络设置里可以看到：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-e50598f8b81b8412.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;DNS 服务器里有两个 IP 地址，一个是中国电信的 (ISP)，一个是位于美国的服务器（根域名服务器）&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-1a759f618a4f90ec.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-bfa0361e4e4e43f7.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;另外，关于 DNS 缓存，每一次的查询，都会缓存下来，先说浏览器缓存，这里以 Chrome 为例，输入 &lt;strong&gt;chrome://net-internals/#dns&lt;/strong&gt; 就会得到 Chrome 的 DNS 缓存。然后是 OS 的缓存，在命令行中输入 &lt;strong&gt;ipconfig /displaydns&lt;/strong&gt; 就会得到 OS 中的缓存：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-9f839dd421780b02.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;3-dns-查询&quot;&gt;3. DNS 查询&lt;/h4&gt;
+
+&lt;p&gt;在说 DNS 查询之前，需要先说一下域名服务器的种类，有根服务器、顶级域名服务器、权威域名服务器和本地域名服务器&lt;/p&gt;
+
+&lt;p&gt;在 DNS 查询的时候，首先查询本地域名服务器，也就是 ISP 提供的 DNS 服务器，如果找不到，这时候就有两种查询方式：&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;递归查询
+ 客户端发出请求，本地 DNS 服务器代替客户端去查询其它 DNS 服务器，然后由本地 DNS 返回最终结果给客户端&lt;/li&gt;
+  &lt;li&gt;迭代查询
+ 本地 DNS 服务器并不能返回完整的结果，它只能给你一部分信息（比如它只知道要去 yyy 服务器上才找得到 xxx），然后又带着这个信息去 yyy 服务器上查找&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;手绘一张草图，意思一下：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-ba4ea5930ea9512e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;至于 DNS 解析，上面介绍的只是最基本的知识，关于 DNS，还会另起一篇文章来说明&lt;/p&gt;
+
+&lt;h4 id=&quot;4-tcp-连接建立&quot;&gt;4. TCP 连接建立&lt;/h4&gt;
+
+&lt;p&gt;在找到目标服务器的 IP 地址之后，就要开始通信了，既然是通信，就要双方消息同步（如果双方说话都不在一个频道，这不能叫通信），这里就要引出另一个应用层协议 —— TCP(Transmission Control Protocol)，传输控制协议&lt;/p&gt;
+
+&lt;p&gt;TCP 是基于连接的 —— 在通信开始之前建立连接，结束时断开连接&lt;/p&gt;
+
+&lt;h4 id=&quot;5-http-请求与响应&quot;&gt;5. HTTP 请求与响应&lt;/h4&gt;
+
+&lt;p&gt;连接建立之后，就可以开始传输了，采用 Http 协议，这里简单分析一下 Http 请求和响应的报文：&lt;/p&gt;
+
+&lt;p&gt;Http 请求报文，一共有 4 个部分（包含一个空行）：&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;1. 请求行 (request-line)&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;请求行包含了请求的方法，资源的位置，以及协议的版本，举个例子：&lt;/p&gt;
+
+&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;GET /index.html HTTP/1.1&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;采用 GET 的方式，请求得到 index.html 这个页面，采用 HTTP/1.1 版本的协议&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;2. 请求头部 (headers)&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;头部是有多个 Key-Value 组成的，常见的有：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Accept:xxx （接受的数据类型）
+Accept-Charset:xxx （接受的编码格式）
+Accept-Language:xxx （接受的语言）
+User-Agent:xxx （浏览器类型）
+Cookie:xxx=yyy （所使用的 Cookie）
+Connection:close/keep-alive （连接状态：关闭/保持连接）
+......
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;strong&gt;3. 空行 (blank line)&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;这个空行是一定要有的，它是用来区分请求头部和请求数据的，它代表着不再有头部的 Key-Value 键值对，接下来是请求数据了&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;4. 请求数据 (request-body)&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;请求主体一般是用于 POST 方法提交数据，例如最常见的表单提交，就是在请求主体写入 &lt;code class=&quot;highlighter-rouge&quot;&gt;Content-Type= multipart/form-data&lt;/code&gt;`&lt;/p&gt;
+
+&lt;p&gt;Http 响应报文，也是分为 4 个部分（包含一个空行）：&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;1. 状态行 (status-line)&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;状态行中包含着协议版本，状态码以及文本描述，状态码和文本描述就代表了服务器所返回的响应结果是怎样的，这里给出大致的描述：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;2XX：成功
+3XX：重定向
+4XX：客户端错误
+5XX：服务器错误
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;最常见的就是：200 (OK) 和 404 (Not Found) 了&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;2. 响应头部 (headers)&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;与请求头部类似，也是 Key-Value 键值对的组合&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;3. 空行 (blank line)&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;用来分隔响应头部和响应正文&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;4. 响应正文&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;响应正文中，如果之前请求的是数据，就返回数据，如果请求的是网页，就返回 HTML 代码&lt;/p&gt;
+
+&lt;h4 id=&quot;6-tcp-连接关闭&quot;&gt;6. TCP 连接关闭&lt;/h4&gt;
+
+&lt;p&gt;在通信结束之后，需要将连接关闭，这时候就是 TCP 四次挥手的场景了&lt;/p&gt;
+
+&lt;p&gt;从输入 URL 到获取页面的过程，看上去就短短几个步骤，其中涵盖的知识点还是挺多的，接下来就是 TCP 的三握四挥以及状态转换图的文章了&lt;/p&gt;
+</description>
+        <pubDate>Wed, 06 Feb 2019 00:00:00 -0800</pubDate>
+        <link>http://localhost:4000/2019/02/06/%E4%BB%8E%E8%BE%93%E5%85%A5-URL-%E5%88%B0%E8%8E%B7%E5%8F%96%E9%A1%B5%E9%9D%A2%E7%9A%84%E8%BF%87%E7%A8%8B/</link>
+        <guid isPermaLink="true">http://localhost:4000/2019/02/06/%E4%BB%8E%E8%BE%93%E5%85%A5-URL-%E5%88%B0%E8%8E%B7%E5%8F%96%E9%A1%B5%E9%9D%A2%E7%9A%84%E8%BF%87%E7%A8%8B/</guid>
+        
+        <category>计算机网络</category>
+        
+        
+      </item>
     
       <item>
         <title>被忽略的 fail-fast</title>
@@ -1610,453 +1768,6 @@
         <pubDate>Thu, 30 Aug 2018 00:00:00 -0700</pubDate>
         <link>http://localhost:4000/2018/08/30/%E4%BF%9D%E6%8C%81%E7%99%BB%E5%BD%95%E7%8A%B6%E6%80%81%E7%9A%84%E6%B3%A8%E5%86%8C%E7%99%BB%E9%99%86%E7%95%8C%E9%9D%A2/</link>
         <guid isPermaLink="true">http://localhost:4000/2018/08/30/%E4%BF%9D%E6%8C%81%E7%99%BB%E5%BD%95%E7%8A%B6%E6%80%81%E7%9A%84%E6%B3%A8%E5%86%8C%E7%99%BB%E9%99%86%E7%95%8C%E9%9D%A2/</guid>
-        
-        <category>Spring MVC</category>
-        
-        <category>Java Web</category>
-        
-        <category>Spring</category>
-        
-        
-      </item>
-    
-      <item>
-        <title>SSM 重构注册登陆界面</title>
-        <description>&lt;h3 id=&quot;正文之前&quot;&gt;正文之前&lt;/h3&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;之前有做过一个练手的&lt;a href=&quot;https://github.com/lihanxiang/p-m&quot;&gt;商品管理的小项目&lt;/a&gt;，然后用 &lt;a href=&quot;https://github.com/lihanxiang/new-p-m&quot;&gt;SSM 重构&lt;/a&gt;了，接下来又做了一个&lt;a href=&quot;https://github.com/lihanxiang/Registration-login-interface&quot;&gt;模拟注册登录的界面&lt;/a&gt;，然后前两天用 &lt;a href=&quot;https://github.com/lihanxiang/Registration-login-interface2&quot;&gt;SSM 重构&lt;/a&gt;了这个项目的后台代码，修改了一点前端页面，后台功能不变&lt;/p&gt;
-
-  &lt;p&gt;接下来还有在此基础上做新的功能：保持登陆状态，查看个人信息等，然后把注册登陆界面整合至商品管理的项目，一步一步扩大&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;h3 id=&quot;正文&quot;&gt;正文&lt;/h3&gt;
-
-&lt;h4 id=&quot;1-项目截图&quot;&gt;1. 项目截图&lt;/h4&gt;
-
-&lt;p&gt;下面的文档中有给出截图&lt;/p&gt;
-
-&lt;h4 id=&quot;2-功能实现&quot;&gt;2. 功能实现&lt;/h4&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;注册、登陆&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;常规的注册登陆操作&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;验证码&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;输出验证码，单击验证码图片可刷新&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;验证用户&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;注册是验证用户名、电话号码和邮箱是否已被注册，登陆时验证用户是否已注册以及密码是否正确，两个过程中都有检测验证码的准确性&lt;/p&gt;
-
-&lt;h4 id=&quot;3-具体说明&quot;&gt;3. 具体说明&lt;/h4&gt;
-
-&lt;p&gt;我还是放上项目的 README 文档吧：&lt;/p&gt;
-
-&lt;h2 id=&quot;registration-login-interface2&quot;&gt;Registration-login-interface2&lt;/h2&gt;
-
-&lt;h3 id=&quot;version-01&quot;&gt;Version 0.1&lt;/h3&gt;
-
-&lt;p&gt;使用 SSM 框架来对原先的 &lt;a href=&quot;https://github.com/lihanxiang/Registration-login-interface&quot;&gt;Registration-login-interface&lt;/a&gt; 进行重构，页面做细微改动，后台使用框架，来达到同样的效果：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-c1638bca24a9db97.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-f583ceb88b70e7bb.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;0.1  版本是使用框架进行重构，接下来的 0.2 版本将会是添加一些功能：用户保持登陆状态，添加一张 SQL 表来存放用户信息，并在页面中进行个人信息添加和修改&lt;/p&gt;
-
-&lt;h4 id=&quot;1-文件结构&quot;&gt;1. 文件结构&lt;/h4&gt;
-
-&lt;p&gt;关于建包和创建哪些类，不多说，直接上一整个项目的图：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-ec1033863d4614b8.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;h4 id=&quot;2-配置文件config-包&quot;&gt;2. 配置文件（config 包）&lt;/h4&gt;
-
-&lt;p&gt;将 Spring 和 MyBatis 整合的方式，在之前的 &lt;a href=&quot;https://github.com/lihanxiang/new-p-m&quot;&gt;new-p-m&lt;/a&gt; 和 &lt;a href=&quot;http://www.mybatis.org/spring/zh/index.html&quot;&gt;mybatis-spring 官方文档&lt;/a&gt; 中都能找到答案，这里直接给出配置：&lt;/p&gt;
-
-&lt;p&gt;数据库信息（db.properties)：&lt;/p&gt;
-
-&lt;p&gt;jdbc.driver = com.mysql.jdbc.Driver
-jdbc.url = jdbc:mysql://localhost:3306/user
-jdbc.username = xxx（你自己的用户名）
-jdbc.password = xxx（你自己的密码）&lt;/p&gt;
-
-&lt;p&gt;spring-mvc.xml:&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;cp&quot;&gt;&amp;lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&amp;gt;&lt;/span&gt;
-&lt;span class=&quot;nt&quot;&gt;&amp;lt;beans&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;xmlns=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;http://www.springframework.org/schema/beans&quot;&lt;/span&gt;
-       &lt;span class=&quot;na&quot;&gt;xmlns:xsi=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;http://www.w3.org/2001/XMLSchema-instance&quot;&lt;/span&gt;
-       &lt;span class=&quot;na&quot;&gt;xmlns:context=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;http://www.springframework.org/schema/context&quot;&lt;/span&gt;
-       &lt;span class=&quot;na&quot;&gt;xmlns:mvc=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;http://www.springframework.org/schema/mvc&quot;&lt;/span&gt;
-       &lt;span class=&quot;na&quot;&gt;xsi:schemaLocation=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;
-
-    &lt;span class=&quot;c&quot;&gt;&amp;lt;!-- 组件扫描 --&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;nt&quot;&gt;&amp;lt;context:component-scan&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;base-package=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;controller&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;/&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;nt&quot;&gt;&amp;lt;context:component-scan&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;base-package=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;service&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;/&amp;gt;&lt;/span&gt;
-
-    &lt;span class=&quot;c&quot;&gt;&amp;lt;!-- 注解驱动 --&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;nt&quot;&gt;&amp;lt;mvc:annotation-driven/&amp;gt;&lt;/span&gt;
-
-    &lt;span class=&quot;c&quot;&gt;&amp;lt;!-- 配置视图解析器 --&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;nt&quot;&gt;&amp;lt;bean&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;class=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;org.springframework.web.servlet.view.InternalResourceViewResolver&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;
-        &lt;span class=&quot;nt&quot;&gt;&amp;lt;property&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;name=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;prefix&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;value=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;WEB-INF/jsp/&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;/&amp;gt;&lt;/span&gt;
-        &lt;span class=&quot;nt&quot;&gt;&amp;lt;property&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;name=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;suffix&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;value=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;.jsp&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;/&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;nt&quot;&gt;&amp;lt;/bean&amp;gt;&lt;/span&gt;
-
-    &lt;span class=&quot;c&quot;&gt;&amp;lt;!-- 这两行代码是为了不让静态资源被 servlet 拦截 --&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;nt&quot;&gt;&amp;lt;mvc:resources&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;mapping=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;/image/**&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;location=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;image&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;/&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;nt&quot;&gt;&amp;lt;mvc:resources&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;mapping=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;../../css/**&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;location=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;css&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;/&amp;gt;&lt;/span&gt;
-&lt;span class=&quot;nt&quot;&gt;&amp;lt;/beans&amp;gt;&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;spring-mybatis.xml:&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;cp&quot;&gt;&amp;lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&amp;gt;&lt;/span&gt;
-&lt;span class=&quot;nt&quot;&gt;&amp;lt;beans&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;xmlns=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;http://www.springframework.org/schema/beans&quot;&lt;/span&gt;
-       &lt;span class=&quot;na&quot;&gt;xmlns:xsi=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;http://www.w3.org/2001/XMLSchema-instance&quot;&lt;/span&gt;
-       &lt;span class=&quot;na&quot;&gt;xmlns:context=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;http://www.springframework.org/schema/context&quot;&lt;/span&gt;
-       &lt;span class=&quot;na&quot;&gt;xsi:schemaLocation=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;
-
-    &lt;span class=&quot;c&quot;&gt;&amp;lt;!-- 将数据库信息配置在外部文件中，使用占位符来代替具体信息的配置 --&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;nt&quot;&gt;&amp;lt;context:property-placeholder&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;location=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;classpath:config/db.properties&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;/&amp;gt;&lt;/span&gt;
-
-    &lt;span class=&quot;c&quot;&gt;&amp;lt;!-- 配置数据源 --&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;nt&quot;&gt;&amp;lt;bean&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;id=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;dataSource&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;class=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;org.apache.commons.dbcp.BasicDataSource&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;
-        &lt;span class=&quot;nt&quot;&gt;&amp;lt;property&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;name=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;driverClassName&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;value=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;${jdbc.driver}&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;/&amp;gt;&lt;/span&gt;
-        &lt;span class=&quot;nt&quot;&gt;&amp;lt;property&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;name=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;url&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;value=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;${jdbc.url}&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;/&amp;gt;&lt;/span&gt;
-        &lt;span class=&quot;nt&quot;&gt;&amp;lt;property&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;name=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;username&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;value=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;${jdbc.username}&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;/&amp;gt;&lt;/span&gt;
-        &lt;span class=&quot;nt&quot;&gt;&amp;lt;property&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;name=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;password&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;value=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;${jdbc.password}&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;/&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;nt&quot;&gt;&amp;lt;/bean&amp;gt;&lt;/span&gt;
-
-    &lt;span class=&quot;c&quot;&gt;&amp;lt;!-- sqlSessionFactory 的配置，这是基于 MyBatis 的应用的核心 --&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;nt&quot;&gt;&amp;lt;bean&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;id=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;sqlSessionFactory&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;class=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;org.mybatis.spring.SqlSessionFactoryBean&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;
-        &lt;span class=&quot;c&quot;&gt;&amp;lt;!-- 使用上面定义的数据源来进行配置 --&amp;gt;&lt;/span&gt;
-        &lt;span class=&quot;nt&quot;&gt;&amp;lt;property&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;name=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;dataSource&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;ref=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;dataSource&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;/&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;nt&quot;&gt;&amp;lt;/bean&amp;gt;&lt;/span&gt;
-
-    &lt;span class=&quot;c&quot;&gt;&amp;lt;!-- 查找下面指定的类路径中的映射器 --&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;nt&quot;&gt;&amp;lt;bean&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;class=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;org.mybatis.spring.mapper.MapperScannerConfigurer&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;
-        &lt;span class=&quot;c&quot;&gt;&amp;lt;!-- 定义 Mapper 配置器的位置 --&amp;gt;&lt;/span&gt;
-        &lt;span class=&quot;nt&quot;&gt;&amp;lt;property&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;name=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;basePackage&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;value=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;mapper&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;/&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;nt&quot;&gt;&amp;lt;/bean&amp;gt;&lt;/span&gt;
-
-    &lt;span class=&quot;c&quot;&gt;&amp;lt;!-- 之后要用到的两个 Bean --&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;nt&quot;&gt;&amp;lt;bean&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;id=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;exceptionService&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;class=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;service.impl.ExceptionServiceImpl&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;/&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;nt&quot;&gt;&amp;lt;bean&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;id=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;verifyCode&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;class=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;util.VerifyCode&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;/&amp;gt;&lt;/span&gt;
-&lt;span class=&quot;nt&quot;&gt;&amp;lt;/beans&amp;gt;&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h4 id=&quot;3-webxml&quot;&gt;3. web.xml&lt;/h4&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;cp&quot;&gt;&amp;lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&amp;gt;&lt;/span&gt;
-&lt;span class=&quot;nt&quot;&gt;&amp;lt;web-app&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;xmlns=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;http://xmlns.jcp.org/xml/ns/javaee&quot;&lt;/span&gt;
-         &lt;span class=&quot;na&quot;&gt;xmlns:xsi=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;http://www.w3.org/2001/XMLSchema-instance&quot;&lt;/span&gt;
-         &lt;span class=&quot;na&quot;&gt;xsi:schemaLocation=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd&quot;&lt;/span&gt;
-         &lt;span class=&quot;na&quot;&gt;version=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;4.0&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;nt&quot;&gt;&amp;lt;context-param&amp;gt;&lt;/span&gt;
-        &lt;span class=&quot;nt&quot;&gt;&amp;lt;param-name&amp;gt;&lt;/span&gt;contextConfigLocation&lt;span class=&quot;nt&quot;&gt;&amp;lt;/param-name&amp;gt;&lt;/span&gt;
-        &lt;span class=&quot;nt&quot;&gt;&amp;lt;param-value&amp;gt;&lt;/span&gt;/WEB-INF/classes/config/spring/spring-mybatis.xml&lt;span class=&quot;nt&quot;&gt;&amp;lt;/param-value&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;nt&quot;&gt;&amp;lt;/context-param&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;nt&quot;&gt;&amp;lt;listener&amp;gt;&lt;/span&gt;
-        &lt;span class=&quot;nt&quot;&gt;&amp;lt;listener-class&amp;gt;&lt;/span&gt;org.springframework.web.context.ContextLoaderListener&lt;span class=&quot;nt&quot;&gt;&amp;lt;/listener-class&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;nt&quot;&gt;&amp;lt;/listener&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;nt&quot;&gt;&amp;lt;servlet&amp;gt;&lt;/span&gt;
-        &lt;span class=&quot;nt&quot;&gt;&amp;lt;servlet-name&amp;gt;&lt;/span&gt;dispatcher&lt;span class=&quot;nt&quot;&gt;&amp;lt;/servlet-name&amp;gt;&lt;/span&gt;
-        &lt;span class=&quot;nt&quot;&gt;&amp;lt;servlet-class&amp;gt;&lt;/span&gt;org.springframework.web.servlet.DispatcherServlet&lt;span class=&quot;nt&quot;&gt;&amp;lt;/servlet-class&amp;gt;&lt;/span&gt;
-        &lt;span class=&quot;nt&quot;&gt;&amp;lt;init-param&amp;gt;&lt;/span&gt;
-            &lt;span class=&quot;nt&quot;&gt;&amp;lt;param-name&amp;gt;&lt;/span&gt;contextConfigLocation&lt;span class=&quot;nt&quot;&gt;&amp;lt;/param-name&amp;gt;&lt;/span&gt;
-            &lt;span class=&quot;nt&quot;&gt;&amp;lt;param-value&amp;gt;&lt;/span&gt;classpath:config/spring/spring-mvc.xml&lt;span class=&quot;nt&quot;&gt;&amp;lt;/param-value&amp;gt;&lt;/span&gt;
-        &lt;span class=&quot;nt&quot;&gt;&amp;lt;/init-param&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;nt&quot;&gt;&amp;lt;/servlet&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;nt&quot;&gt;&amp;lt;servlet-mapping&amp;gt;&lt;/span&gt;
-        &lt;span class=&quot;nt&quot;&gt;&amp;lt;servlet-name&amp;gt;&lt;/span&gt;dispatcher&lt;span class=&quot;nt&quot;&gt;&amp;lt;/servlet-name&amp;gt;&lt;/span&gt;
-        &lt;span class=&quot;nt&quot;&gt;&amp;lt;url-pattern&amp;gt;&lt;/span&gt;*.action&lt;span class=&quot;nt&quot;&gt;&amp;lt;/url-pattern&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;nt&quot;&gt;&amp;lt;/servlet-mapping&amp;gt;&lt;/span&gt;
-&lt;span class=&quot;nt&quot;&gt;&amp;lt;/web-app&amp;gt;&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;第 2 步中配置的两个文件作为上下文配置信息，最后的 url 映射是 xxx.action 的形式&lt;/p&gt;
-
-&lt;h4 id=&quot;4-实体类userjava&quot;&gt;4. 实体类（User.java）&lt;/h4&gt;
-
-&lt;p&gt;为了节省篇幅，这里不给出实体类代码，和 Registration-login-interface 中的实体类是一样的&lt;/p&gt;
-
-&lt;h4 id=&quot;5-自定义异常&quot;&gt;5. 自定义异常&lt;/h4&gt;
-
-&lt;p&gt;自定义的异常是调用父类方法来实现的，因用户注册或登陆时输入有误而抛出&lt;/p&gt;
-
-&lt;p&gt;public class UserException extends Exception {
-    //自定义异常
-    public UserException(String message) {
-        super(message);
-    }
-}&lt;/p&gt;
-
-&lt;h4 id=&quot;6-映射器&quot;&gt;6. 映射器&lt;/h4&gt;
-
-&lt;p&gt;MyBatis-Spring 提供的 MapperFactoryBean 能够进行动态代理，能够将数据映射器&lt;strong&gt;接口&lt;/strong&gt;注入到 Service 层中的 Bean 里，注意，一定要是接口，不能是实现类，所以我们这里写了一个 UserMapper：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public interface UserMapper {
-    void addUser(User user);
-    User findUserByName(String username);
-    User findUserByPhone(String phone);
-    User findUserByEmail(String email);
-}
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;映射器接口对应着一个同名的 XML 映射器文件文件：UserMapper.xml&lt;/p&gt;
-
-&lt;p&gt;这个映射器中写的是 SQL 语句，这里面有四句，添加，按照名称、电话号码和邮箱进行查找，映射文件的命名空间（namespace）对应着映射器接口的名称，SQL 语句的 id 对应着接口中的方法，不能有误&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&amp;lt;mapper namespace=&quot;mapper.UserMapper&quot;&amp;gt;
-    &amp;lt;insert id=&quot;addUser&quot; parameterType=&quot;domain.User&quot;&amp;gt;
-      INSERT INTO user(username,password,phone,email)
-      VALUES (#{username}, #{password}, #{phone}, #{email})
-    &amp;lt;/insert&amp;gt;
-
-    &amp;lt;select id=&quot;findUserByName&quot; parameterType=&quot;String&quot; resultType=&quot;domain.User&quot;&amp;gt;
-        SELECT * FROM user WHERE username = #{username}
-    &amp;lt;/select&amp;gt;
-
-    &amp;lt;select id=&quot;findUserByPhone&quot; parameterType=&quot;String&quot; resultType=&quot;domain.User&quot;&amp;gt;
-        SELECT * FROM user WHERE phone = #{phone}
-    &amp;lt;/select&amp;gt;
-
-    &amp;lt;select id=&quot;findUserByEmail&quot; parameterType=&quot;String&quot; resultType=&quot;domain.User&quot;&amp;gt;
-        SELECT * FROM user WHERE email = #{email}
-    &amp;lt;/select&amp;gt;
-&amp;lt;/mapper&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h4 id=&quot;6-验证码&quot;&gt;6. 验证码&lt;/h4&gt;
-
-&lt;p&gt;SSM 版本的验证码没有变化，还是 &lt;a href=&quot;https://github.com/lihanxiang/Registration-login-interface&quot;&gt;Registration-login-interface&lt;/a&gt; 中的验证码，不做更改&lt;/p&gt;
-
-&lt;h4 id=&quot;7-service-层&quot;&gt;7. Service 层&lt;/h4&gt;
-
-&lt;p&gt;Service 层有两个接口，一个是关于注册和登陆的：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public interface UserService {
-    public void addUser(User user) throws UserException;
-    public void login(User user) throws UserException;
-}
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;另一个是检测注册和登陆过程中的错误情况：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;@Service
-public interface ExceptionService {
-
-    //_user 是从数据库中查找出的记录，user 是用户输入
-    public void loginException(User user, User db_user) throws UserException;
-
-    public void addUserException1(User user) throws UserException;
-
-    public void addUserException2(User user) throws UserException;
-}
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;先写 ExceptionService 的实现，在注册和登陆过程中要使用：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    //先创建 Bean，接下来会用到
-    private final UserMapper userMapper;
-
-    @Autowired
-    public ExceptionServiceImpl(UserMapper userMapper) {
-        this.userMapper = userMapper;
-    }
-    
-    //先判断输入格式是否有误
-    public void addUserException1(User user) throws UserException{
-        if (user.getUsername() == null || user.getUsername().trim().isEmpty()){
-            throw new UserException(&quot;用户名不能为空&quot;);
-        }else if (user.getUsername().length() &amp;lt; 5 || user.getUsername().length() &amp;gt; 15){
-            throw new UserException(&quot;用户名必须为5-15个字符&quot;);
-        }
-
-        if (user.getPassword() == null || user.getPassword().trim().isEmpty()){
-            throw new UserException(&quot;密码不能为空&quot;);
-        }else if (user.getPassword().length() &amp;lt; 5 || user.getPassword().length() &amp;gt; 15){
-            throw new UserException(&quot;密码必须为5-15个字符&quot;);
-        }
-
-        if (user.getPhone() == null || user.getPhone().trim().isEmpty()){
-            throw new UserException(&quot;电话号码不能为空&quot;);
-        }
-
-        if (user.getEmail() == null || user.getEmail().trim().isEmpty()){
-            throw new UserException(&quot;邮箱不能为空&quot;);
-        }
-    }
-
-    //再判断输入的信息是否已被注册
-    public void addUserException2(User user) throws UserException{
-        //这三者都必须是唯一的
-        if (userMapper.findUserByName(user.getUsername()) != null){
-            throw new UserException(&quot;该用户名已被注册&quot;);
-        } else if (userMapper.findUserByPhone(user.getPhone()) != null){
-            throw new UserException(&quot;该电话号码已被注册&quot;);
-        } else if (userMapper.findUserByEmail(user.getEmail()) != null){
-            throw new UserException(&quot;该邮箱已被注册&quot;);
-        }
-    }
-
-    //登入检测
-    public void loginException(User user, User db_user) throws UserException {
-
-        if(db_user == null){
-            throw new UserException(&quot;该用户不存在&quot;);
-        }
-        if(!user.getPassword().equals(db_user.getPassword())){
-            throw new UserException(&quot;密码错误&quot;);
-        }
-    }
-
-    //验证码检测
-    @Override
-    public void verifyCodeException(String inputVerifyCode, String code) throws UserException {
-        if (inputVerifyCode == null || inputVerifyCode.trim().isEmpty()){
-            throw new UserException(&quot;验证码不能为空&quot;);
-        } else if (inputVerifyCode.length() != 4){
-            throw new UserException(&quot;验证码长度应为 4 位&quot;);
-        } else if (!inputVerifyCode.equals(code)){
-            throw new UserException(&quot;验证码错误&quot;);
-        }
-    }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;然后是 UserService 的实现：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    //先是用构造器注入来创建 UserMapper 和 ExceptionService 两个 Bean
-    private final UserMapper userMapper;
-
-    private final ExceptionService exceptionService;
-
-    @Autowired
-    public UserServiceImpl(UserMapper userMapper, ExceptionService exceptionService) {
-        this.userMapper = userMapper;
-        this.exceptionService = exceptionService;
-    }
-    
-    public void addUser(User user) throws UserException {
-        //先判断用户的输入是否有错
-        exceptionService.addUserException1(user);
-        //再判断用户的信息是否已被注册
-        exceptionService.addUserException2(user);
-        userMapper.addUser(user);
-    }
-    
-    //根据用户输入名字去数据库查找有没有这个用户，如果没有，就会抛出异常
-    public void login(User user) throws UserException {
-        User db_user = userMapper.findUserByName(user.getUsername());
-        exceptionService.loginException(user, db_user);
-    }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;可能有人会觉得为什么登陆的方法没有返回值，其实如果登入成功，也就是没有抛出异常，在 Controller 中就可以接着执行后面的方法，如果用户名或密码错误，是会抛出异常，中断程序的&lt;/p&gt;
-
-&lt;h4 id=&quot;8-controller&quot;&gt;8. Controller&lt;/h4&gt;
-
-&lt;p&gt;到了关键的一步，Controller 负责处理 DispatcherServlet 分发的请求：&lt;/p&gt;
-
-&lt;p&gt;首先是使用构造器注入来创建三个 Bean：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    private final UserService userService;
-
-    private final VerifyCode verifyCode;
-
-    private final ExceptionService exceptionService;
-
-    @Autowired
-    public UserController(UserService userService, VerifyCode verifyCode, ExceptionService exceptionService) {
-        this.userService = userService;
-        this.verifyCode = verifyCode;
-        this.exceptionService = exceptionService;
-    }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;userService 就是用于注册和登陆的，verifyCode 就是用于得到验证码，exceptionService 是用来检测注册和登陆过程中是否出现错误&lt;/p&gt;
-
-&lt;p&gt;在注册和登陆之前，都需要得到带有表单的页面：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    //在注册之前需要先得到注册的界面
-    @RequestMapping(&quot;/preAdd&quot;)
-    public ModelAndView preAdd(){
-        return new ModelAndView(&quot;addUser&quot;);
-    }
-    
-    //同样的，需要先得到界面
-    @RequestMapping(&quot;preLogin&quot;)
-    public ModelAndView preLogin(){
-        return new ModelAndView(&quot;login&quot;);
-    }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;然后是注册的过程，先调用 addUser() 方法，如果用户注册的时候出现了问题，比如说用户名、电话号码或者邮箱已被注册，就直接抛出异常，就没有执行验证码验证的方法了，如果没问题，就接着检测验证码输入，将表单输入与验证码文本进行比较&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    @RequestMapping(&quot;/addUser&quot;)
-    public ModelAndView addUser(User user, HttpServletRequest request){
-        ModelAndView modelAndView;
-        //如果下面的 try 语句块没有抛出异常，则返回 addUserSuccessful.jsp
-        modelAndView = new ModelAndView(&quot;addUserSuccessful&quot;);
-        try{
-            //先调用添加用户的方法，看看有没有因为不符规定的输入而导致异常抛出
-            userService.addUser(user);
-            //然后再看有没有因为验证码错误而导致异常抛出
-            exceptionService.verifyCodeException(request.getParameter(&quot;verifyCode&quot;), verifyCode.getText());
-        } catch (UserException e){
-            //如果捕获异常，就带着异常信息返回注册界面
-            modelAndView = new ModelAndView(&quot;addUser&quot;);
-            modelAndView.addObject(&quot;message&quot;, e.getMessage());
-        }
-        return modelAndView;
-    }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;登陆的过程，也是先先检查用户输入信息是否有误，再检查验证码信息&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    //登陆的逻辑和上面是一样的
-    @RequestMapping(&quot;/login&quot;)
-    public ModelAndView login(User user, HttpServletRequest request) {
-        ModelAndView modelAndView;
-        modelAndView = new ModelAndView(&quot;loginSuccessful&quot;);
-        try {
-            userService.login(user);
-            exceptionService.verifyCodeException(request.getParameter(&quot;verifyCode&quot;), verifyCode.getText());
-        } catch (UserException e){
-            modelAndView = new ModelAndView(&quot;login&quot;);
-            modelAndView.addObject(&quot;message&quot;, e.getMessage());
-        }
-        return modelAndView;
-    }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;最后是关于输出验证码图片的操作：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    //得到验证码，然后用于 jsp 文件的 &amp;lt;img&amp;gt; 标签的 src 属性中
-    @RequestMapping(&quot;/getVerifyCode&quot;)
-    public void setVerifyCode(HttpServletResponse response)
-            throws IOException{
-        //设置响应格式
-        response.setContentType(&quot;image/jpg&quot;);
-        //得到图片
-        BufferedImage image = verifyCode.getImage();
-        //输出
-        verifyCode.output(image, response.getOutputStream());
-    }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-</description>
-        <pubDate>Sun, 26 Aug 2018 00:00:00 -0700</pubDate>
-        <link>http://localhost:4000/2018/08/26/SSM-%E9%87%8D%E6%9E%84%E6%B3%A8%E5%86%8C%E7%99%BB%E9%99%86%E7%95%8C%E9%9D%A2/</link>
-        <guid isPermaLink="true">http://localhost:4000/2018/08/26/SSM-%E9%87%8D%E6%9E%84%E6%B3%A8%E5%86%8C%E7%99%BB%E9%99%86%E7%95%8C%E9%9D%A2/</guid>
         
         <category>Spring MVC</category>
         
