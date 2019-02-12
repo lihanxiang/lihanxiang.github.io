@@ -19,9 +19,9 @@
     <meta name="keyword"  content="Java">
     <link rel="shortcut icon" href="/img/favicon.ico">
 
-    <title>树莓派小车（一）小车配件选购及安装 - 李汉祥的博客 | L Blog</title>
+    <title>TCP 的三握四挥 - 李汉祥的博客 | L Blog</title>
 
-    <link rel="canonical" href="http://localhost:4000/2018/04/19/%E6%A0%91%E8%8E%93%E6%B4%BE%E5%B0%8F%E8%BD%A6-%E4%B8%80-%E5%B0%8F%E8%BD%A6%E9%85%8D%E4%BB%B6%E9%80%89%E8%B4%AD%E5%8F%8A%E5%AE%89%E8%A3%85/">
+    <link rel="canonical" href="http://localhost:4000/2019/02/12/TCP-%E7%9A%84%E4%B8%89%E6%8F%A1%E5%9B%9B%E6%8C%A5/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -143,12 +143,12 @@
 
 
     <!-- Image to hack wechat -->
-<!-- <img src="/img/post/2018-04/19.jpg" width="0" height="0"> -->
+<!-- <img src="/img/post/2019-02/12.jpg" width="0" height="0"> -->
 
 <!-- Post Header -->
 <style type="text/css">
     header.intro-header{
-        background-image: url('/img/post/2018-04/19.jpg')
+        background-image: url('/img/post/2019-02/12.jpg')
     }
 </style>
 <header class="intro-header" >
@@ -158,15 +158,15 @@
                 <div class="post-heading">
                     <div class="tags">
                         
-                        <a class="tag" href="/tags/#树莓派" title="树莓派">树莓派</a>
+                        <a class="tag" href="/tags/#计算机网络" title="计算机网络">计算机网络</a>
                         
                     </div>
-                    <h1>树莓派小车（一）小车配件选购及安装</h1>
+                    <h1>TCP 的三握四挥</h1>
                     
                     
-                    <h2 class="subheading">随便玩玩</h2>
+                    <h2 class="subheading"></h2>
                     
-                    <span class="meta">Posted by L on April 19, 2018</span>
+                    <span class="meta">Posted by L on February 12, 2019</span>
                 </div>
             </div>
         </div>
@@ -184,121 +184,114 @@
                 col-md-10 col-md-offset-1
                 post-container">
 
-				<p>这篇文章转载自<a href="https://www.jianshu.com/p/2692875cc8d7">我的简书</a></p>
+				<h3 id="正文之前">正文之前</h3>
 
-<h3 id="正文之前">正文之前</h3>
+<blockquote>
+  <p>上一篇文章讲了网上冲浪的基本过程，其中的 TCP 相关知识还没有给出，所以在这一篇种来讲述一下 TCP 的连接建立与断开</p>
+</blockquote>
 
-<p>在考试之后突发奇想，想要用身边的树莓派做点事情，作为入门级的树莓派玩法，应该当属小车了吧，我先做的是红外避障小车</p>
+<h3 id="正文">正文</h3>
 
-<p><img src="https://upload-images.jianshu.io/upload_images/3426615-f60dec482ce908ee.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
+<h4 id="1-连接的建立三次挥手">1. 连接的建立（三次挥手）</h4>
 
-<p>接下来说重点，说一说配件的选购和小车的拼装</p>
+<p>由于 TCP 是面向连接的，在双方进行通信前，需要先构建一条<strong>虚拟通道</strong> —— 也就是连接</p>
 
-<hr />
+<p>建立连接的目的，其实就是双方处于一个<strong>同步</strong>的状态 —— 你说的我能收到，我说的你也能收到，接下来以 A 作为客户端，B 作为服务端来说明一下（序号是随机生成的）：</p>
 
-<h3 id="1配件选购">1.配件选购</h3>
-
-<p>买配件当然是从某宝买入，建议大家去一些做零件批发的店，如果去专卖店的话，就有些小贵了。而且也要学着如何去确定自己所需要的零件，而不是直接购买一整辆小车的零件</p>
-
-<p>对于需要哪些零件，我说一说我自己的购物清单：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-0f20f5fee7d267af.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
 
 <ol>
-  <li>
-    <p>树莓派1只（必须的，建议买英国版）</p>
-  </li>
-  <li>
-    <p>小车底盘，四只直流电机，四个车轮，20线测速码盘，铜柱、螺丝、螺帽、紧固件若干</p>
-  </li>
+  <li>A 发送一个信号（SYN = 1000），表示 A 想要发起一个连接请求</li>
+  <li>B 收到这个 SYN，并且返回 ACK = 1001（1 中的 SYN + 1），表示 B 收到了 A 的请求，同时 B 也发出一个 SYN（2000），表示 B 同意开启这个连接</li>
+  <li>A 收到了 SYN （2000）+ ACK，表示 A 已经知道 B 同意开启连接，发送一个 ACK 给 B，表示<strong>“我知道你同意开启连接了”</strong></li>
 </ol>
 
-<p>（商家自配电池盒以及电线若干）</p>
+<p>这时候虚拟通道就建立了，这里要注意的点是：</p>
+
+<p>同步，就代表双方需要在同一个状态，<strong>A 发出 SYN，但是它不知道 B 是否收到，同样，B 发出的 SYN，它不知道 A 是否收到，所以需要第三步来确认 B 发出的 SYN 被 A 接收了</strong></p>
+
+<p><strong>成功建立连接的条件就是：双方都同意开启连接，并且双方都知道对方也同意开启连接</strong></p>
+
+<p>接下来来假设一下，三次握手中的意外情况（数字表示图中圈的数字，也就是连接的步骤）：</p>
+
+<ul>
+  <li>1 丢失，A 超时重发（A 一段时间后没收到 B 的信号，就重发）</li>
+  <li>2 丢失，B 超时重发（同理）</li>
+  <li>3 丢失，图中看到，3 发出去之后，客户端的状态就变为 <strong>ESTABLISHED</strong>，表示已就绪，但是，此时 B 还未收到 ACK，无法变为就绪状态，这时候有两种情况：
+    <ul>
+      <li>
+        <ol>
+          <li>A 还没有发送数据，这时候 B 会重发 SYN + ACK，直到收到 3（ACK）</li>
+        </ol>
+      </li>
+      <li>
+        <ol>
+          <li>A 有发送数据，这时候 B 收到的是 ACK + Data，B 就变为 <strong>ESTABLISHED</strong> 状态，并且接受数据</li>
+        </ol>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<p>所以，TCP 的连接建立需要三次，两次太少，有可能 B 准备好了，但是没有收到 A 的回应，就无法进入 <strong>ESTABLISHED</strong> 状态</p>
+
+<h4 id="2-连接断开四次挥手">2. 连接断开（四次挥手）</h4>
+
+<p>为什么连接建立要三次，断开却要四次呢？这里涉及到一个概念：半关闭 (half-close)，在《TCP/IP 详解 卷一》中给出了这样的解释：</p>
+
+<blockquote>
+  <p>TCP provides the ability for one end of connection to terminate its output, while still receiving data from the other end. This is called a <em>half-close</em></p>
+
+  <p>通俗的来说，就是关闭连接的一端，已经不能发送数据，但是它能够继续接收来自另一端的数据</p>
+</blockquote>
+
+<p>接下来看看四次挥手的过程：</p>
+
+<p><img src="https://upload-images.jianshu.io/upload_images/3426615-33008e84853d67a7.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
+
+<p>首先，双方都是 <strong>ESTABLISHED</strong> 状态（图中未给出），接下来：</p>
 
 <ol>
-  <li>
-    <p>L298N驱动板</p>
-  </li>
-  <li>
-    <p>充电宝（必须有2A输出的）</p>
-  </li>
-  <li>
-    <p>杜邦线若干（公对公，母对母，公对母最好都买一些）</p>
-  </li>
-  <li>
-    <p>4节5号电池（建议买充电电池，小车耗电量太大了）</p>
-  </li>
+  <li>A 主动关闭连接，发送 FIN 信号，变为 <strong>FIN_WAIT_1</strong> 状态，表示不再传送数据，但是可接收数据</li>
+  <li>B 接收到 FIN，被动关闭，发送 ACK，表示已收到 1 的 FIN，进入 <strong>CLOSE_WAIT</strong> 状态</li>
+  <li>B 还可以继续发送数据（半关闭）</li>
+  <li>B 发送数据完毕，也要关闭了，发送 FIN，状态变为 LAST_ACK（等待最后一个 ACK）</li>
+  <li>A 收到 FIN，发送 ACK，表示收到了 FIN，进入 <strong>TIME_WAIT</strong> 状态</li>
+  <li>B 收到 ACK 之后，成功关闭，进入 CLOSED 状态</li>
+  <li>A 经过 2MSL 之后，也进入 CLOSED 状态</li>
 </ol>
 
-<p>以上是做小车基础模型所必需的，由于我做的是红外避障小车，所以还需要买红外传感器</p>
+<p>这里的 <strong>1、2、4、5</strong> 就是四次挥手，关于 2MSL (Maximum Segment Lifetime)，是为了防止最后一个 ACK 没有到达 B，如果最后一个 ACK 在途中丢失，B 就会重发 ACK + FIN，直到收到最后的 ACK</p>
 
-<p>还买了迷你摄像头，打算过一段时间加一个拍摄功能</p>
+<h4 id="3-三握四挥中的状态">3. 三握四挥中的状态</h4>
 
-<p><img src="https://upload-images.jianshu.io/upload_images/3426615-9686214962edf9c8.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
+<p>接下来说一下在三握四挥中的双方状态，先说三次挥手：</p>
 
-<p><img src="https://upload-images.jianshu.io/upload_images/3426615-5f6b38a4612f182b.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
+<p>LISTEN：服务器监听状态，等待请求</p>
 
-<p>加上运费差不多75元左右，建议大家可以多买一些配件，反正玩小车都有可能用到，比如超声波传感，红外测距，测速模块，人体感应模块和声音检测传感器之类的</p>
+<p>SYN_SENT：同步请求已发送</p>
 
-<h3 id="2小车底盘安装">2.小车底盘安装</h3>
+<p>SYN_RCVD：同步请求已接受</p>
 
-<p>配件到手之后，就可以开始动手安装了，先说一说下小车车驱动的思路：</p>
+<p>ESTABLISHED：连接已建立</p>
 
-<h4 id="电池盒中的四节电池是用来给驱动板供电的驱动板给电机提供动力电机带动车轮转动由于此车是没有用到舵机的所以转弯的方式是通过单边车轮前进或后退来进行转弯的">电池盒中的四节电池是用来给驱动板供电的，驱动板给电机提供动力，电机带动车轮转动，由于此车是没有用到舵机的，所以转弯的方式是通过单边车轮前进或后退来进行转弯的</h4>
+<p><strong>若连接成功建立，要双发都成功进入 ESTABLISHED 状态才行，单方面的建立连接是无效的</strong></p>
 
-<p>还需要说一下供电的问题，关于树莓派的供电问题一直是大家的一大焦点，本次安装中，充电宝是给树莓派单独供电的，电池则是给驱动板供电（用充电电池比较环保，四驱车耗电量太大）。千万不能用充电宝给树莓派和L298N同时供电（不然又要去买树莓派了）</p>
+<p>接下来是四次挥手：</p>
 
-<h3 id="开始组装">开始组装</h3>
+<p>FIN_WAIT_1：终止等待 1</p>
 
-<p>1.电机的连接</p>
+<p>CLOSE_WAIT：关闭等待，还在持续发送数据</p>
 
-<p>将去掉外皮的电线连接至电机末尾的铜环处</p>
+<p>FIN_WAIT_2：终止等待 2，等待服务器发送 FIN</p>
 
-<p><img src="https://upload-images.jianshu.io/upload_images/3426615-f80b0f6e05d95915.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
+<p>LAST_ACK：最后确认，等待 A 的 ACK</p>
 
-<p>2.将车轮和电机固定至底盘</p>
+<p>TIME_WAIT：时间等待，等待 2MSL 之后，进入 CLOSED 状态</p>
 
-<p>使用配件中的紧固件、螺丝和螺帽将车轮、码盘和电机固定在底盘</p>
+<p>CLOSED：关闭状态</p>
 
-<p><img src="https://upload-images.jianshu.io/upload_images/3426615-39708a29f65d9b41.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
-
-<p>3.电机与L298N驱动板的连接</p>
-
-<p>关于L298N的知识在此不赘述，大家自行解决。</p>
-
-<p>将两边电机的负极连至L298N的OUT1和OUT3处，正极连至OUT2和OUT4处。</p>
-
-<p><img src="https://upload-images.jianshu.io/upload_images/3426615-88fff7dd0b8294c3.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
-
-<p>4.驱动板供电</p>
-
-<p>将4节五号电池装入电池盒，将电池盒与驱动板的接地口和12V输入口相连</p>
-
-<p>正极（红线）连接12V供电</p>
-
-<p>负极（黑线）接地</p>
-
-<p><img src="https://upload-images.jianshu.io/upload_images/3426615-8ca765338a87b652.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
-
-<p><img src="https://upload-images.jianshu.io/upload_images/3426615-dc9a98bf5e804db0.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
-
-<p>5.驱动板与树莓派连接</p>
-
-<p>L298N驱动板上共有4个信息输入口，为IN1,IN2,IN3,IN4。</p>
-
-<p>这四个口就是与树莓派的GPIO接口相连的。</p>
-
-<p>关于GPIO接口，有时间另说，读者可以科学上网解决此问题</p>
-
-<p><img src="https://upload-images.jianshu.io/upload_images/3426615-419925c3ca591a02.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
-
-<p>5.安装完成</p>
-
-<p>根据个人喜好，我连接的树莓派GPIO为引脚编号11，12，13，15的接口。</p>
-
-<p>读者可以另选其他位置接口（只要符合连接规则就行）</p>
-
-<p><img src="https://upload-images.jianshu.io/upload_images/3426615-c31e3b62f027d11e.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" /></p>
-
-<p>关于小车的基础模型的安装就到这里了，接下来的文章会讲解用Pyhton驱动小车，以及红外避障小车的制作</p>
+<p>那么，TCP 连接的基础部分就这样结束了</p>
 
 
                 <hr>
@@ -309,13 +302,9 @@
                 <ul class="pager">
                     
                     <li class="previous">
-                        <a href="/2018/04/18/%E5%8D%9A%E5%AE%A2%E4%BB%8B%E7%BB%8D/" data-toggle="tooltip" data-placement="top" title="博客介绍">&larr; Previous Post</a>
+                        <a href="/2019/02/06/%E4%BB%8E%E8%BE%93%E5%85%A5-URL-%E5%88%B0%E8%8E%B7%E5%8F%96%E9%A1%B5%E9%9D%A2%E7%9A%84%E8%BF%87%E7%A8%8B/" data-toggle="tooltip" data-placement="top" title="从输入 URL 到获取页面的过程">&larr; Previous Post</a>
                     </li>
                     
-                    
-                    <li class="next">
-                        <a href="/2018/04/20/%E6%A0%91%E8%8E%93%E6%B4%BE%E5%B0%8F%E8%BD%A6-%E4%BA%8C-%E6%A0%91%E8%8E%93%E6%B4%BE-%E5%B0%8F%E8%BD%A6%E5%92%8C%E7%BA%A2%E5%A4%96%E7%BA%BF%E6%A8%A1%E5%9D%97%E8%BF%9E%E6%8E%A5/" data-toggle="tooltip" data-placement="top" title="树莓派小车（二）树莓派、小车和红外线模块连接">Next Post &rarr;</a>
-                    </li>
                     
                 </ul>
 
@@ -469,8 +458,8 @@
 <script type="text/javascript">
     /* * * CONFIGURATION VARIABLES * * */
     var disqus_shortname = "http-hxblog-site";
-    var disqus_identifier = "/2018/04/19/树莓派小车（一）小车配件选购及安装";
-    var disqus_url = "http://localhost:4000/2018/04/19/%E6%A0%91%E8%8E%93%E6%B4%BE%E5%B0%8F%E8%BD%A6-%E4%B8%80-%E5%B0%8F%E8%BD%A6%E9%85%8D%E4%BB%B6%E9%80%89%E8%B4%AD%E5%8F%8A%E5%AE%89%E8%A3%85/";
+    var disqus_identifier = "/2019/02/12/TCP 的三握四挥";
+    var disqus_url = "http://localhost:4000/2019/02/12/TCP-%E7%9A%84%E4%B8%89%E6%8F%A1%E5%9B%9B%E6%8C%A5/";
 
     (function() {
         var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;

@@ -5,9 +5,129 @@
     <description>你问我什么咖啡最好，我当然觉得是 Java</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Wed, 06 Feb 2019 06:08:00 -0800</pubDate>
-    <lastBuildDate>Wed, 06 Feb 2019 06:08:00 -0800</lastBuildDate>
+    <pubDate>Tue, 12 Feb 2019 01:34:29 -0800</pubDate>
+    <lastBuildDate>Tue, 12 Feb 2019 01:34:29 -0800</lastBuildDate>
     <generator>Jekyll v3.7.4</generator>
+    
+      <item>
+        <title>TCP 的三握四挥</title>
+        <description>&lt;h3 id=&quot;正文之前&quot;&gt;正文之前&lt;/h3&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;上一篇文章讲了网上冲浪的基本过程，其中的 TCP 相关知识还没有给出，所以在这一篇种来讲述一下 TCP 的连接建立与断开&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h3 id=&quot;正文&quot;&gt;正文&lt;/h3&gt;
+
+&lt;h4 id=&quot;1-连接的建立三次挥手&quot;&gt;1. 连接的建立（三次挥手）&lt;/h4&gt;
+
+&lt;p&gt;由于 TCP 是面向连接的，在双方进行通信前，需要先构建一条&lt;strong&gt;虚拟通道&lt;/strong&gt; —— 也就是连接&lt;/p&gt;
+
+&lt;p&gt;建立连接的目的，其实就是双方处于一个&lt;strong&gt;同步&lt;/strong&gt;的状态 —— 你说的我能收到，我说的你也能收到，接下来以 A 作为客户端，B 作为服务端来说明一下（序号是随机生成的）：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-0f20f5fee7d267af.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;A 发送一个信号（SYN = 1000），表示 A 想要发起一个连接请求&lt;/li&gt;
+  &lt;li&gt;B 收到这个 SYN，并且返回 ACK = 1001（1 中的 SYN + 1），表示 B 收到了 A 的请求，同时 B 也发出一个 SYN（2000），表示 B 同意开启这个连接&lt;/li&gt;
+  &lt;li&gt;A 收到了 SYN （2000）+ ACK，表示 A 已经知道 B 同意开启连接，发送一个 ACK 给 B，表示&lt;strong&gt;“我知道你同意开启连接了”&lt;/strong&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;这时候虚拟通道就建立了，这里要注意的点是：&lt;/p&gt;
+
+&lt;p&gt;同步，就代表双方需要在同一个状态，&lt;strong&gt;A 发出 SYN，但是它不知道 B 是否收到，同样，B 发出的 SYN，它不知道 A 是否收到，所以需要第三步来确认 B 发出的 SYN 被 A 接收了&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;成功建立连接的条件就是：双方都同意开启连接，并且双方都知道对方也同意开启连接&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;接下来来假设一下，三次握手中的意外情况（数字表示图中圈的数字，也就是连接的步骤）：&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;1 丢失，A 超时重发（A 一段时间后没收到 B 的信号，就重发）&lt;/li&gt;
+  &lt;li&gt;2 丢失，B 超时重发（同理）&lt;/li&gt;
+  &lt;li&gt;3 丢失，图中看到，3 发出去之后，客户端的状态就变为 &lt;strong&gt;ESTABLISHED&lt;/strong&gt;，表示已就绪，但是，此时 B 还未收到 ACK，无法变为就绪状态，这时候有两种情况：
+    &lt;ul&gt;
+      &lt;li&gt;
+        &lt;ol&gt;
+          &lt;li&gt;A 还没有发送数据，这时候 B 会重发 SYN + ACK，直到收到 3（ACK）&lt;/li&gt;
+        &lt;/ol&gt;
+      &lt;/li&gt;
+      &lt;li&gt;
+        &lt;ol&gt;
+          &lt;li&gt;A 有发送数据，这时候 B 收到的是 ACK + Data，B 就变为 &lt;strong&gt;ESTABLISHED&lt;/strong&gt; 状态，并且接受数据&lt;/li&gt;
+        &lt;/ol&gt;
+      &lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;所以，TCP 的连接建立需要三次，两次太少，有可能 B 准备好了，但是没有收到 A 的回应，就无法进入 &lt;strong&gt;ESTABLISHED&lt;/strong&gt; 状态&lt;/p&gt;
+
+&lt;h4 id=&quot;2-连接断开四次挥手&quot;&gt;2. 连接断开（四次挥手）&lt;/h4&gt;
+
+&lt;p&gt;为什么连接建立要三次，断开却要四次呢？这里涉及到一个概念：半关闭 (half-close)，在《TCP/IP 详解 卷一》中给出了这样的解释：&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;TCP provides the ability for one end of connection to terminate its output, while still receiving data from the other end. This is called a &lt;em&gt;half-close&lt;/em&gt;&lt;/p&gt;
+
+  &lt;p&gt;通俗的来说，就是关闭连接的一端，已经不能发送数据，但是它能够继续接收来自另一端的数据&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;接下来看看四次挥手的过程：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-33008e84853d67a7.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;首先，双方都是 &lt;strong&gt;ESTABLISHED&lt;/strong&gt; 状态（图中未给出），接下来：&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;A 主动关闭连接，发送 FIN 信号，变为 &lt;strong&gt;FIN_WAIT_1&lt;/strong&gt; 状态，表示不再传送数据，但是可接收数据&lt;/li&gt;
+  &lt;li&gt;B 接收到 FIN，被动关闭，发送 ACK，表示已收到 1 的 FIN，进入 &lt;strong&gt;CLOSE_WAIT&lt;/strong&gt; 状态&lt;/li&gt;
+  &lt;li&gt;B 还可以继续发送数据（半关闭）&lt;/li&gt;
+  &lt;li&gt;B 发送数据完毕，也要关闭了，发送 FIN，状态变为 LAST_ACK（等待最后一个 ACK）&lt;/li&gt;
+  &lt;li&gt;A 收到 FIN，发送 ACK，表示收到了 FIN，进入 &lt;strong&gt;TIME_WAIT&lt;/strong&gt; 状态&lt;/li&gt;
+  &lt;li&gt;B 收到 ACK 之后，成功关闭，进入 CLOSED 状态&lt;/li&gt;
+  &lt;li&gt;A 经过 2MSL 之后，也进入 CLOSED 状态&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;这里的 &lt;strong&gt;1、2、4、5&lt;/strong&gt; 就是四次挥手，关于 2MSL (Maximum Segment Lifetime)，是为了防止最后一个 ACK 没有到达 B，如果最后一个 ACK 在途中丢失，B 就会重发 ACK + FIN，直到收到最后的 ACK&lt;/p&gt;
+
+&lt;h4 id=&quot;3-三握四挥中的状态&quot;&gt;3. 三握四挥中的状态&lt;/h4&gt;
+
+&lt;p&gt;接下来说一下在三握四挥中的双方状态，先说三次挥手：&lt;/p&gt;
+
+&lt;p&gt;LISTEN：服务器监听状态，等待请求&lt;/p&gt;
+
+&lt;p&gt;SYN_SENT：同步请求已发送&lt;/p&gt;
+
+&lt;p&gt;SYN_RCVD：同步请求已接受&lt;/p&gt;
+
+&lt;p&gt;ESTABLISHED：连接已建立&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;若连接成功建立，要双发都成功进入 ESTABLISHED 状态才行，单方面的建立连接是无效的&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;接下来是四次挥手：&lt;/p&gt;
+
+&lt;p&gt;FIN_WAIT_1：终止等待 1&lt;/p&gt;
+
+&lt;p&gt;CLOSE_WAIT：关闭等待，还在持续发送数据&lt;/p&gt;
+
+&lt;p&gt;FIN_WAIT_2：终止等待 2，等待服务器发送 FIN&lt;/p&gt;
+
+&lt;p&gt;LAST_ACK：最后确认，等待 A 的 ACK&lt;/p&gt;
+
+&lt;p&gt;TIME_WAIT：时间等待，等待 2MSL 之后，进入 CLOSED 状态&lt;/p&gt;
+
+&lt;p&gt;CLOSED：关闭状态&lt;/p&gt;
+
+&lt;p&gt;那么，TCP 连接的基础部分就这样结束了&lt;/p&gt;
+</description>
+        <pubDate>Tue, 12 Feb 2019 00:00:00 -0800</pubDate>
+        <link>http://localhost:4000/2019/02/12/TCP-%E7%9A%84%E4%B8%89%E6%8F%A1%E5%9B%9B%E6%8C%A5/</link>
+        <guid isPermaLink="true">http://localhost:4000/2019/02/12/TCP-%E7%9A%84%E4%B8%89%E6%8F%A1%E5%9B%9B%E6%8C%A5/</guid>
+        
+        <category>计算机网络</category>
+        
+        
+      </item>
     
       <item>
         <title>从输入 URL 到获取页面的过程</title>
@@ -1514,260 +1634,6 @@ Connection:close/keep-alive （连接状态：关闭/保持连接）
         <pubDate>Fri, 31 Aug 2018 00:00:00 -0700</pubDate>
         <link>http://localhost:4000/2018/08/31/%E6%8B%A6%E6%88%AA%E5%99%A8%E5%92%8C%E8%BF%87%E6%BB%A4%E5%99%A8%E9%AA%8C%E8%AF%81%E7%99%BB%E5%BD%95/</link>
         <guid isPermaLink="true">http://localhost:4000/2018/08/31/%E6%8B%A6%E6%88%AA%E5%99%A8%E5%92%8C%E8%BF%87%E6%BB%A4%E5%99%A8%E9%AA%8C%E8%AF%81%E7%99%BB%E5%BD%95/</guid>
-        
-        <category>Spring MVC</category>
-        
-        <category>Java Web</category>
-        
-        <category>Spring</category>
-        
-        
-      </item>
-    
-      <item>
-        <title>保持登录状态的注册登陆界面</title>
-        <description>&lt;h3 id=&quot;正文之前&quot;&gt;正文之前&lt;/h3&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;前两天写了&lt;a href=&quot;https://lihanxiang.github.io/2018/08/26/SSM-%E9%87%8D%E6%9E%84%E6%B3%A8%E5%86%8C%E7%99%BB%E9%99%86%E7%95%8C%E9%9D%A2/&quot;&gt;SSM 重构注册登陆界面&lt;/a&gt;，然后添加了一点功能：保持登录状态，修改当前登录用户信息，查看登录状态&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;h3 id=&quot;正文&quot;&gt;正文&lt;/h3&gt;
-
-&lt;h3 id=&quot;version-021&quot;&gt;Version 0.2.1&lt;/h3&gt;
-
-&lt;h4 id=&quot;新增的功能都是在原有的基础上添加代码基本没有删去版本-01-的代码&quot;&gt;新增的功能都是在原有的基础上添加代码，基本没有删去版本 0.1 的代码&lt;/h4&gt;
-
-&lt;p&gt;可通过点击 tag 来查看 v0.1：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-a2a86f9628363959.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;h4 id=&quot;1-新增功能截图&quot;&gt;1. 新增功能截图&lt;/h4&gt;
-
-&lt;p&gt;登录成功后主页面：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-e89ae45825fa5ff5.PNG?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;修改用户信息（用户名无法修改）：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-a95449255a2f23c2.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;电话号码和邮箱不能为空：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-619e57307bb9bd2b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;修改成功：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-2955b3d0ca2d9c26.PNG?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;检测登录状态：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-16eb325efa37d0f3.PNG?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;若未登录就检测登录状态：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-4299278f99f6f2af.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;h4 id=&quot;2-实体类&quot;&gt;2. 实体类&lt;/h4&gt;
-
-&lt;p&gt;用户的信息添加了电话号码和描述，所以要在实体类和数据库中都做一点改动：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    private String gender;
-    private String description;
-    public void setGender(String gender) {
-        this.gender = gender;
-    }
-    public String getGender() {
-        return gender;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-    public String getDescription() {
-        return description;
-    }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;MySQL 中对表做一点改动：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;alter table user add gender varchar(10), add description varchar(200);
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h4 id=&quot;3-mybatis&quot;&gt;3. Mybatis&lt;/h4&gt;
-
-&lt;p&gt;为了添加新功能，需要在 MyBatis 映射器中添加两步：&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;查找用户信息：&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    &amp;lt;select id=&quot;showInfo&quot; parameterType=&quot;String&quot; resultType=&quot;domain.User&quot;&amp;gt;
-        SELECT *
-        FROM user
-        WHERE username = #{username}
-    &amp;lt;/select&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;修改用户信息：&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    &amp;lt;update id=&quot;setUserInfo&quot; parameterType=&quot;domain.User&quot;&amp;gt;
-        UPDATE user SET phone = #{phone}, email = #{email},
-        gender = #{gender}, description = #{description}
-    &amp;lt;/update&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;然后在接口中添加对应方法：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    User showInfo(String username);
-    void setUserInfo(User user);
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h4 id=&quot;3-service&quot;&gt;3. Service&lt;/h4&gt;
-
-&lt;p&gt;先写异常的接口 ExceptionService 吧：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    void setInfoException(User user) throws UserException;
-
-    void statusException(String username) throws UserException;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;然后写实现类：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    //重置信息检测，关键信息不能为空
-    @Override
-    public void setInfoException(User user) throws UserException {
-        if (user.getPhone() == null || user.getPhone().trim().isEmpty()){
-            throw new UserException(&quot;电话号码不能为空&quot;);
-        } else if (user.getEmail() == null || user.getEmail().trim().isEmpty()){
-            throw new UserException(&quot;邮箱不能为空&quot;);
-        }
-    }
-
-    //用户状态检测，如果在 Session 中未找到有用户登陆，就抛出异常
-    @Override
-    public void statusException(String username) throws UserException {
-        if (username == null){
-            throw new UserException(&quot;请先登录&quot;);
-        }
-    }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;在 UserService 中新增三个功能，其中有两个有异常检测：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    User showInfo(String username);
-    String getStatus(String username) throws UserException;
-    void setUserInfo(User user) throws UserException;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;然后是实现类：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    //显示用户信息
-    @Override
-    public User showInfo(String username) {
-        return userMapper.showInfo(username);
-    }
-
-    //显示当前登录状态
-    @Override
-    public String getStatus(String username) throws UserException {
-        exceptionService.statusException(username);
-        return username;
-    }
-
-    //修改用户信息
-    @Override
-    public void setUserInfo(User user) throws UserException{
-        exceptionService.setInfoException(user);
-        userMapper.setUserInfo(user);
-    }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h4 id=&quot;4-controller&quot;&gt;4. Controller&lt;/h4&gt;
-
-&lt;p&gt;在登录时，需要添加一点代码，将用户名写入 Session，以保持登录状态：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    public ModelAndView login(User user, HttpServletRequest request) {
-        ModelAndView modelAndView = new ModelAndView(&quot;main&quot;);
-        try {
-            userService.login(user);
-            userService.verifyCode(request.getParameter(&quot;verifyCode&quot;), verifyCode.getText());
-            //创建 Session，保持登录状态
-            request.getSession().setAttribute(&quot;username&quot;, user.getUsername());
-            //在模型中添加对象，用于 JSP 读取
-            modelAndView.addObject(&quot;username&quot;, request.getSession().getAttribute(&quot;username&quot;));
-        } catch (UserException e){
-            //如果未登录成功，就重新登录
-            modelAndView.setViewName(&quot;login&quot;);
-            modelAndView.addObject(&quot;message&quot;, e.getMessage());
-        }
-        return modelAndView;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;然后是登出的操作：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    //登出账户，不需要具体用户名称，直接废除 session 就行
-    @RequestMapping(&quot;/logout&quot;)
-    public ModelAndView logout(HttpServletRequest request){
-        request.getSession().invalidate();
-        return new ModelAndView(&quot;login&quot;).addObject(&quot;message&quot;, &quot;已登出&quot;);
-    }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;新增查看用户状态的功能：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    //查看用户状态，显示是哪个用户在登录，如果没有登录的用户，就会提示你先登录
-    @RequestMapping(&quot;/userStatus&quot;)
-    public ModelAndView userState(HttpServletRequest request){
-        ModelAndView modelAndView = new ModelAndView(&quot;userStatus&quot;);
-        try {
-            modelAndView.addObject(&quot;username&quot;,
-                    userService.getStatus((String)request.getSession().getAttribute(&quot;username&quot;)));
-        } catch (UserException e){
-            modelAndView.addObject(&quot;message&quot;, e.getMessage());
-        }
-        return modelAndView;
-    }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;然后是用户信息相关的操作，如果在修改信息时抛出异常，就带着错误信息回到信息修改页面：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    //显示用户信息
-    @RequestMapping(&quot;showInfo&quot;)
-    public ModelAndView showInfo(HttpServletRequest request){
-        return new ModelAndView(&quot;userInfo&quot;)
-                .addObject(&quot;user&quot;, userService.showInfo(
-                        ((String)request.getSession().getAttribute(&quot;username&quot;))));
-    }
-
-    //对用户信息进行修改
-    @RequestMapping(&quot;setUserInfo&quot;)
-    public ModelAndView setUserInfo(User user){
-        ModelAndView modelAndView = new ModelAndView(&quot;userInfo&quot;);
-        try {
-            userService.setUserInfo(user);
-            //设置提示信息
-            modelAndView.addObject(&quot;message&quot;, &quot;修改成功&quot;);
-            //跳转
-            modelAndView.setViewName(&quot;main&quot;);
-        } catch (UserException e){
-            modelAndView.addObject(&quot;message&quot;, e.getMessage());
-        }
-        return modelAndView;
-    }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h4 id=&quot;5-jsp&quot;&gt;5. JSP&lt;/h4&gt;
-
-&lt;p&gt;新增两个前端页面：userInfo.jsp 和 userStatus.jsp，都是差不多的页面，这里就不演示了&lt;/p&gt;
-
-&lt;p&gt;接下来的 v0.2.2 是采用过滤器来实现相同功能&lt;/p&gt;
-</description>
-        <pubDate>Thu, 30 Aug 2018 00:00:00 -0700</pubDate>
-        <link>http://localhost:4000/2018/08/30/%E4%BF%9D%E6%8C%81%E7%99%BB%E5%BD%95%E7%8A%B6%E6%80%81%E7%9A%84%E6%B3%A8%E5%86%8C%E7%99%BB%E9%99%86%E7%95%8C%E9%9D%A2/</link>
-        <guid isPermaLink="true">http://localhost:4000/2018/08/30/%E4%BF%9D%E6%8C%81%E7%99%BB%E5%BD%95%E7%8A%B6%E6%80%81%E7%9A%84%E6%B3%A8%E5%86%8C%E7%99%BB%E9%99%86%E7%95%8C%E9%9D%A2/</guid>
         
         <category>Spring MVC</category>
         
