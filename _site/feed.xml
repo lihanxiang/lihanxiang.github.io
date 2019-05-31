@@ -5,9 +5,22 @@
     <description>你问我什么咖啡最好，我当然觉得是 Java</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Tue, 12 Feb 2019 01:34:29 -0800</pubDate>
-    <lastBuildDate>Tue, 12 Feb 2019 01:34:29 -0800</lastBuildDate>
+    <pubDate>Fri, 31 May 2019 00:43:01 -0700</pubDate>
+    <lastBuildDate>Fri, 31 May 2019 00:43:01 -0700</lastBuildDate>
     <generator>Jekyll v3.7.4</generator>
+    
+      <item>
+        <title>博客停更</title>
+        <description>&lt;p&gt;因为现在大三了，准备申研究出国，所以关于 Java 方面的文章就停更了，现在只是专心刷雅思和算法了。等申研成功再回来吧&lt;/p&gt;
+</description>
+        <pubDate>Fri, 31 May 2019 00:00:00 -0700</pubDate>
+        <link>http://localhost:4000/2019/05/31/%E5%8D%9A%E5%AE%A2%E5%81%9C%E6%9B%B4/</link>
+        <guid isPermaLink="true">http://localhost:4000/2019/05/31/%E5%8D%9A%E5%AE%A2%E5%81%9C%E6%9B%B4/</guid>
+        
+        <category>公告</category>
+        
+        
+      </item>
     
       <item>
         <title>TCP 的三握四挥</title>
@@ -1492,154 +1505,6 @@ Connection:close/keep-alive （连接状态：关闭/保持连接）
         <guid isPermaLink="true">http://localhost:4000/2018/09/14/%E5%A4%A7%E5%AD%A6%E4%B8%A4%E5%B9%B4%E7%9A%84%E4%B8%80%E7%82%B9%E6%80%BB%E7%BB%93/</guid>
         
         <category>随笔</category>
-        
-        
-      </item>
-    
-      <item>
-        <title>拦截器和过滤器验证登录</title>
-        <description>&lt;p&gt;之前的版本是 &lt;a href=&quot;https://github.com/lihanxiang/Registration-login-interface2/tree/v0.2.1&quot;&gt;v0.2.1&lt;/a&gt; 保持登录状态的版本，这一次 v0.2.2 是对验证登录过程的一个更新，用拦截器和过滤器来进行，发现这种方式省去了一些逻辑的实现&lt;/p&gt;
-
-&lt;h3 id=&quot;registration-login-interface2&quot;&gt;&lt;a href=&quot;https://github.com/lihanxiang/Registration-login-interface2&quot;&gt;Registration-login-interface2&lt;/a&gt;&lt;/h3&gt;
-
-&lt;h3 id=&quot;version-022&quot;&gt;Version 0.2.2&lt;/h3&gt;
-
-&lt;h4 id=&quot;新增的功能都是在-v021-的基础上进行修改删去部分代码&quot;&gt;新增的功能都是在 v0.2.1 的基础上进行修改，删去部分代码&lt;/h4&gt;
-
-&lt;p&gt;可通过点击 tag 来查看之前的代码：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://upload-images.jianshu.io/upload_images/3426615-a2a86f9628363959.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;h4 id=&quot;1-新增功能&quot;&gt;1. 新增功能&lt;/h4&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;
-    &lt;p&gt;使用 mvc 的拦截器来对特定页面进行拦截，拦截之后跳转至登录界面&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;使用过滤器来进行相同功能的拦截&lt;/p&gt;
-  &lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h4 id=&quot;2-删去的代码&quot;&gt;2. 删去的代码&lt;/h4&gt;
-
-&lt;p&gt;先删除 ExceptionService 中的 statusException 方法，删去对应的实现，然后在 UserServiceImpl 和 Controller 中删去调用它的代码&lt;/p&gt;
-
-&lt;p&gt;这样，就变成了不检测用户是否登录&lt;/p&gt;
-
-&lt;h4 id=&quot;3-拦截器&quot;&gt;3. 拦截器&lt;/h4&gt;
-
-&lt;p&gt;首先新建一个包：interceptor&lt;/p&gt;
-
-&lt;p&gt;然后新建一个类：LoginInterceptor，实现了 HandlerInterceptor 接口：&lt;/p&gt;
-
-&lt;p&gt;关于 HandlerInterceptor 的使用这里不讲述，如果在 session 中没有获得 &lt;strong&gt;username&lt;/strong&gt; 属性，就跳转到登录页面&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;拦截是有范围的，在下文的配置文件中自行配置需要拦截的页面&lt;/strong&gt;&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    public class LoginInterceptor implements org.springframework.web.servlet.HandlerInterceptor {
-    @Override
-    public boolean preHandle(HttpServletRequest httpServletRequest,
-                             HttpServletResponse httpServletResponse, Object o) throws Exception {
-        HttpSession session = httpServletRequest.getSession();
-        if (session.getAttribute(&quot;username&quot;) == null){
-            httpServletResponse.sendRedirect(&quot;preLogin.action&quot;);
-        } else {
-            return true;
-        }
-        return false;
-    }
-
-    @Override
-    public void postHandle(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse,
-                           Object o, ModelAndView modelAndView) throws Exception {
-
-    }
-
-    @Override
-    public void afterCompletion(HttpServletRequest httpServletRequest,
-                                HttpServletResponse httpServletResponse, Object o, Exception e) throws Exception {
-
-    }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;在 spring-mvc.xml 中添加拦截器的配置：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    &amp;lt;mvc:interceptors&amp;gt;
-        &amp;lt;mvc:interceptor&amp;gt;
-            &amp;lt;mvc:mapping path=&quot;/userStatus.action&quot;/&amp;gt;
-            &amp;lt;mvc:mapping path=&quot;/showInfo.action&quot;/&amp;gt;
-            &amp;lt;mvc:mapping path=&quot;/setUserInfo.action&quot;/&amp;gt;
-            &amp;lt;bean class=&quot;interceptor.LoginInterceptor&quot;/&amp;gt;
-        &amp;lt;/mvc:interceptor&amp;gt;
-    &amp;lt;/mvc:interceptors&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;对指定路径进行映射，LoginInterceptor 中的操作就是对映射的路径而言的，然后指定一下拦截器所在位置，就完成了&lt;/p&gt;
-
-&lt;h5 id=&quot;效果&quot;&gt;效果&lt;/h5&gt;
-
-&lt;p&gt;运行之后，在浏览器地址栏输入&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;&lt;strong&gt;localhost:8080/userStatus.action&lt;/strong&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;strong&gt;localhost:8080/showInfo.action&lt;/strong&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;strong&gt;localhost:8080/setUserInfo.action&lt;/strong&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;就会跳转到 http://localhost:8080/preLogin.action&lt;/p&gt;
-
-&lt;p&gt;拦截器的部分就结束了&lt;/p&gt;
-
-&lt;h4 id=&quot;4-过滤器&quot;&gt;4. 过滤器&lt;/h4&gt;
-
-&lt;p&gt;将 spring-mvc.xml 中配置的拦截器信息注释掉，然后新建包：filter，包中新建类 LoginFilter，实现 &lt;strong&gt;javax.servlet.Filter&lt;/strong&gt; 接口：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public class LoginFilter implements Filter {
-
-    @Override
-    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, 
-                         FilterChain filterChain) throws IOException, ServletException {
-        if (((HttpServletRequest) servletRequest).getSession().
-                getAttribute(&quot;username&quot;) == null){
-            ((HttpServletResponse)servletResponse).sendRedirect(&quot;preLogin.action&quot;);
-        } else {
-            filterChain.doFilter(servletRequest,
-                    servletResponse);
-        }
-    }
-}
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;如果检测出没有登录，就会跳转到登录界面，&lt;strong&gt;有一点要注意&lt;/strong&gt;：&lt;code class=&quot;highlighter-rouge&quot;&gt; filterChain.doFilter(servletRequest,
-                    servletResponse);&lt;/code&gt;
-是一定要写的，如果不写，在登录之后，就不能访问那些需要登录才能访问的页面的，相当于请求已经被过滤器中断了，如果检测出已登录，就要加上这一行代码才能方位个人信息页面&lt;/p&gt;
-
-&lt;p&gt;然后在 web.xml 中添加一个过滤器的配置：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    &amp;lt;filter&amp;gt;
-        &amp;lt;filter-name&amp;gt;loginFilter&amp;lt;/filter-name&amp;gt;
-        &amp;lt;filter-class&amp;gt;filter.LoginFilter&amp;lt;/filter-class&amp;gt;
-    &amp;lt;/filter&amp;gt;
-    &amp;lt;filter-mapping&amp;gt;
-        &amp;lt;filter-name&amp;gt;loginFilter&amp;lt;/filter-name&amp;gt;
-        &amp;lt;url-pattern&amp;gt;/showInfo.action&amp;lt;/url-pattern&amp;gt;
-        &amp;lt;url-pattern&amp;gt;/userStatus.action&amp;lt;/url-pattern&amp;gt;
-        &amp;lt;url-pattern&amp;gt;/setUserInfo.action&amp;lt;/url-pattern&amp;gt;
-    &amp;lt;/filter-mapping&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;这样子，不同于 v0.2.1 的验证登录方式就做完了&lt;/p&gt;
-</description>
-        <pubDate>Fri, 31 Aug 2018 00:00:00 -0700</pubDate>
-        <link>http://localhost:4000/2018/08/31/%E6%8B%A6%E6%88%AA%E5%99%A8%E5%92%8C%E8%BF%87%E6%BB%A4%E5%99%A8%E9%AA%8C%E8%AF%81%E7%99%BB%E5%BD%95/</link>
-        <guid isPermaLink="true">http://localhost:4000/2018/08/31/%E6%8B%A6%E6%88%AA%E5%99%A8%E5%92%8C%E8%BF%87%E6%BB%A4%E5%99%A8%E9%AA%8C%E8%AF%81%E7%99%BB%E5%BD%95/</guid>
-        
-        <category>Spring MVC</category>
-        
-        <category>Java Web</category>
-        
-        <category>Spring</category>
         
         
       </item>
